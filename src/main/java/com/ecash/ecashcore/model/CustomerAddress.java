@@ -5,24 +5,26 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "plan")
-public class Plan extends BaseModel {
+@Table(name = "customer_address")
+public class CustomerAddress extends BaseModel {
   @Id
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   private String id;
 
-  @OneToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "type_code", nullable = true)
-  private PlanType typeCode;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "customer_id", nullable = true)
+  private Customer customerId;
 
-  private Integer limit;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "address_id", nullable = true)
+  private Address addressId;
 
   private String status;
 
@@ -34,20 +36,20 @@ public class Plan extends BaseModel {
     this.id = id;
   }
 
-  public PlanType getTypeCode() {
-    return typeCode;
+  public Customer getCustomerId() {
+    return customerId;
   }
 
-  public void setTypeCode(PlanType typeCode) {
-    this.typeCode = typeCode;
+  public void setCustomerId(Customer customerId) {
+    this.customerId = customerId;
   }
 
-  public Integer getLimit() {
-    return limit;
+  public Address getAddressId() {
+    return addressId;
   }
 
-  public void setLimit(Integer limit) {
-    this.limit = limit;
+  public void setAddressId(Address addressId) {
+    this.addressId = addressId;
   }
 
   public String getStatus() {

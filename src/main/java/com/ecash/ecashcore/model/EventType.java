@@ -4,7 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="event_types")
-public class EventTypes extends Types {
-	
+@Table(name = "event_type")
+public class EventType extends Type {
+
 }

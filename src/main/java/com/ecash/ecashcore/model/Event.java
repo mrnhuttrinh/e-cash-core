@@ -13,28 +13,29 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "balance_history")
-public class BalanceHistory extends BaseModel {
-
+@Table(name = "event")
+public class Event extends BaseModel {
   @Id
   @GeneratedValue(generator = "UUID")
   @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
   private String id;
 
-  private Date date;
-
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "account_id", nullable = true)
   private Account accountId;
 
-  private Double balance;
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_code", nullable = true)
+  private EventType typeCode;
 
-  public Date getDate() {
-    return date;
+  private Date date;
+
+  public String getId() {
+    return id;
   }
 
-  public void setDate(Date date) {
-    this.date = date;
+  public void setId(String id) {
+    this.id = id;
   }
 
   public Account getAccountId() {
@@ -45,20 +46,19 @@ public class BalanceHistory extends BaseModel {
     this.accountId = accountId;
   }
 
-  public Double getBalance() {
-    return balance;
+  public EventType getTypeCode() {
+    return typeCode;
   }
 
-  public void setBalance(Double balance) {
-    this.balance = balance;
+  public void setTypeCode(EventType typeCode) {
+    this.typeCode = typeCode;
   }
 
-  public String getId() {
-    return id;
+  public Date getDate() {
+    return date;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setDate(Date date) {
+    this.date = date;
   }
-
 }
