@@ -1,11 +1,13 @@
 package com.ecash.ecashcore.model;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public class Type extends BaseModel {
+public abstract class Type extends BaseModel {
 
+  @Id
   @Column(name = "type_code", nullable = false)
   protected String typeCode;
 

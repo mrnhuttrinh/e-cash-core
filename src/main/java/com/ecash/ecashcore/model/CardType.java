@@ -5,6 +5,6 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "card_type")
-public class CardType extends BaseModel {
+public class CardType extends Type {
 
 }

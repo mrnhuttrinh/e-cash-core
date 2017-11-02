@@ -4,12 +4,14 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "currency_code")
 public class CurrencyCode extends BaseModel {
 
+  @Id
   @Column(name = "type_code", nullable = false)
   private String code;
 
