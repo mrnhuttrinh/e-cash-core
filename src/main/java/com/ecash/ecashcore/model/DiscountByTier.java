@@ -9,39 +9,40 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name="discount_by_tier")
+@Table(name = "discount_by_tier")
 public class DiscountByTier extends BaseModel {
-	@Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-	private String id;
-	
-	@Column(name="discount_rate")
-	private Double discountRate;
-	
-	private String status;
 
-	public String getId() {
-		return id;
-	}
+  @Id
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
+  private String id;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  @Column(name = "discount_rate")
+  private Double discountRate;
 
-	public Double getDiscountRate() {
-		return discountRate;
-	}
+  private String status;
 
-	public void setDiscountRate(Double discountRate) {
-		this.discountRate = discountRate;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public String getStatus() {
-		return status;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+  public Double getDiscountRate() {
+    return discountRate;
+  }
+
+  public void setDiscountRate(Double discountRate) {
+    this.discountRate = discountRate;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
 }

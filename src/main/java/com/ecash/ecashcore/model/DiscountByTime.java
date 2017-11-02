@@ -11,61 +11,62 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name="discount_by_time")
+@Table(name = "discount_by_time")
 public class DiscountByTime extends BaseModel {
-	@Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-	private String id;
-	
-	@Column(name="start_date")
-	private Date startDate;
-	
-	@Column(name="end_date")
-	private Date endDate;
-	
-	@Column(name="discount_rate")
-	private Double discountRate;
-	
-	private String Status;
 
-	public String getId() {
-		return id;
-	}
+  @Id
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
+  private String id;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  @Column(name = "start_date")
+  private Date startDate;
 
-	public Date getStartDate() {
-		return startDate;
-	}
+  @Column(name = "end_date")
+  private Date endDate;
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
+  @Column(name = "discount_rate")
+  private Double discountRate;
 
-	public Date getEndDate() {
-		return endDate;
-	}
+  private String status;
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public Double getDiscountRate() {
-		return discountRate;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setDiscountRate(Double discountRate) {
-		this.discountRate = discountRate;
-	}
+  public Date getStartDate() {
+    return startDate;
+  }
 
-	public String getStatus() {
-		return Status;
-	}
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
 
-	public void setStatus(String status) {
-		Status = status;
-	}
+  public Date getEndDate() {
+    return endDate;
+  }
+
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
+  }
+
+  public Double getDiscountRate() {
+    return discountRate;
+  }
+
+  public void setDiscountRate(Double discountRate) {
+    this.discountRate = discountRate;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
 }

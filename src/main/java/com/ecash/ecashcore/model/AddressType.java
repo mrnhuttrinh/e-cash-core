@@ -4,7 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="card_types")
-public class CardTypes extends BaseModel {
+@Table(name = "address_type")
+public class AddressType extends Type {
 
 }

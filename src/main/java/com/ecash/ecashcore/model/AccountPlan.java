@@ -11,8 +11,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "plan")
-public class Plan extends BaseModel {
+@Table(name = "account_plan")
+public class AccountPlan extends BaseModel {
 
   @Id
   @GeneratedValue(generator = "system-uuid")
@@ -20,12 +20,12 @@ public class Plan extends BaseModel {
   private String id;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = true)
-  private PlanType typeCode;
+  @JoinColumn(name = "account_id", nullable = true)
+  private Account accountId;
 
-  private Integer limit;
-
-  private String status;
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "plan_id", nullable = true)
+  private Plan planId;
 
   public String getId() {
     return id;
@@ -35,28 +35,19 @@ public class Plan extends BaseModel {
     this.id = id;
   }
 
-  public PlanType getTypeCode() {
-    return typeCode;
+  public Account getAccountId() {
+    return accountId;
   }
 
-  public void setTypeCode(PlanType typeCode) {
-    this.typeCode = typeCode;
+  public void setAccountId(Account accountId) {
+    this.accountId = accountId;
   }
 
-  public Integer getLimit() {
-    return limit;
+  public Plan getPlanId() {
+    return planId;
   }
 
-  public void setLimit(Integer limit) {
-    this.limit = limit;
+  public void setPlanId(Plan planId) {
+    this.planId = planId;
   }
-
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
 }
