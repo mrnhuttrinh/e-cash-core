@@ -13,12 +13,13 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "plan")
 public class Plan extends BaseModel {
+
   @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
   private PlanType typeCode;
 

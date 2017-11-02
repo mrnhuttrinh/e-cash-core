@@ -13,9 +13,10 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "discount_by_time")
 public class DiscountByTime extends BaseModel {
+
   @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
   @Column(name = "start_date")

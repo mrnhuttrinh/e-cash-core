@@ -11,11 +11,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "card")
 public class Card extends BaseModel {
+
   @Id
   @Column(name = "card_number")
   private String cardNumber;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
   private CardType typeCode;
 

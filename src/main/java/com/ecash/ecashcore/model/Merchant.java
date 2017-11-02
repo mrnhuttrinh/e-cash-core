@@ -13,9 +13,10 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "merchant")
 public class Merchant extends BaseModel {
+
   @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
   private String name;
@@ -24,7 +25,7 @@ public class Merchant extends BaseModel {
 
   private String email;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address_id", nullable = true)
   private Address addressId;
 

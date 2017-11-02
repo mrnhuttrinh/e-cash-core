@@ -13,16 +13,17 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "merchant_discount_by_time")
 public class MerchantDiscountByTime extends BaseModel {
+  
   @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merchant_id", nullable = true)
   private Merchant merchantId;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "discount_id", nullable = true)
   private DiscountByTime discountId;
 
