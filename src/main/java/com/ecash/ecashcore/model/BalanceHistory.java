@@ -25,7 +25,7 @@ public class BalanceHistory extends BaseModel {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id", nullable = true)
-  private Account accountId;
+  private Account account;
 
   private Double balance;
 
@@ -37,12 +37,12 @@ public class BalanceHistory extends BaseModel {
     this.date = date;
   }
 
-  public Account getAccountId() {
-    return accountId;
+  public Account getAccount() {
+    return account;
   }
 
-  public void setAccountId(Account accountId) {
-    this.accountId = accountId;
+  public void setAccount(Account account) {
+    this.account = account;
   }
 
   public Double getBalance() {

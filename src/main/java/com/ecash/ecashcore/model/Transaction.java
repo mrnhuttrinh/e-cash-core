@@ -23,15 +23,15 @@ public class Transaction extends BaseModel {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id", nullable = true)
-  private Account accountId;
+  private Account account;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "related_transaction_id", nullable = true)
-  private Transaction relatedTransactionId;
+  private Transaction relatedTransaction;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
-  private TransactionType typeCode;
+  private TransactionType transactionType;
 
   private Date date;
 
@@ -49,28 +49,28 @@ public class Transaction extends BaseModel {
     this.id = id;
   }
 
-  public Account getAccountId() {
-    return accountId;
+  public Account getaccount() {
+    return account;
   }
 
-  public void setAccountId(Account accountId) {
-    this.accountId = accountId;
+  public void setAccount(Account account) {
+    this.account = account;
   }
 
-  public Transaction getRelatedTransactionId() {
-    return relatedTransactionId;
+  public Transaction getRelatedTransaction() {
+    return relatedTransaction;
   }
 
-  public void setRelatedTransactionId(Transaction relatedTransactionId) {
-    this.relatedTransactionId = relatedTransactionId;
+  public void setRelatedTransaction(Transaction relatedTransaction) {
+    this.relatedTransaction = relatedTransaction;
   }
 
-  public TransactionType getTypeCode() {
-    return typeCode;
+  public TransactionType getTransactionType() {
+    return transactionType;
   }
 
-  public void setTypeCode(TransactionType typeCode) {
-    this.typeCode = typeCode;
+  public void setTransactionType(TransactionType transactionType) {
+    this.transactionType = transactionType;
   }
 
   public Date getDate() {

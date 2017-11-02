@@ -21,11 +21,11 @@ public class CustomerAddress extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id", nullable = true)
-  private Customer customerId;
+  private Customer customer;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address_id", nullable = true)
-  private Address addressId;
+  private Address address;
 
   private String status;
 
@@ -37,20 +37,20 @@ public class CustomerAddress extends BaseModel {
     this.id = id;
   }
 
-  public Customer getCustomerId() {
-    return customerId;
+  public Customer getCustomer() {
+    return customer;
   }
 
-  public void setCustomerId(Customer customerId) {
-    this.customerId = customerId;
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
   }
 
-  public Address getAddressId() {
-    return addressId;
+  public Address getAddress() {
+    return address;
   }
 
-  public void setAddressId(Address addressId) {
-    this.addressId = addressId;
+  public void setAddress(Address address) {
+    this.address = address;
   }
 
   public String getStatus() {

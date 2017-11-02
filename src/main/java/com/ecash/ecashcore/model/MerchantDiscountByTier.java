@@ -21,11 +21,11 @@ public class MerchantDiscountByTier extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merchant_id", nullable = true)
-  private Merchant merchantId;
+  private Merchant merchant;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "discount_id", nullable = true)
-  private MerchantDiscountByTier discountId;
+  private DiscountByTier discountByTier;
 
   public String getId() {
     return id;
@@ -35,19 +35,19 @@ public class MerchantDiscountByTier extends BaseModel {
     this.id = id;
   }
 
-  public Merchant getMerchantId() {
-    return merchantId;
+  public Merchant getmerchant() {
+    return merchant;
   }
 
-  public void setMerchantId(Merchant merchantId) {
-    this.merchantId = merchantId;
+  public void setmerchant(Merchant merchant) {
+    this.merchant = merchant;
   }
 
-  public MerchantDiscountByTier getDiscountId() {
-    return discountId;
+  public DiscountByTier getDiscountByTier() {
+    return discountByTier;
   }
 
-  public void setDiscountId(MerchantDiscountByTier discountId) {
-    this.discountId = discountId;
+  public void setDiscountByTier(DiscountByTier discountByTier) {
+    this.discountByTier = discountByTier;
   }
 }

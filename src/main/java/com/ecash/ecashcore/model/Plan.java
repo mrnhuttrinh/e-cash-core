@@ -21,7 +21,7 @@ public class Plan extends BaseModel {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
-  private PlanType typeCode;
+  private PlanType planType;
 
   private Integer limit;
 
@@ -35,12 +35,12 @@ public class Plan extends BaseModel {
     this.id = id;
   }
 
-  public PlanType getTypeCode() {
-    return typeCode;
+  public PlanType getPlanType() {
+    return planType;
   }
 
-  public void setTypeCode(PlanType typeCode) {
-    this.typeCode = typeCode;
+  public void setPlanType(PlanType planType) {
+    this.planType = planType;
   }
 
   public Integer getLimit() {

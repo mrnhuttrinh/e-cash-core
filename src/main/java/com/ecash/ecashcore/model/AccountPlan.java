@@ -21,11 +21,11 @@ public class AccountPlan extends BaseModel {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id", nullable = true)
-  private Account accountId;
+  private Account account;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "plan_id", nullable = true)
-  private Plan planId;
+  private Plan plan;
 
   public String getId() {
     return id;
@@ -35,19 +35,19 @@ public class AccountPlan extends BaseModel {
     this.id = id;
   }
 
-  public Account getAccountId() {
-    return accountId;
+  public Account getAccount() {
+    return account;
   }
 
-  public void setAccountId(Account accountId) {
-    this.accountId = accountId;
+  public void setAccount(Account account) {
+    this.account = account;
   }
 
-  public Plan getPlanId() {
-    return planId;
+  public Plan getPlan() {
+    return plan;
   }
 
-  public void setPlanId(Plan planId) {
-    this.planId = planId;
+  public void setPlan(Plan plan) {
+    this.plan = plan;
   }
 }

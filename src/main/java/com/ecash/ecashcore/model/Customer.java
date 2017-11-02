@@ -24,7 +24,7 @@ public class Customer extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
-  private CustomerType typeCode;
+  private CustomerType customerType;
 
   @Column(name = "cif_number")
   private Integer cifNumber;
@@ -56,12 +56,12 @@ public class Customer extends BaseModel {
     this.id = id;
   }
 
-  public CustomerType getTypeCode() {
-    return typeCode;
+  public CustomerType getCustomerType() {
+    return customerType;
   }
 
-  public void setTypeCode(CustomerType typeCode) {
-    this.typeCode = typeCode;
+  public void setCustomerType(CustomerType customerType) {
+    this.customerType = customerType;
   }
 
   public Integer getCifNumber() {

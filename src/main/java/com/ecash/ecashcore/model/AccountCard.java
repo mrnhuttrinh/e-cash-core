@@ -21,11 +21,11 @@ public class AccountCard extends BaseModel {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id", nullable = true)
-  private Account accountId;
+  private Account account;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "card_id", nullable = true)
-  private Card cardId;
+  private Card card;
 
   private String status;
 
@@ -37,20 +37,20 @@ public class AccountCard extends BaseModel {
     this.id = id;
   }
 
-  public Account getAccountId() {
-    return accountId;
+  public Account getAccount() {
+    return account;
   }
 
-  public void setAccountId(Account accountId) {
-    this.accountId = accountId;
+  public void setAccount(Account account) {
+    this.account = account;
   }
 
-  public Card getCardId() {
-    return cardId;
+  public Card getCard() {
+    return card;
   }
 
-  public void setCardId(Card cardId) {
-    this.cardId = cardId;
+  public void setCard(Card card) {
+    this.card = card;
   }
 
   public String getStatus() {

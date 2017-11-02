@@ -27,7 +27,7 @@ public class Merchant extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address_id", nullable = true)
-  private Address addressId;
+  private Address address;
 
   private String status;
 
@@ -63,12 +63,12 @@ public class Merchant extends BaseModel {
     this.email = email;
   }
 
-  public Address getAddressId() {
-    return addressId;
+  public Address getAddress() {
+    return address;
   }
 
-  public void setAddressId(Address addressId) {
-    this.addressId = addressId;
+  public void setAddress(Address address) {
+    this.address = address;
   }
 
   public String getStatus() {

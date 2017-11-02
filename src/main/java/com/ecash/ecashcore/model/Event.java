@@ -23,11 +23,11 @@ public class Event extends BaseModel {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id", nullable = true)
-  private Account accountId;
+  private Account account;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
-  private EventType typeCode;
+  private EventType eventType;
 
   private Date date;
 
@@ -39,20 +39,20 @@ public class Event extends BaseModel {
     this.id = id;
   }
 
-  public Account getAccountId() {
-    return accountId;
+  public Account getAccount() {
+    return account;
   }
 
-  public void setAccountId(Account accountId) {
-    this.accountId = accountId;
+  public void setAccount(Account account) {
+    this.account = account;
   }
 
-  public EventType getTypeCode() {
-    return typeCode;
+  public EventType getEventType() {
+    return eventType;
   }
 
-  public void setTypeCode(EventType typeCode) {
-    this.typeCode = typeCode;
+  public void setEventType(EventType eventType) {
+    this.eventType = eventType;
   }
 
   public Date getDate() {

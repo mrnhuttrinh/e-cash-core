@@ -22,7 +22,7 @@ public class Address extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
-  private AddressType typeCode;
+  private AddressType addressType;
 
   @Column(name = "line_1")
   private String line1;
@@ -50,12 +50,12 @@ public class Address extends BaseModel {
     this.id = id;
   }
 
-  public AddressType getTypeCode() {
-    return typeCode;
+  public AddressType getAddressType() {
+    return addressType;
   }
 
-  public void setTypeCode(AddressType typeCode) {
-    this.typeCode = typeCode;
+  public void setAddressType(AddressType addressType) {
+    this.addressType = addressType;
   }
 
   public String getLine1() {
