@@ -25,11 +25,11 @@ public class Account extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
-  private AccountType typeCode;
+  private AccountType accountType;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id", nullable = true)
-  private Customer customerId;
+  private Customer customer;
 
   @Column(name = "account_name")
   private String accountName;
@@ -54,20 +54,20 @@ public class Account extends BaseModel {
     this.id = id;
   }
 
-  public AccountType getTypeCode() {
-    return typeCode;
+  public AccountType getAccountType() {
+    return accountType;
   }
 
-  public void setTypeCode(AccountType typeCode) {
-    this.typeCode = typeCode;
+  public void setAccountType(AccountType accountType) {
+    this.accountType = accountType;
   }
 
-  public Customer getCustomerId() {
-    return customerId;
+  public Customer getCustomer() {
+    return customer;
   }
 
-  public void setCustomerId(Customer customerId) {
-    this.customerId = customerId;
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
   }
 
   public String getAccountName() {

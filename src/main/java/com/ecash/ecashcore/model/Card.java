@@ -18,7 +18,7 @@ public class Card extends BaseModel {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
-  private CardType typeCode;
+  private CardType cardType;
 
   private String status;
 
@@ -30,12 +30,12 @@ public class Card extends BaseModel {
     this.cardNumber = cardNumber;
   }
 
-  public CardType getTypeCode() {
-    return typeCode;
+  public CardType getCardType() {
+    return cardType;
   }
 
-  public void setTypeCode(CardType typeCode) {
-    this.typeCode = typeCode;
+  public void setCardType(CardType cardType) {
+    this.cardType = cardType;
   }
 
   public String getStatus() {

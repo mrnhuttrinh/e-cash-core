@@ -13,7 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "merchant_discount_by_time")
 public class MerchantDiscountByTime extends BaseModel {
-  
+
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
@@ -21,11 +21,11 @@ public class MerchantDiscountByTime extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merchant_id", nullable = true)
-  private Merchant merchantId;
+  private Merchant merchant;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "discount_id", nullable = true)
-  private DiscountByTime discountId;
+  private DiscountByTime discountByTime;
 
   private String status;
 
@@ -37,20 +37,20 @@ public class MerchantDiscountByTime extends BaseModel {
     this.id = id;
   }
 
-  public Merchant getMerchantId() {
-    return merchantId;
+  public Merchant getMerchant() {
+    return merchant;
   }
 
-  public void setMerchantId(Merchant merchantId) {
-    this.merchantId = merchantId;
+  public void setMerchant(Merchant merchant) {
+    this.merchant = merchant;
   }
 
-  public DiscountByTime getDiscountId() {
-    return discountId;
+  public DiscountByTime getDiscountByTime() {
+    return discountByTime;
   }
 
-  public void setDiscountId(DiscountByTime discountId) {
-    this.discountId = discountId;
+  public void setDiscountByTime(DiscountByTime discountByTime) {
+    this.discountByTime = discountByTime;
   }
 
   public String getStatus() {
