@@ -33,7 +33,7 @@ public class Address extends BaseModel {
   private String city;
 
   @Column(name = "zip_code")
-  private String zipCode;
+  private Integer zipCode;
 
   @Column(name = "state_province")
   private String stateProvince;
@@ -82,11 +82,11 @@ public class Address extends BaseModel {
     this.city = city;
   }
 
-  public String getZipCode() {
+  public Integer getZipCode() {
     return zipCode;
   }
 
-  public void setZipCode(String zipCode) {
+  public void setZipCode(Integer zipCode) {
     this.zipCode = zipCode;
   }
 
