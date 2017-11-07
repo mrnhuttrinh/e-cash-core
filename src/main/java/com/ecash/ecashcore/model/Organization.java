@@ -28,7 +28,6 @@ public class Organization extends BaseModel {
 
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
-	}
-	
-	
+  }
+
 }

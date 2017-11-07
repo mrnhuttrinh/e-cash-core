@@ -9,6 +9,8 @@ import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.IdentifyDocument;
 import com.ecash.ecashcore.model.Organization;
 import com.ecash.ecashcore.model.SCMSSync;
+import com.ecash.ecashcore.util.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class InputCardVO {
   private String syncCode;
@@ -47,207 +49,270 @@ public class InputCardVO {
   public String getSyncCode() {
     return syncCode;
   }
+
   public void setSyncCode(String syncCode) {
     this.syncCode = syncCode;
   }
+
   public Date getSyncTime() {
     return syncTime;
   }
+
   public void setSyncTime(Date syncTime) {
     this.syncTime = syncTime;
   }
+
   public Boolean getFinishFlag() {
     return finishFlag;
   }
+
   public void setFinishFlag(Boolean finishFlag) {
     this.finishFlag = finishFlag;
   }
+
   public String getPersonalizationCode() {
     return personalizationCode;
   }
+
   public void setPersonalizationCode(String personalizationCode) {
     this.personalizationCode = personalizationCode;
   }
+
   public Date getPersonalizationDate() {
     return personalizationDate;
   }
+
   public void setPersonalizationDate(Date personalizationDate) {
     this.personalizationDate = personalizationDate;
   }
+
   public String getCardCode() {
     return cardCode;
   }
+
   public void setCardCode(String cardCode) {
     this.cardCode = cardCode;
   }
+
   public Date getEffectiveDate() {
     return effectiveDate;
   }
+
   public void setEffectiveDate(Date effectiveDate) {
     this.effectiveDate = effectiveDate;
   }
+
   public Date getExpiryDate() {
     return expiryDate;
   }
+
   public void setExpiryDate(Date expiryDate) {
     this.expiryDate = expiryDate;
   }
+
   public String getStatus() {
     return status;
   }
+
   public void setStatus(String status) {
     this.status = status;
   }
+
   public String getOrganizationCode() {
     return organizationCode;
   }
+
   public void setOrganizationCode(String organizationCode) {
     this.organizationCode = organizationCode;
   }
+
   public String getOrganizationShortName() {
     return organizationShortName;
   }
+
   public void setOrganizationShortName(String organizationShortName) {
     this.organizationShortName = organizationShortName;
   }
+
   public String getMemberCode() {
     return memberCode;
   }
+
   public void setMemberCode(String memberCode) {
     this.memberCode = memberCode;
   }
+
   public String getMemberLastName() {
     return memberLastName;
   }
+
   public void setMemberLastName(String memberLastName) {
     this.memberLastName = memberLastName;
   }
+
   public String getMemberFirstName() {
     return memberFirstName;
   }
+
   public void setMemberFirstName(String memberFirstName) {
     this.memberFirstName = memberFirstName;
   }
+
   public Integer getGender() {
     return gender;
   }
+
   public void setGender(Integer gender) {
     this.gender = gender;
   }
+
   public Date getBirthdate() {
     return birthdate;
   }
+
   public void setBirthdate(Date birthdate) {
     this.birthdate = birthdate;
   }
+
   public String getCountryCode() {
     return countryCode;
   }
+
   public void setCountryCode(String countryCode) {
     this.countryCode = countryCode;
   }
+
   public String getIdentityCardNumber() {
     return identityCardNumber;
   }
+
   public void setIdentityCardNumber(String identityCardNumber) {
     this.identityCardNumber = identityCardNumber;
   }
+
   public Date getIdentityCardIssuingDate() {
     return identityCardIssuingDate;
   }
+
   public void setIdentityCardIssuingDate(Date identityCardIssuingDate) {
     this.identityCardIssuingDate = identityCardIssuingDate;
   }
+
   public String getIdentityCardIssuingAuthority() {
     return identityCardIssuingAuthority;
   }
-  public void setIdentityCardIssuingAuthority(
-      String identityCardIssuingAuthority) {
+
+  public void setIdentityCardIssuingAuthority(String identityCardIssuingAuthority) {
     this.identityCardIssuingAuthority = identityCardIssuingAuthority;
   }
+
   public String getPassportNumber() {
     return passportNumber;
   }
+
   public void setPassportNumber(String passportNumber) {
     this.passportNumber = passportNumber;
   }
+
   public Date getPassportIssuingDate() {
     return passportIssuingDate;
   }
+
   public void setPassportIssuingDate(Date passportIssuingDate) {
     this.passportIssuingDate = passportIssuingDate;
   }
+
   public Date getPassportExpiryDate() {
     return passportExpiryDate;
   }
+
   public void setPassportExpiryDate(Date passportExpiryDate) {
     this.passportExpiryDate = passportExpiryDate;
   }
+
   public String getPassportIssuingAuthority() {
     return passportIssuingAuthority;
   }
+
   public void setPassportIssuingAuthority(String passportIssuingAuthority) {
     this.passportIssuingAuthority = passportIssuingAuthority;
   }
+
   public String getTemporaryAddress() {
     return temporaryAddress;
   }
+
   public void setTemporaryAddress(String temporaryAddress) {
     this.temporaryAddress = temporaryAddress;
   }
+
   public String getPermanentAddress() {
     return permanentAddress;
   }
+
   public void setPermanentAddress(String permanentAddress) {
     this.permanentAddress = permanentAddress;
   }
+
   public String getEmail() {
     return email;
   }
+
   public void setEmail(String email) {
     this.email = email;
   }
+
   public String getPhoneNumber1() {
     return phoneNumber1;
   }
+
   public void setPhoneNumber1(String phoneNumber1) {
     this.phoneNumber1 = phoneNumber1;
   }
+
   public String getPhoneNumber2() {
     return phoneNumber2;
   }
+
   public void setPhoneNumber2(String phoneNumber2) {
     this.phoneNumber2 = phoneNumber2;
   }
+
   public String getOccupation() {
     return occupation;
   }
+
   public void setOccupation(String occupation) {
     this.occupation = occupation;
   }
+
   public String getTitle() {
     return title;
   }
+
   public void setTitle(String title) {
     this.title = title;
   }
+
   public String getPosition() {
     return position;
   }
+
   public void setPosition(String position) {
     this.position = position;
   }
 
+  @JsonIgnore
   public SCMSSync getSCMSSync() {
     SCMSSync scmsSync = new SCMSSync();
     scmsSync.setSyncCode(syncCode);
     scmsSync.setSyncTime(syncTime);
     scmsSync.setFinishFlag(finishFlag);
-    // To DO
-    scmsSync.setSyncDetails("{}");
+    scmsSync.setSyncDetails(JsonUtil.objectToJsonString(this));
     return scmsSync;
   }
 
+  @JsonIgnore
   public Card getCard() {
     Card card = new Card();
     card.setCardCode(cardCode);
@@ -257,11 +322,15 @@ public class InputCardVO {
     card.setStatus(status);
     return card;
   }
+
+  @JsonIgnore
   public Account getAccount() {
     Account account = new Account();
     account.setAccountName(email);
     return account;
   }
+
+  @JsonIgnore
   public Customer getCustomer() {
     Customer customer = new Customer();
     customer.setScmsMemberCode(memberCode);
@@ -279,12 +348,16 @@ public class InputCardVO {
     customer.setPosition(position);
     return customer;
   }
+
+  @JsonIgnore
   public Organization getOrganization() {
     Organization organization = new Organization();
     organization.setId(organizationCode);
     organization.setShortName(organizationShortName);
     return organization;
   }
+
+  @JsonIgnore
   public Address getCustomerAddress() {
     Address address = new Address();
     address.setCountry(countryCode);
@@ -292,6 +365,8 @@ public class InputCardVO {
     address.setLine2(temporaryAddress);
     return address;
   }
+
+  @JsonIgnore
   public IdentifyDocument getIdentifyCard() {
     IdentifyDocument identifyDocument = new IdentifyDocument();
     identifyDocument.setNumber(identityCardNumber);
@@ -299,6 +374,8 @@ public class InputCardVO {
     identifyDocument.setPlaceOfIssue(identityCardIssuingAuthority);
     return identifyDocument;
   }
+
+  @JsonIgnore
   public IdentifyDocument getPassportCard() {
     IdentifyDocument identifyDocument = new IdentifyDocument();
     identifyDocument.setNumber(passportNumber);

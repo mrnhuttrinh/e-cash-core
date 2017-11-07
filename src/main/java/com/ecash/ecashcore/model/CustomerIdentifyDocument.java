@@ -11,8 +11,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "customer_identify_documents")
-public class CustomerIdentifyDocuments extends BaseModel {
+@Table(name = "customer_identify_document")
+public class CustomerIdentifyDocument extends BaseModel {
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
@@ -25,15 +25,19 @@ public class CustomerIdentifyDocuments extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "identify_document_id", nullable = true)
   private IdentifyDocument identifyDocument;
+
   public Customer getCustomer() {
     return customer;
   }
+
   public void setCustomer(Customer customer) {
     this.customer = customer;
   }
+
   public IdentifyDocument getIdentifyDocument() {
     return identifyDocument;
   }
+
   public void setIdentifyDocument(IdentifyDocument identifyDocument) {
     this.identifyDocument = identifyDocument;
   }

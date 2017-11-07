@@ -29,9 +29,6 @@ public class Customer extends BaseModel {
   @Column(name = "scms_member_code")
   private String scmsMemberCode;
 
-  @Column(name = "cif_number")
-  private Integer cifNumber;
-
   @Column(name = "first_name")
   private String firstName;
 
@@ -91,14 +88,6 @@ public class Customer extends BaseModel {
 
   public void setScmsMemberCode(String scmsMemberCode) {
     this.scmsMemberCode = scmsMemberCode;
-  }
-
-  public Integer getCifNumber() {
-    return cifNumber;
-  }
-
-  public void setCifNumber(Integer cifNumber) {
-    this.cifNumber = cifNumber;
   }
 
   public String getFirstName() {
