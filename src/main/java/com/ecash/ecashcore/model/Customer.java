@@ -26,27 +26,45 @@ public class Customer extends BaseModel {
   @JoinColumn(name = "type_code", nullable = true)
   private CustomerType customerType;
 
-  @Column(name = "cif_number")
-  private Integer cifNumber;
+  @Column(name = "scms_member_code")
+  private String scmsMemberCode;
 
-  private String name;
+  @Column(name = "first_name")
+  private String firstName;
 
-  private String phone;
+  @Column(name = "last_name")
+  private String lastName;
+
+  @Column(name = "phone_1")
+  private String phone1;
+
+  @Column(name = "phone_2")
+  private String phone2;
 
   private String email;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "organization_id", nullable = true)
+  private Organization organization;
 
   @Column(name = "date_of_birth")
   private Date dateOfBirth;
 
-  private String gender;
-
-  @Column(name = "identify_number")
-  private String identifyNumber;
+  private Integer gender;
 
   @Column(name = "date_became_customer")
   private Date dateBecameCustomer;
 
   private String status;
+
+  @Column(name = "country_code")
+  private String countryCode;
+
+  private String occupation;
+
+  private String title;
+
+  private String position;
 
   public String getId() {
     return id;
@@ -64,28 +82,44 @@ public class Customer extends BaseModel {
     this.customerType = customerType;
   }
 
-  public Integer getCifNumber() {
-    return cifNumber;
+  public String getScmsMemberCode() {
+    return scmsMemberCode;
   }
 
-  public void setCifNumber(Integer cifNumber) {
-    this.cifNumber = cifNumber;
+  public void setScmsMemberCode(String scmsMemberCode) {
+    this.scmsMemberCode = scmsMemberCode;
   }
 
-  public String getName() {
-    return name;
+  public String getFirstName() {
+    return firstName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
   }
 
-  public String getPhone() {
-    return phone;
+  public String getLastName() {
+    return lastName;
   }
 
-  public void setPhone(String phone) {
-    this.phone = phone;
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public String getPhone1() {
+    return phone1;
+  }
+
+  public void setPhone1(String phone1) {
+    this.phone1 = phone1;
+  }
+
+  public String getPhone2() {
+    return phone2;
+  }
+
+  public void setPhone2(String phone2) {
+    this.phone2 = phone2;
   }
 
   public String getEmail() {
@@ -96,28 +130,28 @@ public class Customer extends BaseModel {
     this.email = email;
   }
 
+  public Organization getOrganization() {
+    return organization;
+  }
+
+  public void setOrganization(Organization organization) {
+    this.organization = organization;
+  }
+
+  public void setGender(Integer gender) {
+    this.gender = gender;
+  }
+
+  public Integer getGender() {
+    return gender;
+  }
+
   public Date getDateOfBirth() {
     return dateOfBirth;
   }
 
   public void setDateOfBirth(Date dateOfBirth) {
     this.dateOfBirth = dateOfBirth;
-  }
-
-  public String getGender() {
-    return gender;
-  }
-
-  public void setGender(String gender) {
-    this.gender = gender;
-  }
-
-  public String getIdentifyNumber() {
-    return identifyNumber;
-  }
-
-  public void setIdentifyNumber(String identifyNumber) {
-    this.identifyNumber = identifyNumber;
   }
 
   public Date getDateBecameCustomer() {
@@ -134,6 +168,38 @@ public class Customer extends BaseModel {
 
   public void setStatus(String status) {
     this.status = status;
+  }
+
+  public String getCountryCode() {
+    return countryCode;
+  }
+
+  public void setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
+  }
+
+  public String getOccupation() {
+    return occupation;
+  }
+
+  public void setOccupation(String occupation) {
+    this.occupation = occupation;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getPosition() {
+    return position;
+  }
+
+  public void setPosition(String position) {
+    this.position = position;
   }
 
 }

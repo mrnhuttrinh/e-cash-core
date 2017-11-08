@@ -1,18 +1,25 @@
 package com.ecash.ecashcore.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "card")
 public class Card extends BaseModel {
 
   @Id
+  @GeneratedValue(generator = "system-uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid")
   @Column(name = "card_number")
   private String cardNumber;
 
@@ -21,6 +28,15 @@ public class Card extends BaseModel {
   private CardType cardType;
 
   private String status;
+
+  @Column(name = "card_code")
+  private String cardCode;
+
+  @Column(name = "effective_date")
+  private Date effectiveDate;
+
+  @Column(name = "expiry_date")
+  private Date expiryDate;
 
   public String getCardNumber() {
     return cardNumber;
@@ -45,4 +61,29 @@ public class Card extends BaseModel {
   public void setStatus(String status) {
     this.status = status;
   }
+
+  public String getCardCode() {
+    return cardCode;
+  }
+
+  public void setCardCode(String cardCode) {
+    this.cardCode = cardCode;
+  }
+
+  public Date getEffectiveDate() {
+    return effectiveDate;
+  }
+
+  public void setEffectiveDate(Date effectiveDate) {
+    this.effectiveDate = effectiveDate;
+  }
+
+  public Date getExpiryDate() {
+    return expiryDate;
+  }
+
+  public void setExpiryDate(Date expiryDate) {
+    this.expiryDate = expiryDate;
+  }
+
 }
