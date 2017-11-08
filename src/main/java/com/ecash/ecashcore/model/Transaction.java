@@ -29,6 +29,20 @@ public class Transaction extends BaseModel {
   @JoinColumn(name = "related_transaction_id", nullable = true)
   private Transaction relatedTransaction;
 
+  public Transaction() {
+    super();
+  }
+
+  public Transaction(Account account, TransactionType transactionType, Date date, CurrencyCode currencyCode,
+      Double amount) {
+    super();
+    this.account = account;
+    this.transactionType = transactionType;
+    this.date = date;
+    this.currencyCode = currencyCode;
+    this.amount = amount;
+  }
+
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
   private TransactionType transactionType;

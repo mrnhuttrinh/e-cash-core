@@ -44,6 +44,7 @@ public class Account extends BaseModel {
   @Column(name = "current_balance")
   private Double currentBalance;
 
+  @Column(name = "status")
   private String status;
 
   public String getId() {

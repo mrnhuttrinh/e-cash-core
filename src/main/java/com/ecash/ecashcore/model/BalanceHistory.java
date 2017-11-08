@@ -29,6 +29,13 @@ public class BalanceHistory extends BaseModel {
 
   private Double balance;
 
+  public BalanceHistory(Date date, Account account, Double balance) {
+    super();
+    this.date = date;
+    this.account = account;
+    this.balance = balance;
+  }
+
   public Date getDate() {
     return date;
   }

@@ -2,6 +2,7 @@ package com.ecash.ecashcore.model;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,9 +28,10 @@ public class Card extends BaseModel {
   @JoinColumn(name = "type_code", nullable = true)
   private CardType cardType;
 
+  @Column(name = "status")
   private String status;
 
-  @Column(name = "card_code")
+  @Column(name = "card_code", unique = true)
   private String cardCode;
 
   @Column(name = "effective_date")
@@ -37,6 +39,9 @@ public class Card extends BaseModel {
 
   @Column(name = "expiry_date")
   private Date expiryDate;
+
+  @OneToOne(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+  private AccountCard accountCard;
 
   public String getCardNumber() {
     return cardNumber;
@@ -86,4 +91,15 @@ public class Card extends BaseModel {
     this.expiryDate = expiryDate;
   }
 
+  public AccountCard getAccountCard() {
+    return accountCard;
+  }
+
+  public void setAccountCard(AccountCard accountCard) {
+    this.accountCard = accountCard;
+  }
+
+  public Account getAccount() {
+    return this.getAccountCard().getAccount();
+  }
 }
