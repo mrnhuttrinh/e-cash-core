@@ -24,18 +24,18 @@ public class Account extends BaseModel {
   private String id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = true)
+  @JoinColumn(name = "type_code", nullable = false)
   private AccountType accountType;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "customer_id", nullable = true)
+  @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;
 
   @Column(name = "account_name")
   private String accountName;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "currency_code", nullable = true)
+  @JoinColumn(name = "currency_code", nullable = false)
   private CurrencyCode currencyCode;
 
   @Column(name = "date_opened")
@@ -46,6 +46,17 @@ public class Account extends BaseModel {
 
   @Column(name = "status")
   private String status;
+
+  public Account() {
+    super();
+  }
+
+  public Account(AccountType accountType, Customer customer, CurrencyCode currencyCode) {
+    super();
+    this.accountType = accountType;
+    this.customer = customer;
+    this.currencyCode = currencyCode;
+  }
 
   public String getId() {
     return id;

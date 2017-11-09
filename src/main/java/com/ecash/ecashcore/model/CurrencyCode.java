@@ -1,10 +1,11 @@
 package com.ecash.ecashcore.model;
 
-import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -18,11 +19,8 @@ public class CurrencyCode extends BaseModel {
   @Column(name = "text", nullable = true)
   private String text;
 
-  @Column(name = "created_at", nullable = true)
-  private Date createdAt;
-
-  @Column(name = "updated_at", nullable = true)
-  private Date updatedAt;
+  @OneToMany(mappedBy = "currencyCode")
+  private List<Account> account;
 
   public String getCode() {
     return code;
@@ -40,19 +38,11 @@ public class CurrencyCode extends BaseModel {
     this.text = text;
   }
 
-  public Date getCreatedAt() {
-    return createdAt;
+  public List<Account> getAccount() {
+    return account;
   }
 
-  public void setCreatedAt(Date createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public Date getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public void setUpdatedAt(Date updatedAt) {
-    this.updatedAt = updatedAt;
+  public void setAccount(List<Account> account) {
+    this.account = account;
   }
 }

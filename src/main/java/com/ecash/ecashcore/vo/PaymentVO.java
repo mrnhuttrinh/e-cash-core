@@ -2,13 +2,13 @@ package com.ecash.ecashcore.vo;
 
 import java.util.Date;
 
-public class DeductionVO {
+public class PaymentVO {
   private String terminalId;
   private Double amount;
   private String terminalSign;
   private String cardCode;
   private Date time;
-  private String orderDetail;
+  private String detail;
 
   public String getTerminalId() {
     return terminalId;
@@ -50,11 +50,11 @@ public class DeductionVO {
     this.time = time;
   }
 
-  public String getOrderDetail() {
-    return orderDetail;
+  public String getDetail() {
+    return detail;
   }
 
-  public void setOrderDetail(String orderDetail) {
-    this.orderDetail = orderDetail;
+  public void setDetail(String detail) {
+    this.detail = detail;
   }
 }

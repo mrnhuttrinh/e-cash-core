@@ -1,6 +1,7 @@
 package com.ecash.ecashcore.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -41,6 +43,7 @@ public class Customer extends BaseModel {
   @Column(name = "phone_2")
   private String phone2;
 
+  @Column(name = "email")
   private String email;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -50,21 +53,29 @@ public class Customer extends BaseModel {
   @Column(name = "date_of_birth")
   private Date dateOfBirth;
 
+  @Column(name = "gender")
   private Integer gender;
 
   @Column(name = "date_became_customer")
   private Date dateBecameCustomer;
 
+  @Column(name = "status")
   private String status;
 
   @Column(name = "country_code")
   private String countryCode;
 
+  @Column(name = "occupation")
   private String occupation;
 
+  @Column(name = "title")
   private String title;
 
+  @Column(name = "position")
   private String position;
+
+  @OneToMany(mappedBy = "customer")
+  private List<Account> account;
 
   public String getId() {
     return id;
@@ -202,4 +213,11 @@ public class Customer extends BaseModel {
     this.position = position;
   }
 
+  public List<Account> getAccount() {
+    return account;
+  }
+
+  public void setAccount(List<Account> account) {
+    this.account = account;
+  }
 }

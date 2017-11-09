@@ -2,6 +2,7 @@ package com.ecash.ecashcore.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -9,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -22,12 +25,27 @@ public class Transaction extends BaseModel {
   private String id;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "account_id", nullable = true)
+  @JoinColumn(name = "account_id", nullable = false)
   private Account account;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "related_transaction_id", nullable = true)
   private Transaction relatedTransaction;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "type_code", nullable = false)
+  private TransactionType transactionType;
+
+  @Column(name = "date")
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date date;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "currency_code", nullable = false)
+  private CurrencyCode currencyCode;
+
+  @Column(name = "amount", nullable = false)
+  private Double amount;
 
   public Transaction() {
     super();
@@ -42,18 +60,6 @@ public class Transaction extends BaseModel {
     this.currencyCode = currencyCode;
     this.amount = amount;
   }
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = true)
-  private TransactionType transactionType;
-
-  private Date date;
-
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "currency_code", nullable = true)
-  private CurrencyCode currencyCode;
-
-  private Double amount;
 
   public String getId() {
     return id;
