@@ -21,11 +21,11 @@ public class AccountCard extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "account_id")
   private Account account;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "card_id")
   private Card card;
 

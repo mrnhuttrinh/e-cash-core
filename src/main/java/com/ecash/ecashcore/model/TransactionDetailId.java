@@ -19,6 +19,10 @@ public class TransactionDetailId implements Serializable {
   @JoinColumn(name = "transaction_id")
   Transaction transaction;
 
+  public TransactionDetailId() {
+    super();
+  }
+
   public TransactionDetailId(Transaction transaction) {
     this.transaction = transaction;
   }

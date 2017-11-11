@@ -40,10 +40,6 @@ public class Transaction extends BaseModel {
   @Temporal(TemporalType.TIMESTAMP)
   private Date date;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "currency_code")
-  private CurrencyCode currencyCode;
-
   @Column(name = "amount")
   private Double amount;
 
@@ -51,13 +47,11 @@ public class Transaction extends BaseModel {
     super();
   }
 
-  public Transaction(Account account, TransactionType transactionType, Date date, CurrencyCode currencyCode,
-      Double amount) {
+  public Transaction(Account account, TransactionType transactionType, Date date, Double amount) {
     super();
     this.account = account;
     this.transactionType = transactionType;
     this.date = date;
-    this.currencyCode = currencyCode;
     this.amount = amount;
   }
 
@@ -99,14 +93,6 @@ public class Transaction extends BaseModel {
 
   public void setDate(Date date) {
     this.date = date;
-  }
-
-  public CurrencyCode getCurrencyCode() {
-    return currencyCode;
-  }
-
-  public void setCurrencyCode(CurrencyCode currencyCode) {
-    this.currencyCode = currencyCode;
   }
 
   public Double getAmount() {

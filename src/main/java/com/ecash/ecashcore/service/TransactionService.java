@@ -1,5 +1,7 @@
 package com.ecash.ecashcore.service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,9 @@ import com.ecash.ecashcore.repository.CardRepository;
 import com.ecash.ecashcore.repository.TransactionDetailRepository;
 import com.ecash.ecashcore.repository.TransactionRepository;
 import com.ecash.ecashcore.repository.TransactionTypeRepository;
-import com.ecash.ecashcore.vo.PaymentVO;
+import com.ecash.ecashcore.util.JsonUtil;
+import com.ecash.ecashcore.vo.ChargeRequestVO;
+import com.ecash.ecashcore.vo.ExtendedInformationVO;
 
 @Service
 @Transactional
@@ -45,17 +49,21 @@ public class TransactionService {
   @Autowired
   TransactionDetailRepository transactionDetailRepository;
 
-  public void pay(PaymentVO paymentInfo) {
+  public void chargeRequest(ChargeRequestVO chargeRequest) {
+    if (chargeRequest.getCard() == null || chargeRequest.getAmount() == null
+        || chargeRequest.getExtendedInformation() == null) {
+      throw new InvalidInputException("Invalid request: please input card info, amount and transaction info!");
+    }
 
-    Optional<Card> card = Optional.ofNullable(cardRepository.findByCardCode(paymentInfo.getCardCode()));
+    Optional<Card> card = Optional.ofNullable(cardRepository.findByCardCode(chargeRequest.getCard().getNumber()));
 
     if (!card.isPresent()) {
-      throw new InvalidInputException("Card code is not valid or not exist!");
+      throw new InvalidInputException("Card number is not valid or not exist!");
     }
 
     Account account = card.get().getAccount();
 
-    double remainAmount = account.getCurrentBalance() - paymentInfo.getAmount();
+    double remainAmount = account.getCurrentBalance() - chargeRequest.getAmount();
     if (remainAmount < 0) {
       throw new TransactionException("Account don't have enough money!");
     }
@@ -63,15 +71,20 @@ public class TransactionService {
     account.setCurrentBalance(remainAmount);
     accountRepository.save(account);
 
-    BalanceHistory balanceHistory = new BalanceHistory(paymentInfo.getTime(), account, account.getCurrentBalance());
+    Date transactionTime = Calendar.getInstance().getTime();
+
+    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
     balanceHistoryRepository.save(balanceHistory);
 
     TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.PAYMENT.getName());
-    Transaction transaction = new Transaction(account, transactionType, paymentInfo.getTime(),
-        account.getCurrencyCode(), paymentInfo.getAmount());
+    Transaction transaction = new Transaction(account, transactionType, transactionTime, chargeRequest.getAmount());
     transactionRepository.save(transaction);
 
-    TransactionDetail transactionDetail = new TransactionDetail(transaction, paymentInfo.getDetail(), null);
+    ExtendedInformationVO extendedInformation = chargeRequest.getExtendedInformation();
+
+    // TODO: find merchant
+    TransactionDetail transactionDetail = new TransactionDetail(transaction, extendedInformation.getTypeOfGoods(),
+        JsonUtil.objectToJsonString(extendedInformation.getInvoiceDetails()), null);
     transactionDetailRepository.save(transactionDetail);
   }
 }

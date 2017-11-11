@@ -1,6 +1,5 @@
 package com.ecash.ecashcore.vo;
 
-
 public class ChargeRequestVO {
   private CardInformationVO card;
   private Double amount;

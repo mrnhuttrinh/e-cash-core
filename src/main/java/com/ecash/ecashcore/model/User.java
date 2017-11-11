@@ -1,9 +1,7 @@
 package com.ecash.ecashcore.model;
 
 import java.util.Collection;
-import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -138,6 +136,7 @@ public class User extends BaseModel {
 
   @Override
   public int hashCode() {
+    // TODO: should re-implement hashCode
     return 31;
   }
 

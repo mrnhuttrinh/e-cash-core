@@ -12,7 +12,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -70,6 +69,7 @@ public class Permission extends BaseModel {
 
   @Override
   public int hashCode() {
+    // TODO: should re-implement hashCode
     return 31;
   }
 

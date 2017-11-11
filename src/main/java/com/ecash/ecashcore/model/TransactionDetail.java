@@ -21,8 +21,9 @@ public class TransactionDetail extends BaseModel {
   @Column(name = "product_details")
   private String productDetail;
 
+  // TODO: remove nullable = true
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "merchant_id")
+  @JoinColumn(name = "merchant_id", nullable = true)
   private Merchant merchant;
 
   @Column(name = "status")
@@ -32,9 +33,11 @@ public class TransactionDetail extends BaseModel {
     super();
   }
 
-  public TransactionDetail(Transaction transaction, String productDetail, Merchant merchant) {
+  public TransactionDetail(Transaction transaction, String productType, String productDetail,
+      Merchant merchant) {
     super();
     this.transactionDetailId = new TransactionDetailId(transaction);
+    this.productType = productType;
     this.productDetail = productDetail;
     this.merchant = merchant;
   }
