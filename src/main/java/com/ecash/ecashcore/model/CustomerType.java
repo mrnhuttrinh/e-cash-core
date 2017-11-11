@@ -5,6 +5,4 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "customer_type")
-public class CustomerType extends Type {
-
-}
+public class CustomerType extends Type {}

@@ -26,23 +26,26 @@ public class Account extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code")
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_code", nullable = true)
   private AccountType accountType;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "customer_id")
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "customer_id", nullable = true)
   private Customer customer;
 
   @Column(name = "account_name")
   private String accountName;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "currency_code")
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "currency_code", nullable = true)
   private CurrencyCode currencyCode;
 
   @Column(name = "date_opened")
   private Date dateOpened;
+
+  @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+  private List<AccountHistory> accountHistories;
 
   @Column(name = "current_balance")
   private Double currentBalance;
@@ -140,5 +143,13 @@ public class Account extends BaseModel {
     List<Card> cards = new LinkedList<>();
     accountCards.stream().forEach(c -> cards.add(c.getCard()));
     return cards;
+  }
+
+  public List<AccountHistory> getAccountHistories() {
+    return accountHistories;
+  }
+
+  public void setAccountHistories(List<AccountHistory> accountHistories) {
+    this.accountHistories = accountHistories;
   }
 }

@@ -13,10 +13,10 @@ import javax.persistence.Table;
 public class CurrencyCode extends BaseModel {
 
   @Id
-  @Column(name = "type_code", nullable = false)
+  @Column(name = "code", nullable = false)
   private String code;
 
-  @Column(name = "text", nullable = true)
+  @Column(name = "name", nullable = true)
   private String text;
 
   @OneToMany(mappedBy = "currencyCode")

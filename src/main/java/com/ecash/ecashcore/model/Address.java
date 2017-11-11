@@ -1,5 +1,7 @@
 package com.ecash.ecashcore.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,8 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "address")
@@ -20,7 +20,7 @@ public class Address extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "type_code", nullable = true)
   private AddressType addressType;
 

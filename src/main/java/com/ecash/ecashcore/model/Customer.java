@@ -9,9 +9,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -24,8 +27,8 @@ public class Customer extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code")
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_code", nullable = false)
   private CustomerType customerType;
 
   @Column(name = "scms_member_code")
@@ -46,11 +49,12 @@ public class Customer extends BaseModel {
   @Column(name = "email")
   private String email;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "organization_id")
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "organization_id", nullable = true)
   private Organization organization;
 
   @Column(name = "date_of_birth")
+  @Temporal(TemporalType.DATE)
   private Date dateOfBirth;
 
   @Column(name = "gender")
@@ -75,7 +79,11 @@ public class Customer extends BaseModel {
   private String position;
 
   @OneToMany(mappedBy = "customer")
-  private List<Account> account;
+  private List<Account> accounts;
+
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
+  private List<Address> addresses;
 
   public String getId() {
     return id;
@@ -213,11 +221,19 @@ public class Customer extends BaseModel {
     this.position = position;
   }
 
-  public List<Account> getAccount() {
-    return account;
+  public List<Account> getAccounts() {
+    return accounts;
   }
 
-  public void setAccount(List<Account> account) {
-    this.account = account;
+  public void setAccounts(List<Account> accounts) {
+    this.accounts = accounts;
+  }
+
+  public List<Address> getAddresses() {
+    return addresses;
+  }
+
+  public void setAddresses(List<Address> addresses) {
+    this.addresses = addresses;
   }
 }
