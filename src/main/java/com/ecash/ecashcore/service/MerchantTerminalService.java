@@ -17,24 +17,28 @@ public class MerchantTerminalService {
     @Autowired
     private MerchantTerminalRepository merchantTerminalRepository;
 
-    public String findSecretKeyByMerchantPubKey(String pubKey) {
-        Optional<MerchantTerminal> merchantTerminal = Optional
-                .ofNullable(merchantTerminalRepository.findByPubKey(pubKey));
-        if (merchantTerminal.isPresent()) {
-            return merchantTerminal.get().getSecretKey();
-        } else {
-            return null;
-        }
-    }
-
     public boolean checkMerchantPubKey(String pubKey) {
         Optional<MerchantTerminal> merchantTerminal = Optional
                 .ofNullable(merchantTerminalRepository.findByPubKey(pubKey));
+        return merchantTerminal.isPresent();
+    }
+
+    public MerchantTerminal createNewTerminal(MerchantTerminal newMerchantTerminal) {
+        return merchantTerminalRepository.save(newMerchantTerminal);
+    }
+
+    public String getMerchantPubKey(String uuid) {
+        Optional<MerchantTerminal> merchantTerminal = Optional.ofNullable(merchantTerminalRepository.findById(uuid));
         if (merchantTerminal.isPresent()) {
-            return true;
-        } else {
-            return false;
+            return merchantTerminal.get().getPubKey();
         }
+        return null;
+    }
+
+    public MerchantTerminal updateMerchantTerminalPubKey(String uuid, String pubKey) {
+        MerchantTerminal merchantTerminal = merchantTerminalRepository.findById(uuid);
+        merchantTerminal.setPubKey(pubKey);
+        return merchantTerminalRepository.save(merchantTerminal);
     }
 
 }
