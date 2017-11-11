@@ -25,15 +25,15 @@ public class Transaction extends BaseModel {
   private String id;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "account_id", nullable = false)
+  @JoinColumn(name = "account_id")
   private Account account;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "related_transaction_id", nullable = true)
+  @JoinColumn(name = "related_transaction_id")
   private Transaction relatedTransaction;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = false)
+  @JoinColumn(name = "type_code")
   private TransactionType transactionType;
 
   @Column(name = "date")
@@ -41,10 +41,10 @@ public class Transaction extends BaseModel {
   private Date date;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "currency_code", nullable = false)
+  @JoinColumn(name = "currency_code")
   private CurrencyCode currencyCode;
 
-  @Column(name = "amount", nullable = false)
+  @Column(name = "amount")
   private Double amount;
 
   public Transaction() {

@@ -25,7 +25,7 @@ public class Customer extends BaseModel {
   private String id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = true)
+  @JoinColumn(name = "type_code")
   private CustomerType customerType;
 
   @Column(name = "scms_member_code")
@@ -47,7 +47,7 @@ public class Customer extends BaseModel {
   private String email;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "organization_id", nullable = true)
+  @JoinColumn(name = "organization_id")
   private Organization organization;
 
   @Column(name = "date_of_birth")

@@ -25,7 +25,7 @@ public class Card extends BaseModel {
   private String cardNumber;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = true)
+  @JoinColumn(name = "type_code")
   private CardType cardType;
 
   @Column(name = "status")

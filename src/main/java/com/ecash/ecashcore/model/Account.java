@@ -1,6 +1,8 @@
 package com.ecash.ecashcore.model;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -24,18 +27,18 @@ public class Account extends BaseModel {
   private String id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = false)
+  @JoinColumn(name = "type_code")
   private AccountType accountType;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "customer_id", nullable = false)
+  @JoinColumn(name = "customer_id")
   private Customer customer;
 
   @Column(name = "account_name")
   private String accountName;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "currency_code", nullable = false)
+  @JoinColumn(name = "currency_code")
   private CurrencyCode currencyCode;
 
   @Column(name = "date_opened")
@@ -46,6 +49,9 @@ public class Account extends BaseModel {
 
   @Column(name = "status")
   private String status;
+
+  @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+  private List<AccountCard> accountCards;
 
   public Account() {
     super();
@@ -122,4 +128,17 @@ public class Account extends BaseModel {
     this.status = status;
   }
 
+  public List<AccountCard> getAccountCards() {
+    return accountCards;
+  }
+
+  public void setAccountCards(List<AccountCard> accountCards) {
+    this.accountCards = accountCards;
+  }
+
+  public List<Card> getCard() {
+    List<Card> cards = new LinkedList<>();
+    accountCards.stream().forEach(c -> cards.add(c.getCard()));
+    return cards;
+  }
 }

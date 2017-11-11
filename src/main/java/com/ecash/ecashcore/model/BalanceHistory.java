@@ -29,10 +29,10 @@ public class BalanceHistory extends BaseModel {
   private Date date;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "account_id", nullable = false)
+  @JoinColumn(name = "account_id")
   private Account account;
 
-  @Column(name = "balance", nullable = false)
+  @Column(name = "balance")
   private Double balance;
 
   public BalanceHistory(Date date, Account account, Double balance) {

@@ -13,10 +13,12 @@ import com.ecash.ecashcore.model.Account;
 import com.ecash.ecashcore.model.BalanceHistory;
 import com.ecash.ecashcore.model.Card;
 import com.ecash.ecashcore.model.Transaction;
+import com.ecash.ecashcore.model.TransactionDetail;
 import com.ecash.ecashcore.model.TransactionType;
 import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.BalanceHistoryRepository;
 import com.ecash.ecashcore.repository.CardRepository;
+import com.ecash.ecashcore.repository.TransactionDetailRepository;
 import com.ecash.ecashcore.repository.TransactionRepository;
 import com.ecash.ecashcore.repository.TransactionTypeRepository;
 import com.ecash.ecashcore.vo.PaymentVO;
@@ -39,6 +41,9 @@ public class TransactionService {
 
   @Autowired
   TransactionTypeRepository transactionTypeRepository;
+
+  @Autowired
+  TransactionDetailRepository transactionDetailRepository;
 
   public void pay(PaymentVO paymentInfo) {
 
@@ -65,5 +70,8 @@ public class TransactionService {
     Transaction transaction = new Transaction(account, transactionType, paymentInfo.getTime(),
         account.getCurrencyCode(), paymentInfo.getAmount());
     transactionRepository.save(transaction);
+
+    TransactionDetail transactionDetail = new TransactionDetail(transaction, paymentInfo.getDetail(), null);
+    transactionDetailRepository.save(transactionDetail);
   }
 }

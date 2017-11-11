@@ -22,11 +22,11 @@ public class AccountCard extends BaseModel {
   private String id;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "account_id", nullable = false)
+  @JoinColumn(name = "account_id")
   private Account account;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "card_id", nullable = false)
+  @JoinColumn(name = "card_id")
   private Card card;
 
   @Column(name = "status")
