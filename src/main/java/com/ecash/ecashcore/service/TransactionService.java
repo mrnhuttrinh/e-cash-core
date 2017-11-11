@@ -9,17 +9,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ecash.ecashcore.enums.TransactionTypeEnum;
+import com.ecash.ecashcore.exception.DataNotFoundException;
 import com.ecash.ecashcore.exception.InvalidInputException;
 import com.ecash.ecashcore.exception.TransactionException;
 import com.ecash.ecashcore.model.Account;
 import com.ecash.ecashcore.model.BalanceHistory;
 import com.ecash.ecashcore.model.Card;
+import com.ecash.ecashcore.model.MerchantTerminal;
 import com.ecash.ecashcore.model.Transaction;
 import com.ecash.ecashcore.model.TransactionDetail;
 import com.ecash.ecashcore.model.TransactionType;
 import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.BalanceHistoryRepository;
 import com.ecash.ecashcore.repository.CardRepository;
+import com.ecash.ecashcore.repository.MerchantTerminalRepository;
 import com.ecash.ecashcore.repository.TransactionDetailRepository;
 import com.ecash.ecashcore.repository.TransactionRepository;
 import com.ecash.ecashcore.repository.TransactionTypeRepository;
@@ -49,16 +52,19 @@ public class TransactionService {
   @Autowired
   TransactionDetailRepository transactionDetailRepository;
 
+  @Autowired
+  MerchantTerminalRepository merchantTerminalRepository;
+
   public void chargeRequest(ChargeRequestVO chargeRequest) {
     if (chargeRequest.getCard() == null || chargeRequest.getAmount() == null
         || chargeRequest.getExtendedInformation() == null) {
-      throw new InvalidInputException("Invalid request: please input card info, amount and transaction info!");
+      throw new InvalidInputException("Please input card info, amount and transaction info!");
     }
 
     Optional<Card> card = Optional.ofNullable(cardRepository.findByCardCode(chargeRequest.getCard().getNumber()));
 
     if (!card.isPresent()) {
-      throw new InvalidInputException("Card number is not valid or not exist!");
+      throw new DataNotFoundException("Card number is not valid or not exist!");
     }
 
     Account account = card.get().getAccount();
@@ -81,10 +87,19 @@ public class TransactionService {
     transactionRepository.save(transaction);
 
     ExtendedInformationVO extendedInformation = chargeRequest.getExtendedInformation();
+    if (extendedInformation.getAdditionalTerminalInfo() == null) {
+      throw new InvalidInputException("Please input terminal info!");
+    }
 
-    // TODO: find merchant
+    Optional<MerchantTerminal> merchantTerminal = Optional.ofNullable(
+        merchantTerminalRepository.findOne(extendedInformation.getAdditionalTerminalInfo().getTerminalId()));
+
+    if (!merchantTerminal.isPresent()) {
+      throw new DataNotFoundException("Terminal id is not valid or not exist!");
+    }
+
     TransactionDetail transactionDetail = new TransactionDetail(transaction, extendedInformation.getTypeOfGoods(),
-        JsonUtil.objectToJsonString(extendedInformation.getInvoiceDetails()), null);
+        JsonUtil.objectToJsonString(extendedInformation.getInvoiceDetails()), merchantTerminal.get().getMerchant());
     transactionDetailRepository.save(transactionDetail);
   }
 }

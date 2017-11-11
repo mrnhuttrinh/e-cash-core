@@ -21,7 +21,7 @@ public class MerchantTerminalService {
         Optional<MerchantTerminal> merchantTerminal = Optional
                 .ofNullable(merchantTerminalRepository.findByPubKey(pubKey));
         if (merchantTerminal.isPresent()) {
-            return merchantTerminal.get().getSecretKey();
+            return merchantTerminal.get().getPubKey();
         } else {
             return null;
         }
