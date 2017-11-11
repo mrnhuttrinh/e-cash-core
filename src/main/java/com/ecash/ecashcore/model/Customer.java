@@ -1,17 +1,10 @@
 package com.ecash.ecashcore.model;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "customer")
@@ -22,8 +15,8 @@ public class Customer extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = true)
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_code", nullable = false)
   private CustomerType customerType;
 
   @Column(name = "scms_member_code")
@@ -43,7 +36,7 @@ public class Customer extends BaseModel {
 
   private String email;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "organization_id", nullable = true)
   private Organization organization;
 
@@ -65,6 +58,17 @@ public class Customer extends BaseModel {
   private String title;
 
   private String position;
+
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name="customer_address",
+      joinColumns = @JoinColumn( name="customer_id"),
+      inverseJoinColumns = @JoinColumn( name="address_id")
+  )
+  private Set<Address> addresses;
+
+  @OneToMany(mappedBy="customer")
+  private Set<Account> accounts;
 
   public String getId() {
     return id;
@@ -202,4 +206,19 @@ public class Customer extends BaseModel {
     this.position = position;
   }
 
+  public Set<Account> getAccounts() {
+    return accounts;
+  }
+
+  public void setAccounts(Set<Account> accounts) {
+    this.accounts = accounts;
+  }
+
+  public Set<Address> getAddresses() {
+    return addresses;
+  }
+
+  public void setAddresses(Set<Address> addresses) {
+    this.addresses = addresses;
+  }
 }
