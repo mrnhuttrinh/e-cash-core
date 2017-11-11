@@ -1,18 +1,10 @@
 package com.ecash.ecashcore.model;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "account")
@@ -23,23 +15,26 @@ public class Account extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "type_code", nullable = true)
   private AccountType accountType;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "customer_id", nullable = true)
   private Customer customer;
 
   @Column(name = "account_name")
   private String accountName;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "currency_code", nullable = true)
   private CurrencyCode currencyCode;
 
   @Column(name = "date_opened")
   private Date dateOpened;
+
+  @OneToMany(mappedBy="account", fetch = FetchType.LAZY)
+  private Set<AccountHistory> accountHistories;
 
   @Column(name = "current_balance")
   private Double currentBalance;
@@ -110,4 +105,11 @@ public class Account extends BaseModel {
     this.status = status;
   }
 
+  public Set<AccountHistory> getAccountHistories() {
+    return accountHistories;
+  }
+
+  public void setAccountHistories(Set<AccountHistory> accountHistories) {
+    this.accountHistories = accountHistories;
+  }
 }
