@@ -1,5 +1,7 @@
 package com.ecash.ecashcore.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,8 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
+import java.util.Date;
 
 @Entity
 @Table(name = "merchant_terminal")
@@ -23,8 +24,8 @@ public class MerchantTerminal extends BaseModel {
     @Column(name = "pub_key", nullable = false)
     private String pubKey;
 
-    @Column(name = "secret_key", nullable = false)
-    private String secretKey;
+    @Column(name = "pub_key_expire_date", nullable = false)
+    private Date pubKeyExpireDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "merchant_id", nullable = false)
@@ -46,12 +47,12 @@ public class MerchantTerminal extends BaseModel {
         this.pubKey = pubKey;
     }
 
-    public String getSecretKey() {
-        return secretKey;
+    public Date getPubKeyExpireDate() {
+        return pubKeyExpireDate;
     }
 
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
+    public void setPubKeyExpireDate(Date pubKeyExpireDate) {
+        this.pubKeyExpireDate = pubKeyExpireDate;
     }
 
     public Merchant getMerchant() {
