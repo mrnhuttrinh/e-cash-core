@@ -3,6 +3,7 @@ package com.ecash.ecashcore.util;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -22,6 +23,7 @@ public class JsonUtil {
 
   public static Object jsonStringToObject(String json, Class<?> clazz) {
     ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     Object object = null;
     try {
       object = mapper.readValue(json, clazz);
