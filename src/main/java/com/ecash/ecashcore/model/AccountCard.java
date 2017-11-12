@@ -25,7 +25,7 @@ public class AccountCard extends BaseModel {
   @JoinColumn(name = "account_id")
   private Account account;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "card_id")
   private Card card;
 
