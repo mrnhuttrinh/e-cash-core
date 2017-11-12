@@ -88,8 +88,11 @@ public class Role extends BaseModel {
 
   @Override
   public int hashCode() {
-    // TODO: should re-implement hashCode
-    return 31;
+    int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    return result;
   }
 
 }

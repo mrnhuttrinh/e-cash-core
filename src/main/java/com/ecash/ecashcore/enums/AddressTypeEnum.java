@@ -1,13 +1,13 @@
 package com.ecash.ecashcore.enums;
 
-public enum TransactionTypeEnum {
-  DEPOSIT("DEPOSIT"),
-  EXPENSE("EXPENSE"),
-  PAYMENT("PAYMENT");
+public enum AddressTypeEnum {
+  DEFAULT("DEFAULT"),
+  RESIDENT("RESIDENT"),
+  TEMPORARY("TEMPORARY");
 
   String name;
 
-  private TransactionTypeEnum(String name) {
+  private AddressTypeEnum(String name) {
     this.name = name;
   }
 

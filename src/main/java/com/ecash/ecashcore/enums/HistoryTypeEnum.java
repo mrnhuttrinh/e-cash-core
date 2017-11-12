@@ -1,13 +1,13 @@
 package com.ecash.ecashcore.enums;
 
-public enum TransactionTypeEnum {
-  DEPOSIT("DEPOSIT"),
-  EXPENSE("EXPENSE"),
-  PAYMENT("PAYMENT");
+public enum HistoryTypeEnum {
+  CREATED("CREATED"),
+  DELETED("DELETED"),
+  UPDATED("UPDATED");
 
   String name;
 
-  private TransactionTypeEnum(String name) {
+  private HistoryTypeEnum(String name) {
     this.name = name;
   }
 

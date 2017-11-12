@@ -1,13 +1,14 @@
 package com.ecash.ecashcore.enums;
 
-public enum TransactionTypeEnum {
-  DEPOSIT("DEPOSIT"),
-  EXPENSE("EXPENSE"),
-  PAYMENT("PAYMENT");
+public enum StatusEnum {
+  ACTIVE("ACTIVE"),
+  CLOSE("CLOSE"),
+  DELETE("DELETE"),
+  DEACTIVE("DEACTIVE");
 
   String name;
 
-  private TransactionTypeEnum(String name) {
+  private StatusEnum(String name) {
     this.name = name;
   }
 
