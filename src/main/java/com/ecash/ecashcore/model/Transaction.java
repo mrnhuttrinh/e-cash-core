@@ -2,6 +2,7 @@ package com.ecash.ecashcore.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -9,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -22,24 +25,35 @@ public class Transaction extends BaseModel {
   private String id;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "account_id", nullable = true)
+  @JoinColumn(name = "account_id")
   private Account account;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "related_transaction_id", nullable = true)
+  @JoinColumn(name = "related_transaction_id")
   private Transaction relatedTransaction;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = true)
+  @JoinColumn(name = "type_code")
   private TransactionType transactionType;
 
+  @Column(name = "date")
+  @Temporal(TemporalType.TIMESTAMP)
   private Date date;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "currency_code", nullable = true)
-  private CurrencyCode currencyCode;
-
+  @Column(name = "amount")
   private Double amount;
+
+  public Transaction() {
+    super();
+  }
+
+  public Transaction(Account account, TransactionType transactionType, Date date, Double amount) {
+    super();
+    this.account = account;
+    this.transactionType = transactionType;
+    this.date = date;
+    this.amount = amount;
+  }
 
   public String getId() {
     return id;
@@ -79,14 +93,6 @@ public class Transaction extends BaseModel {
 
   public void setDate(Date date) {
     this.date = date;
-  }
-
-  public CurrencyCode getCurrencyCode() {
-    return currencyCode;
-  }
-
-  public void setCurrencyCode(CurrencyCode currencyCode) {
-    this.currencyCode = currencyCode;
   }
 
   public Double getAmount() {

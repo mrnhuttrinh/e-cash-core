@@ -1,5 +1,6 @@
 package com.ecash.ecashcore.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -7,11 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "account_card")
+@Table(name = "account_card", uniqueConstraints = { @UniqueConstraint(columnNames = { "account_id", "card_id" }) })
 public class AccountCard extends BaseModel {
 
   @Id
@@ -19,14 +21,15 @@ public class AccountCard extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "account_id", nullable = true)
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "account_id")
   private Account account;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "card_id", nullable = true)
+  @JoinColumn(name = "card_id")
   private Card card;
 
+  @Column(name = "status")
   private String status;
 
   public String getId() {

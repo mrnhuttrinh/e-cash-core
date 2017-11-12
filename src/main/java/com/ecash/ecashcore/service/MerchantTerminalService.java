@@ -28,7 +28,7 @@ public class MerchantTerminalService {
     }
 
     public String getMerchantPubKey(String uuid) {
-        Optional<MerchantTerminal> merchantTerminal = Optional.ofNullable(merchantTerminalRepository.findById(uuid));
+        Optional<MerchantTerminal> merchantTerminal = Optional.ofNullable(merchantTerminalRepository.findOne(uuid));
         if (merchantTerminal.isPresent()) {
             return merchantTerminal.get().getPubKey();
         }
@@ -36,7 +36,7 @@ public class MerchantTerminalService {
     }
 
     public MerchantTerminal updateMerchantTerminalPubKey(String uuid, String pubKey) {
-        MerchantTerminal merchantTerminal = merchantTerminalRepository.findById(uuid);
+        MerchantTerminal merchantTerminal = merchantTerminalRepository.findOne(uuid);
         merchantTerminal.setPubKey(pubKey);
         return merchantTerminalRepository.save(merchantTerminal);
     }

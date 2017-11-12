@@ -3,9 +3,9 @@ package com.ecash.ecashcore.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
-import com.ecash.ecashcore.model.CustomerType;
+import com.ecash.ecashcore.model.AccountType;
 
-public interface CustomerTypeRepository extends JpaRepository<CustomerType, String> {
+public interface AccountTypeRepository extends JpaRepository<AccountType, String> {
 
   @Override
   @RestResource(exported = false)
@@ -13,5 +13,5 @@ public interface CustomerTypeRepository extends JpaRepository<CustomerType, Stri
 
   @Override
   @RestResource(exported = false)
-  void delete(CustomerType entity);
+  void delete(AccountType entity);
 }

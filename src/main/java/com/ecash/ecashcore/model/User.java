@@ -1,9 +1,7 @@
 package com.ecash.ecashcore.model;
 
 import java.util.Collection;
-import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,6 +25,7 @@ public class User extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
+  @Column(name = "username", unique = true)
   private String username;
 
   @Column(name = "first_name")
@@ -138,7 +137,11 @@ public class User extends BaseModel {
 
   @Override
   public int hashCode() {
-    return 31;
+    int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((username == null) ? 0 : username.hashCode());
+    return result;
   }
 
 }

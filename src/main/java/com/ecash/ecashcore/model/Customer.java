@@ -1,10 +1,22 @@
 package com.ecash.ecashcore.model;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "customer")
@@ -34,6 +46,7 @@ public class Customer extends BaseModel {
   @Column(name = "phone_2")
   private String phone2;
 
+  @Column(name = "email")
   private String email;
 
   @ManyToOne(fetch = FetchType.EAGER)
@@ -41,34 +54,36 @@ public class Customer extends BaseModel {
   private Organization organization;
 
   @Column(name = "date_of_birth")
+  @Temporal(TemporalType.DATE)
   private Date dateOfBirth;
 
+  @Column(name = "gender")
   private Integer gender;
 
   @Column(name = "date_became_customer")
   private Date dateBecameCustomer;
 
+  @Column(name = "status")
   private String status;
 
   @Column(name = "country_code")
   private String countryCode;
 
+  @Column(name = "occupation")
   private String occupation;
 
+  @Column(name = "title")
   private String title;
 
+  @Column(name = "position")
   private String position;
 
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-      name="customer_address",
-      joinColumns = @JoinColumn( name="customer_id"),
-      inverseJoinColumns = @JoinColumn( name="address_id")
-  )
-  private Set<Address> addresses;
+  @OneToMany(mappedBy = "customer")
+  private List<Account> accounts;
 
-  @OneToMany(mappedBy="customer")
-  private Set<Account> accounts;
+  @OneToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
+  private List<Address> addresses;
 
   public String getId() {
     return id;
@@ -206,19 +221,19 @@ public class Customer extends BaseModel {
     this.position = position;
   }
 
-  public Set<Account> getAccounts() {
+  public List<Account> getAccounts() {
     return accounts;
   }
 
-  public void setAccounts(Set<Account> accounts) {
+  public void setAccounts(List<Account> accounts) {
     this.accounts = accounts;
   }
 
-  public Set<Address> getAddresses() {
+  public List<Address> getAddresses() {
     return addresses;
   }
 
-  public void setAddresses(Set<Address> addresses) {
+  public void setAddresses(List<Address> addresses) {
     this.addresses = addresses;
   }
 }
