@@ -3,10 +3,9 @@ package com.ecash.ecashcore.vo;
 import java.util.Map;
 
 public class ExtendedInformationVO {
-  private String typeOfGoods;
+  private String typeOfGoods; // Only for expense transaction
   private TerminalInformationVO additionalTerminalInfo;
-  private String invoiceNumber;
-  private Map<String, Object> invoiceDetails;
+  private Map<String, Object> transactionDetails;
 
   public String getTypeOfGoods() {
     return typeOfGoods;
@@ -24,19 +23,11 @@ public class ExtendedInformationVO {
     this.additionalTerminalInfo = additionalTerminalInfo;
   }
 
-  public String getInvoiceNumber() {
-    return invoiceNumber;
+  public Map<String, Object> getTransactionDetails() {
+    return transactionDetails;
   }
 
-  public void setInvoiceNumber(String invoiceNumber) {
-    this.invoiceNumber = invoiceNumber;
-  }
-
-  public Map<String, Object> getInvoiceDetails() {
-    return invoiceDetails;
-  }
-
-  public void setInvoiceDetails(Map<String, Object> invoiceDetails) {
-    this.invoiceDetails = invoiceDetails;
+  public void setTransactionDetails(Map<String, Object> transactionDetails) {
+    this.transactionDetails = transactionDetails;
   }
 }
