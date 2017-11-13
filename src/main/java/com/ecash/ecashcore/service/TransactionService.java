@@ -54,7 +54,7 @@ public class TransactionService {
   @Autowired
   MerchantTerminalRepository merchantTerminalRepository;
 
-  public void chargeRequest(ChargeRequestVO chargeRequest) {
+  public Transaction chargeRequest(ChargeRequestVO chargeRequest) {
     if (chargeRequest.getCard() == null || chargeRequest.getAmount() == null
         || chargeRequest.getExtendedInformation() == null) {
       throw new InvalidInputException("Required information is missing");
@@ -106,5 +106,6 @@ public class TransactionService {
     TransactionDetail transactionDetail = new TransactionDetail(transaction, extendedInformation.getTypeOfGoods(),
         JsonUtil.objectToJsonString(extendedInformation.getTransactionDetails()), merchantTerminal.get().getMerchant());
     transactionDetailRepository.save(transactionDetail);
+    return transaction;
   }
 }
