@@ -1,21 +1,12 @@
 package com.ecash.ecashcore.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "account")
@@ -32,6 +23,7 @@ public class Account extends BaseModel {
 
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "customer_id", nullable = true)
+  @JsonManagedReference
   private Customer customer;
 
   @Column(name = "account_name")
