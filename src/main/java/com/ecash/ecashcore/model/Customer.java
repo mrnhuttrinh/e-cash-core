@@ -88,7 +88,7 @@ public class Customer extends BaseModel {
   private List<Account> accounts;
 
   @OneToMany(fetch = FetchType.LAZY)
-  @JsonManagedReference
+  @JsonBackReference
   @JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
   private List<Address> addresses;
   

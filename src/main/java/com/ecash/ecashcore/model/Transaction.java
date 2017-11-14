@@ -33,7 +33,7 @@ public class Transaction extends BaseModel {
   @JsonManagedReference
   private Account account;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JsonBackReference
   @JoinColumn(name = "related_transaction_id")
   private Transaction relatedTransaction;
