@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -124,6 +125,10 @@ public class User extends BaseModel {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+  
+  public void encodePassword(PasswordEncoder passwordEncoder) {
+    this.password = passwordEncoder.encode(this.password);
   }
 
   @Override
