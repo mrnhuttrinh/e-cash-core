@@ -1,5 +1,13 @@
 package com.ecash.ecashcore.service;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.enums.TransactionTypeEnum;
 import com.ecash.ecashcore.exception.InvalidInputException;
@@ -20,92 +28,162 @@ import com.ecash.ecashcore.repository.TransactionRepository;
 import com.ecash.ecashcore.repository.TransactionTypeRepository;
 import com.ecash.ecashcore.util.JsonUtil;
 import com.ecash.ecashcore.vo.ChargeRequestVO;
+import com.ecash.ecashcore.vo.DepositRequestVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
+import com.ecash.ecashcore.vo.ITransactionRequestVO;
 
 @Service
 @Transactional
 public class TransactionService {
 
-  @Autowired
-  CardRepository cardRepository;
+	@Autowired
+	CardRepository cardRepository;
 
-  @Autowired
-  AccountRepository accountRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
-  @Autowired
-  BalanceHistoryRepository balanceHistoryRepository;
+	@Autowired
+	BalanceHistoryRepository balanceHistoryRepository;
 
-  @Autowired
-  TransactionRepository transactionRepository;
+	@Autowired
+	TransactionRepository transactionRepository;
 
-  @Autowired
-  TransactionTypeRepository transactionTypeRepository;
+	@Autowired
+	TransactionTypeRepository transactionTypeRepository;
 
-  @Autowired
-  TransactionDetailRepository transactionDetailRepository;
+	@Autowired
+	TransactionDetailRepository transactionDetailRepository;
 
-  @Autowired
-  MerchantTerminalRepository merchantTerminalRepository;
+	@Autowired
+	MerchantTerminalRepository merchantTerminalRepository;
 
-  public Transaction chargeRequest(ChargeRequestVO chargeRequest) {
-    if (chargeRequest.getCard() == null || chargeRequest.getAmount() == null
-        || chargeRequest.getExtendedInformation() == null) {
-      throw new InvalidInputException("Required information is missing");
-    }
+	public Transaction chargeRequest(ChargeRequestVO chargeRequest) {
 
-    ExtendedInformationVO extendedInformation = chargeRequest.getExtendedInformation();
-    if (extendedInformation.getAdditionalTerminalInfo() == null) {
-      throw new InvalidInputException("Required information is missing. Missing terminal information");
-    }
+		validateTrasactionRequest(chargeRequest);
 
-    Optional<Card> card = Optional.ofNullable(cardRepository.findByCardCode(chargeRequest.getCard().getNumber()));
+		Account account = identifyValidAccount(chargeRequest.getCard().getNumber());
 
-    if (!card.isPresent()) {
-      throw new ValidationException("Card number is not valid or not exist.");
-    } else if (!card.get().getStatus().equals(StatusEnum.ACTIVE.getValue())){
-      throw new ValidationException("Card is inactive.");
-    }
+		double remainAmount = account.getCurrentBalance() - chargeRequest.getAmount();
+		if (remainAmount < 0) {
+			throw new ValidationException("Account don't have enough money.");
+		}
 
-    Account account = card.get().getAccount();
+		account.setCurrentBalance(remainAmount);
+		accountRepository.save(account);
 
-    if (!account.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
-      throw new ValidationException("Account is inactive.");
-    }
+		Date transactionTime = Calendar.getInstance().getTime();
 
-    double remainAmount = account.getCurrentBalance() - chargeRequest.getAmount();
-    if (remainAmount < 0) {
-      throw new ValidationException("Account don't have enough money.");
-    }
+		BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
+		balanceHistoryRepository.save(balanceHistory);
 
-    account.setCurrentBalance(remainAmount);
-    accountRepository.save(account);
+		TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.EXPENSE.getName());
+		Transaction transaction = new Transaction(account, transactionType, transactionTime, chargeRequest.getAmount());
+		transactionRepository.save(transaction);
 
-    Date transactionTime = Calendar.getInstance().getTime();
+		ExtendedInformationVO extendedInformation = chargeRequest.getExtendedInformation();
+		MerchantTerminal merchantTerminal = identifyValidMerchantTerminal(
+				extendedInformation.getAdditionalTerminalInfo().getTerminalId());
 
-    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
-    balanceHistoryRepository.save(balanceHistory);
+		TransactionDetail transactionDetail = new TransactionDetail(transaction, extendedInformation.getTypeOfGoods(),
+				JsonUtil.objectToJsonString(extendedInformation.getTransactionDetails()),
+				merchantTerminal.getMerchant());
+		transactionDetailRepository.save(transactionDetail);
+		return transaction;
+	}
 
-    TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.EXPENSE.getName());
-    Transaction transaction = new Transaction(account, transactionType, transactionTime, chargeRequest.getAmount());
-    transactionRepository.save(transaction);
+	public Transaction depositRequest(DepositRequestVO depositRequest) {
 
-    Optional<MerchantTerminal> merchantTerminal = Optional.ofNullable(
-        merchantTerminalRepository.findOne(extendedInformation.getAdditionalTerminalInfo().getTerminalId()));
+		// Validate require information
+		validateTrasactionRequest(depositRequest);
 
-    if (!merchantTerminal.isPresent()) {
-      throw new ValidationException("Terminal id is not valid or not exist.");
-    }
+		// Check valid card information
+		Account account = identifyValidAccount(depositRequest.getCard().getNumber());
 
-    TransactionDetail transactionDetail = new TransactionDetail(transaction, extendedInformation.getTypeOfGoods(),
-        JsonUtil.objectToJsonString(extendedInformation.getTransactionDetails()), merchantTerminal.get().getMerchant());
-    transactionDetailRepository.save(transactionDetail);
-    return transaction;
-  }
+		// Check valid number.
+		if (depositRequest.getAmount() <= 0) {
+			throw new InvalidInputException("Required information is missing. Missing amount information");
+		}
+
+		// Check the last balance value is valid
+		if (isOverflowBalance(account.getCurrentBalance(), depositRequest.getAmount())) {
+			throw new InvalidInputException("Required information is missing. The disposite amount's too large");
+		}
+
+		// Update balance value
+		account.setCurrentBalance(account.getCurrentBalance() + depositRequest.getAmount());
+		accountRepository.save(account);
+
+		Date transactionTime = Calendar.getInstance().getTime();
+
+		// Record the balance history
+		BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
+		balanceHistoryRepository.save(balanceHistory);
+
+		// Record the transaction
+		TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.DEPOSIT.getName());
+		Transaction transaction = new Transaction(account, transactionType, transactionTime,
+				depositRequest.getAmount());
+		transactionRepository.save(transaction);
+
+		// Identify the merchant terminal
+		ExtendedInformationVO extendedInformation = depositRequest.getExtendedInformation();
+		MerchantTerminal merchantTerminal = identifyValidMerchantTerminal(
+				extendedInformation.getAdditionalTerminalInfo().getTerminalId());
+
+		// Record the transaction detail
+		TransactionDetail transactionDetail = new TransactionDetail(transaction, extendedInformation.getTypeOfGoods(),
+				JsonUtil.objectToJsonString(extendedInformation.getTransactionDetails()),
+				merchantTerminal.getMerchant());
+		transactionDetailRepository.save(transactionDetail);
+
+		return transaction;
+	}
+
+	private boolean isOverflowBalance(double balance, double amount) {
+		if (balance > 0) {
+			return amount > (Double.MAX_VALUE - balance);
+		}
+
+		return true;
+	}
+
+	private void validateTrasactionRequest(ITransactionRequestVO transactionRequest) {
+		if (transactionRequest.getCard() == null || transactionRequest.getAmount() == null
+				|| transactionRequest.getExtendedInformation() == null) {
+			throw new InvalidInputException("Required information is missing");
+		}
+
+		ExtendedInformationVO extendedInformation = transactionRequest.getExtendedInformation();
+		if (extendedInformation.getAdditionalTerminalInfo() == null) {
+			throw new InvalidInputException("Required information is missing. Missing terminal information");
+		}
+	}
+
+	private Account identifyValidAccount(String cardNumber) {
+
+		Optional<Card> card = Optional.ofNullable(cardRepository.findByCardCode(cardNumber));
+		if (!card.isPresent()) {
+			throw new ValidationException("Card number is not valid or not exist.");
+		} else if (!card.get().getStatus().equals(StatusEnum.ACTIVE.getValue())) {
+			throw new ValidationException("Card is inactive.");
+		}
+
+		Account account = card.get().getAccount();
+		if (!account.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
+			throw new ValidationException("Account is inactive.");
+		}
+
+		return account;
+	}
+
+	private MerchantTerminal identifyValidMerchantTerminal(String terminalId) {
+		Optional<MerchantTerminal> merchantTerminal = Optional
+				.ofNullable(merchantTerminalRepository.findOne(terminalId));
+		if (!merchantTerminal.isPresent()) {
+			throw new ValidationException("Terminal id is not valid or not exist.");
+		}
+
+		return merchantTerminal.get();
+	}
+
 }
