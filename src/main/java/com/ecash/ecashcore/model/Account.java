@@ -1,12 +1,23 @@
 package com.ecash.ecashcore.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "account")
@@ -19,9 +30,10 @@ public class Account extends BaseModel {
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "type_code", nullable = true)
+  @JsonManagedReference
   private AccountType accountType;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "customer_id", nullable = true)
   @JsonManagedReference
   private Customer customer;
@@ -29,14 +41,19 @@ public class Account extends BaseModel {
   @Column(name = "account_name")
   private String accountName;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "currency_code", nullable = true)
+  @JsonManagedReference
   private CurrencyCode currencyCode;
 
   @Column(name = "date_opened")
   private Date dateOpened;
 
+  @Column(name = "date_closed")
+  private Date dateClosed;
+
   @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+  @JsonBackReference
   private List<AccountHistory> accountHistories;
 
   @Column(name = "current_balance")
@@ -46,13 +63,15 @@ public class Account extends BaseModel {
   private String status;
 
   @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+  @JsonBackReference
   private List<AccountCard> accountCards;
 
   public Account() {
     super();
   }
 
-  public Account(AccountType accountType, Customer customer, CurrencyCode currencyCode) {
+  public Account(AccountType accountType, Customer customer,
+      CurrencyCode currencyCode) {
     super();
     this.accountType = accountType;
     this.customer = customer;
@@ -107,6 +126,14 @@ public class Account extends BaseModel {
     this.dateOpened = dateOpened;
   }
 
+  public Date getDateClosed() {
+    return dateClosed;
+  }
+
+  public void setDateClosed(Date dateClosed) {
+    this.dateClosed = dateClosed;
+  }
+
   public Double getCurrentBalance() {
     return currentBalance;
   }
@@ -131,6 +158,7 @@ public class Account extends BaseModel {
     this.accountCards = accountCards;
   }
 
+  @JsonBackReference
   public List<Card> getCard() {
     List<Card> cards = new LinkedList<>();
     accountCards.stream().forEach(c -> cards.add(c.getCard()));
