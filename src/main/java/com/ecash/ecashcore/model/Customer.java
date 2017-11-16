@@ -18,6 +18,9 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "customer")
 public class Customer extends BaseModel {
@@ -28,6 +31,7 @@ public class Customer extends BaseModel {
   private String id;
 
   @ManyToOne(fetch = FetchType.EAGER)
+  @JsonManagedReference
   @JoinColumn(name = "type_code", nullable = false)
   private CustomerType customerType;
 
@@ -50,6 +54,7 @@ public class Customer extends BaseModel {
   private String email;
 
   @ManyToOne(fetch = FetchType.EAGER)
+  @JsonManagedReference
   @JoinColumn(name = "organization_id", nullable = true)
   private Organization organization;
 
@@ -78,12 +83,19 @@ public class Customer extends BaseModel {
   @Column(name = "position")
   private String position;
 
-  @OneToMany(mappedBy = "customer")
+  @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+  @JsonBackReference
   private List<Account> accounts;
 
   @OneToMany(fetch = FetchType.LAZY)
+  @JsonManagedReference
   @JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
   private List<Address> addresses;
+  
+  @OneToMany(fetch = FetchType.LAZY)
+  @JsonManagedReference
+  @JoinTable(name = "customer_identify_document", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "identify_document_id"))
+  private List<IdentifyDocument> identifyDocuments;
 
   public String getId() {
     return id;
@@ -236,4 +248,13 @@ public class Customer extends BaseModel {
   public void setAddresses(List<Address> addresses) {
     this.addresses = addresses;
   }
+
+  public List<IdentifyDocument> getIdentifyDocuments() {
+    return identifyDocuments;
+  }
+
+  public void setIdentifyDocuments(List<IdentifyDocument> identifyDocuments) {
+    this.identifyDocuments = identifyDocuments;
+  }
+  
 }

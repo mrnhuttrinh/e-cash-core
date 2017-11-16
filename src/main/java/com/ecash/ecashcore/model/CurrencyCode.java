@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "currency_code")
 public class CurrencyCode extends BaseModel {
@@ -20,6 +22,7 @@ public class CurrencyCode extends BaseModel {
   private String text;
 
   @OneToMany(mappedBy = "currencyCode")
+  @JsonBackReference
   private List<Account> account;
 
   public String getCode() {

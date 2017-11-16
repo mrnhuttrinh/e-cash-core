@@ -9,32 +9,35 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "organization")
 public class Organization extends BaseModel {
-	@Id
-	private String id;
-	
-	@Column(name = "short_name")
-	private String shortName;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
-	List<Customer> customer;
+  @Id
+  private String id;
 
-	public String getId() {
-		return id;
-	}
+  @Column(name = "short_name")
+  private String shortName;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "organization")
+  @JsonBackReference
+  List<Customer> customer;
 
-	public String getShortName() {
-		return shortName;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getShortName() {
+    return shortName;
+  }
+
+  public void setShortName(String shortName) {
+    this.shortName = shortName;
   }
 
   public List<Customer> getCustomer() {
