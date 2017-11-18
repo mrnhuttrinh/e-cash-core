@@ -20,6 +20,19 @@
 		<spring-boot.version>1.5.8.RELEASE</spring-boot.version>
 		<java.version>1.8</java.version>
 	</properties>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>synergian-repo</id>
+			<url>https://raw.github.com/synergian/wagon-git/releases</url>
+		</pluginRepository>
+	</pluginRepositories>
+	<distributionManagement>
+		<repository>
+			<id>ecashservice</id>
+			<name>Ecash Core</name>
+			<url>git:master://git@bitbucket.org:ecashservice/e-cash-core.git</url>
+		</repository>
+	</distributionManagement>
 
 	<dependencies>
 		<dependency>
@@ -50,6 +63,14 @@
 	</dependencies>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
+		<extensions>
+			<extension>
+				<groupId>ar.com.synergian</groupId>
+				<artifactId>wagon-git</artifactId>
+				<version>0.3.0</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
