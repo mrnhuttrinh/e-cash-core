@@ -30,7 +30,7 @@
 		<repository>
 			<id>ecashservice</id>
 			<name>Ecash Core</name>
-			<url>git:master://git@bitbucket.org:ecashservice/e-cash-core.git</url>
+			<url>git:releases://git@bitbucket.org:ecashservice/e-cash-core.git</url>
 		</repository>
 	</distributionManagement>
 
