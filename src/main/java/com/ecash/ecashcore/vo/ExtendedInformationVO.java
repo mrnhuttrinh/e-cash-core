@@ -1,19 +1,8 @@
 package com.ecash.ecashcore.vo;
 
-import java.util.Map;
-
 public class ExtendedInformationVO {
-  private String typeOfGoods; // Only for expense transaction
   private TerminalInformationVO additionalTerminalInfo;
-  private Map<String, Object> transactionDetails;
-
-  public String getTypeOfGoods() {
-    return typeOfGoods;
-  }
-
-  public void setTypeOfGoods(String typeOfGoods) {
-    this.typeOfGoods = typeOfGoods;
-  }
+  private String transactionDetails;
 
   public TerminalInformationVO getAdditionalTerminalInfo() {
     return additionalTerminalInfo;
@@ -23,11 +12,11 @@ public class ExtendedInformationVO {
     this.additionalTerminalInfo = additionalTerminalInfo;
   }
 
-  public Map<String, Object> getTransactionDetails() {
+  public String getTransactionDetails() {
     return transactionDetails;
   }
 
-  public void setTransactionDetails(Map<String, Object> transactionDetails) {
+  public void transactionDetails(String transactionDetails) {
     this.transactionDetails = transactionDetails;
   }
 }

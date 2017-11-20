@@ -1,13 +1,5 @@
 package com.ecash.ecashcore.service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.enums.TransactionTypeEnum;
 import com.ecash.ecashcore.exception.InvalidInputException;
@@ -26,11 +18,17 @@ import com.ecash.ecashcore.repository.MerchantTerminalRepository;
 import com.ecash.ecashcore.repository.TransactionDetailRepository;
 import com.ecash.ecashcore.repository.TransactionRepository;
 import com.ecash.ecashcore.repository.TransactionTypeRepository;
-import com.ecash.ecashcore.util.JsonUtil;
 import com.ecash.ecashcore.vo.ChargeRequestVO;
 import com.ecash.ecashcore.vo.DepositRequestVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.ITransactionRequestVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -59,7 +57,7 @@ public class TransactionService {
 
 	public Transaction chargeRequest(ChargeRequestVO chargeRequest) {
 
-		validateTrasactionRequest(chargeRequest);
+		validateTransactionRequest(chargeRequest);
 
 		Account account = identifyValidAccount(chargeRequest.getCard().getNumber());
 
@@ -84,8 +82,8 @@ public class TransactionService {
 		MerchantTerminal merchantTerminal = identifyValidMerchantTerminal(
 				extendedInformation.getAdditionalTerminalInfo().getTerminalId());
 
-		TransactionDetail transactionDetail = new TransactionDetail(transaction, extendedInformation.getTypeOfGoods(),
-				JsonUtil.objectToJsonString(extendedInformation.getTransactionDetails()),
+		TransactionDetail transactionDetail = new TransactionDetail(transaction,
+				extendedInformation.getTransactionDetails(),
 				merchantTerminal.getMerchant());
 		transactionDetailRepository.save(transactionDetail);
 		return transaction;
@@ -94,7 +92,7 @@ public class TransactionService {
 	public Transaction depositRequest(DepositRequestVO depositRequest) {
 
 		// Validate require information
-		validateTrasactionRequest(depositRequest);
+		validateTransactionRequest(depositRequest);
 
 		// Check valid card information
 		Account account = identifyValidAccount(depositRequest.getCard().getNumber());
@@ -131,8 +129,8 @@ public class TransactionService {
 				extendedInformation.getAdditionalTerminalInfo().getTerminalId());
 
 		// Record the transaction detail
-		TransactionDetail transactionDetail = new TransactionDetail(transaction, extendedInformation.getTypeOfGoods(),
-				JsonUtil.objectToJsonString(extendedInformation.getTransactionDetails()),
+		TransactionDetail transactionDetail = new TransactionDetail(transaction,
+				extendedInformation.getTransactionDetails(),
 				merchantTerminal.getMerchant());
 		transactionDetailRepository.save(transactionDetail);
 
@@ -147,7 +145,7 @@ public class TransactionService {
 		return true;
 	}
 
-	private void validateTrasactionRequest(ITransactionRequestVO transactionRequest) {
+	private void validateTransactionRequest(ITransactionRequestVO transactionRequest) {
 		if (transactionRequest.getCard() == null || transactionRequest.getAmount() == null
 				|| transactionRequest.getExtendedInformation() == null) {
 			throw new InvalidInputException("Required information is missing");
