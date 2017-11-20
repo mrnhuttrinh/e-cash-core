@@ -15,11 +15,8 @@ public class TransactionDetail extends BaseModel {
   @EmbeddedId
   TransactionDetailId transactionDetailId;
 
-  @Column(name = "product_type")
-  private String productType;
-
-  @Column(name = "product_details")
-  private String productDetail;
+  @Column(name = "detail")
+  private String detail;
 
   // TODO: remove nullable = true
   @OneToOne(fetch = FetchType.LAZY)
@@ -33,12 +30,11 @@ public class TransactionDetail extends BaseModel {
     super();
   }
 
-  public TransactionDetail(Transaction transaction, String productType, String productDetail,
+  public TransactionDetail(Transaction transaction, String detail,
       Merchant merchant) {
     super();
     this.transactionDetailId = new TransactionDetailId(transaction);
-    this.productType = productType;
-    this.productDetail = productDetail;
+    this.detail = detail;
     this.merchant = merchant;
   }
 
@@ -50,20 +46,12 @@ public class TransactionDetail extends BaseModel {
     this.transactionDetailId = transactionDetailId;
   }
 
-  public String getProductType() {
-    return productType;
+  public String getDetail() {
+    return detail;
   }
 
-  public void setProductType(String productType) {
-    this.productType = productType;
-  }
-
-  public String getProductDetail() {
-    return productDetail;
-  }
-
-  public void setProductDetail(String productDetail) {
-    this.productDetail = productDetail;
+  public void setDetail(String detail) {
+    this.detail = detail;
   }
 
   public Merchant getMerchant() {

@@ -4,6 +4,7 @@ public class DepositRequestVO implements ITransactionRequestVO {
 	private CardInformationVO card;
 	private Double amount;
 	private ExtendedInformationVO extendedInformation;
+	private TargetAccountVO targetAccount;
 
 	public CardInformationVO getCard() {
 		return card;
@@ -28,4 +29,8 @@ public class DepositRequestVO implements ITransactionRequestVO {
 	public void setExtendedInformation(ExtendedInformationVO extendedInformation) {
 		this.extendedInformation = extendedInformation;
 	}
+
+	public TargetAccountVO getTargetAccount() {return targetAccount;}
+
+	public void setTargetAccount(TargetAccountVO targetAccount) {this.targetAccount = targetAccount;}
 }
