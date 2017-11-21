@@ -96,6 +96,9 @@ public class Customer extends BaseModel {
   @JsonManagedReference
   @JoinTable(name = "customer_identify_document", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "identify_document_id"))
   private List<IdentifyDocument> identifyDocuments;
+  
+  @OneToMany(mappedBy = "customer")
+  private List<CustomerHistory> customerHistory;
 
   public String getId() {
     return id;
@@ -255,6 +258,14 @@ public class Customer extends BaseModel {
 
   public void setIdentifyDocuments(List<IdentifyDocument> identifyDocuments) {
     this.identifyDocuments = identifyDocuments;
+  }
+
+  public List<CustomerHistory> getCustomerHistory() {
+    return customerHistory;
+  }
+
+  public void setCustomerHistory(List<CustomerHistory> customerHistory) {
+    this.customerHistory = customerHistory;
   }
   
 }
