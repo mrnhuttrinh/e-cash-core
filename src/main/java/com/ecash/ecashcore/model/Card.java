@@ -1,18 +1,22 @@
 package com.ecash.ecashcore.model;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "card")
@@ -40,8 +44,9 @@ public class Card extends BaseModel {
   @Column(name = "expiry_date")
   private Date expiryDate;
 
-  @OneToOne(mappedBy = "card", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-  private AccountCard accountCard;
+  @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+  @JsonBackReference
+  private List<AccountCard> accountCards;
 
   public String getCardNumber() {
     return cardNumber;
@@ -91,15 +96,18 @@ public class Card extends BaseModel {
     this.expiryDate = expiryDate;
   }
 
-  public AccountCard getAccountCard() {
-    return accountCard;
+  public List<AccountCard> getAccountCards() {
+    return accountCards;
   }
 
-  public void setAccountCard(AccountCard accountCard) {
-    this.accountCard = accountCard;
+  public void setAccountCards(List<AccountCard> accountCards) {
+    this.accountCards = accountCards;
   }
 
-  public Account getAccount() {
-    return this.getAccountCard().getAccount();
+  @JsonBackReference
+  public List<Account> getAccounts() {
+    List<Account> accounts = new LinkedList<>();
+    accountCards.stream().forEach(c -> accounts.add(c.getAccount()));
+    return accounts;
   }
 }
