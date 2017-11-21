@@ -1,0 +1,11 @@
+box: maven:3-jdk-8-alpine
+build:
+  steps:
+   # Build Project
+   - script:
+      name: Ecash Core Maven Build
+      code: mvn -B clean verify packge
+   # Deploy to BitBucket Repository
+   - script:
+      name: Deploy to BitBucket Repo
+      code: mvn deploy -s auth_settings.xml -Dsettings.security=auth_settings-security.xml
