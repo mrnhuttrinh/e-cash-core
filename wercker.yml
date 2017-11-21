@@ -1,4 +1,4 @@
-box: maven:3-jdk-8-alpine
+box: maven:alpine
 build:
   steps:
    # Build Project
