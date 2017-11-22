@@ -49,6 +49,10 @@ public class Transaction extends BaseModel {
 
   @Column(name = "amount")
   private Double amount;
+  
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "transaction_id")
+  private TransactionDetail transactionDetail;
 
   public Transaction() {
     super();
@@ -108,5 +112,13 @@ public class Transaction extends BaseModel {
 
   public void setAmount(Double amount) {
     this.amount = amount;
+  }
+
+  public TransactionDetail getTransactionDetail() {
+    return transactionDetail;
+  }
+
+  public void setTransactionDetail(TransactionDetail transactionDetail) {
+    this.transactionDetail = transactionDetail;
   }
 }

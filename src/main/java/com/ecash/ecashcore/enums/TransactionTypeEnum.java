@@ -3,7 +3,8 @@ package com.ecash.ecashcore.enums;
 public enum TransactionTypeEnum {
   DEPOSIT("DEPOSIT"),
   EXPENSE("EXPENSE"),
-  PAYMENT("PAYMENT");
+  PAYMENT("PAYMENT"),
+  REFUND("REFUND");
 
   String name;
 

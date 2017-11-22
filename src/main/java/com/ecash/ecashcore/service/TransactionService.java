@@ -31,10 +31,12 @@ import com.ecash.ecashcore.repository.MerchantTerminalRepository;
 import com.ecash.ecashcore.repository.TransactionDetailRepository;
 import com.ecash.ecashcore.repository.TransactionRepository;
 import com.ecash.ecashcore.repository.TransactionTypeRepository;
+import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.ChargeRequestVO;
 import com.ecash.ecashcore.vo.DepositRequestVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.ITransactionRequestVO;
+import com.ecash.ecashcore.vo.RefundRequestVO;
 import com.ecash.ecashcore.vo.TargetAccountVO;
 
 @Service
@@ -141,6 +143,74 @@ public class TransactionService {
     return transaction;
   }
 
+  public Transaction refundRequest(RefundRequestVO refundRequest) {
+
+    // Validate transactionId
+    String transactionId = refundRequest.getTransactionId();
+    if (StringUtils.isNullOrEmpty(transactionId)) {
+      throw new InvalidInputException("Required information is missing. The transaction Id is null or empty");
+    }
+
+    // Get transaction from database
+    final Optional<Transaction> transaction = Optional.ofNullable(transactionRepository.findOne(transactionId));
+    if (!transaction.isPresent()) {
+      throw new InvalidInputException("Required information is missing. The transaction Id does not exist");
+    }
+
+    // Can not support refund transaction
+    if (transaction.get().getTransactionType().getTypeCode().equals(TransactionTypeEnum.REFUND.getName())) {
+      throw new InvalidInputException("Required information is missing. The transaction type does not support");
+    }
+
+    Date transactionTime = Calendar.getInstance().getTime();
+
+    // Check the origin transaction from request terminal
+
+    // Refund account balance
+    refundAccountBalance(transaction.get().getaccount(), transaction.get(), transactionTime);
+
+    // Record the transaction
+    TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.REFUND.getName());
+    final Transaction refundTransaction = new Transaction(transaction.get().getaccount(), transactionType,
+        transactionTime, transaction.get().getAmount());
+
+    // Record relate transaction
+    refundTransaction.setRelatedTransaction(transaction.get());
+    transactionRepository.save(refundTransaction);
+
+    // Record the transaction detail
+    TransactionDetail transactionDetail = transaction.get().getTransactionDetail();
+    final TransactionDetail refundTransactionDetail = new TransactionDetail(refundTransaction, "Terminal canceled",
+        transactionDetail.getMerchant());
+    transactionDetailRepository.save(refundTransactionDetail);
+
+    return refundTransaction;
+  }
+
+  private void refundAccountBalance(final Account account, final Transaction transacion, final Date transactionTime) {
+
+    switch (transacion.getTransactionType().getTypeCode()) {
+    case "DEPOSIT":
+      account.setCurrentBalance(account.getCurrentBalance() - transacion.getAmount());
+      break;
+    case "EXPENSE":
+      account.setCurrentBalance(account.getCurrentBalance() + transacion.getAmount());
+      break;
+    case "PAYMENT":
+      account.setCurrentBalance(account.getCurrentBalance() + transacion.getAmount());
+      break;
+
+    default:
+      throw new InvalidInputException("Required information is missing. The transaction type does not support");
+    }
+
+    accountRepository.save(account);
+
+    // Record the balance history
+    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
+    balanceHistoryRepository.save(balanceHistory);
+  }
+
   private boolean isOverflowBalance(double balance, double amount) {
     if (balance > 0) {
       return amount > (Double.MAX_VALUE - balance);
@@ -183,7 +253,8 @@ public class TransactionService {
 
     // get account
     String accountType;
-    if (targetAccountVO == null || targetAccountVO.getType() == null || "".equalsIgnoreCase(targetAccountVO.getType().trim())) {
+    if (targetAccountVO == null || targetAccountVO.getType() == null
+        || "".equalsIgnoreCase(targetAccountVO.getType().trim())) {
       accountType = AccountTypeEnum.DEFAULT.getValue();
     } else {
       accountType = targetAccountVO.getType().toUpperCase();
