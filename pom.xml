@@ -31,8 +31,29 @@
 			<id>ecashservice</id>
 			<name>Ecash Core</name>
 			<url>git:releases://https://bitbucket.org/ecashservice/e-cash-core.git</url>
+			<!-- git:releases://git@bitbucket.org:ecashservice/e-cash-core.git -->
 		</repository>
 	</distributionManagement>
+	<repositories>
+		<repository>
+			<id>ecashservice</id>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<name>Ecash Core</name>
+			<url>https://api.bitbucket.org/1.0/repositories/ecashservice/e-cash-core/raw/releases/</url>
+		</repository>
+	</repositories>
+	<!-- Again, make the changes accordingly to your own path -->
+	<scm>
+		<connection>scm:git:ssh://git@bitbucket.org:ecashservice/e-cash-core.git</connection>
+		<developerConnection>scm:git:ssh://git@bitbucket.org:ecashservice/e-cash-core.git</developerConnection>
+		<url>https://bitbucket.org/ecashservice/e-cash-core.git</url>
+		<tag>HEAD</tag>
+	</scm>
 
 	<dependencies>
 		<dependency>
@@ -101,6 +122,11 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
 			</plugin>
 		</plugins>
 	</build>
