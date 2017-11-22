@@ -1,4 +1,4 @@
-box: maven:alpine
+box: duyviec/mvn-jdk8-git
 build:
   steps:
    # Build Project
