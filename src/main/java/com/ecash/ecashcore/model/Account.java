@@ -159,7 +159,7 @@ public class Account extends BaseModel {
   }
 
   @JsonBackReference
-  public List<Card> getCard() {
+  public List<Card> getCards() {
     List<Card> cards = new LinkedList<>();
     accountCards.stream().forEach(c -> cards.add(c.getCard()));
     return cards;

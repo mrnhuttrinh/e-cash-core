@@ -1,7 +1,8 @@
 package com.ecash.ecashcore.enums;
 
 public enum AccountTypeEnum {
-  DEFAULT("DEFAULT");
+  DEFAULT("DEFAULT"),
+  DEBIT("DEBIT");
 
   String name;
 
