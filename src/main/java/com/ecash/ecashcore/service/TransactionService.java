@@ -1,16 +1,5 @@
 package com.ecash.ecashcore.service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.enums.TransactionTypeEnum;
@@ -38,6 +27,16 @@ import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.ITransactionRequestVO;
 import com.ecash.ecashcore.vo.RefundRequestVO;
 import com.ecash.ecashcore.vo.TargetAccountVO;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -231,9 +230,12 @@ public class TransactionService {
     }
 
     // validate transaction detail
+    if (extendedInformation.getTransactionDetails() == null) {
+      throw new InvalidInputException("Required information is missing. Missing transaction details");
+    }
+
     try {
       new JSONObject(extendedInformation.getTransactionDetails());
-
     } catch (JSONException e) {
       throw new InvalidInputException("Transaction detail is not valid!");
     }
