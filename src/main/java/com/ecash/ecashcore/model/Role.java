@@ -1,7 +1,7 @@
 package com.ecash.ecashcore.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,12 +29,12 @@ public class Role extends BaseModel {
 
   @JsonBackReference
   @ManyToMany(mappedBy = "roles")
-  private Collection<User> users = new ArrayList<>();
+  private List<User> users = new ArrayList<>();
 
   @JsonBackReference
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "roles_permissions", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
-  private Collection<Permission> permissions;
+  private List<Permission> permissions;
 
   public Role() {
     super();
@@ -43,14 +43,6 @@ public class Role extends BaseModel {
   public Role(final String name) {
     super();
     this.name = name;
-  }
-
-  public Collection<User> getUsers() {
-    return users;
-  }
-
-  public void setUsers(Collection<User> users) {
-    this.users = users;
   }
 
   public String getId() {
@@ -69,12 +61,20 @@ public class Role extends BaseModel {
     return name;
   }
 
-  public void setPermissions(Collection<Permission> permissions) {
-    this.permissions = permissions;
+  public List<User> getUsers() {
+    return users;
   }
 
-  public Collection<Permission> getPermissions() {
+  public void setUsers(List<User> users) {
+    this.users = users;
+  }
+
+  public List<Permission> getPermissions() {
     return permissions;
+  }
+
+  public void setPermissions(List<Permission> permissions) {
+    this.permissions = permissions;
   }
 
   @Override

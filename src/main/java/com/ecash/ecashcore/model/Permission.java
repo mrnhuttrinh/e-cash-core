@@ -1,7 +1,7 @@
 package com.ecash.ecashcore.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
@@ -26,7 +26,7 @@ public class Permission extends BaseModel {
 
   @JsonManagedReference
   @ManyToMany(mappedBy = "permissions")
-  private Collection<Role> roles = new ArrayList<>();
+  private List<Role> roles = new ArrayList<>();
 
   public String getId() {
     return id;
@@ -44,11 +44,11 @@ public class Permission extends BaseModel {
     this.name = name;
   }
 
-  public Collection<Role> getRoles() {
+  public List<Role> getRoles() {
     return roles;
   }
 
-  public void setRoles(Collection<Role> roles) {
+  public void setRoles(List<Role> roles) {
     this.roles = roles;
   }
 

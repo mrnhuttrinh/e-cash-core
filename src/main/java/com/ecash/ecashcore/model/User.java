@@ -1,6 +1,6 @@
 package com.ecash.ecashcore.model;
 
-import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,7 +48,7 @@ public class User extends BaseModel {
   @JsonManagedReference
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-  private Collection<Role> roles;
+  private List<Role> roles;
 
   public User() {
     super();
@@ -95,14 +95,6 @@ public class User extends BaseModel {
     this.password = password;
   }
 
-  public Collection<Role> getRoles() {
-    return roles;
-  }
-
-  public void setRoles(final Collection<Role> roles) {
-    this.roles = roles;
-  }
-
   public boolean isEnabled() {
     return enabled;
   }
@@ -126,9 +118,17 @@ public class User extends BaseModel {
   public void setUsername(String username) {
     this.username = username;
   }
-  
+
   public void encodePassword(PasswordEncoder passwordEncoder) {
     this.password = passwordEncoder.encode(this.password);
+  }
+
+  public List<Role> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(List<Role> roles) {
+    this.roles = roles;
   }
 
   @Override
@@ -148,5 +148,4 @@ public class User extends BaseModel {
     result = prime * result + ((username == null) ? 0 : username.hashCode());
     return result;
   }
-
 }

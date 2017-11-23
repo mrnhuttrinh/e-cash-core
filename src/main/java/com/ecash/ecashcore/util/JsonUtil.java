@@ -23,10 +23,10 @@ public class JsonUtil {
     return json;
   }
 
-  public static Object jsonStringToObject(String json, Class<?> clazz) {
+  public static <T> T jsonStringToObject(String json, Class<T> clazz) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    Object object = null;
+    T object = null;
     try {
       object = mapper.readValue(json, clazz);
     } catch (IOException e) {

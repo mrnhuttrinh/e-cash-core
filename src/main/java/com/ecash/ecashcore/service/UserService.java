@@ -39,42 +39,42 @@ public class UserService {
     return userRepository.findByUsername(username);
   }
 
-  public User addNewUser(String email) {
-
-    Permission readPrivilege = this.createPrivilegeIfNotFound("READ");
-    Permission writePrivilege = this.createPrivilegeIfNotFound("WRITE");
-    Permission fullControlPrivilege = this.createPrivilegeIfNotFound("FULL_CONTROL");
-    List<Permission> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege, fullControlPrivilege);
-
-    this.createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-
-    Role adminRole = roleRepository.findByName("ROLE_ADMIN");
-    User user = new User();
-    user.setFirstName("Test");
-    user.setLastName("Test");
-    user.setPassword("passwordEncoder.encode(test)");
-    user.setEmail("test@test.com");
-    user.setRoles(Arrays.asList(adminRole));
-    user.setEnabled(true);
-    return userRepository.save(user);
-  }
-
-  private Permission createPrivilegeIfNotFound(String name) {
-    Permission privilege = permissionRepository.findByName(name);
-    if (privilege == null) {
-      privilege = new Permission(name);
-      permissionRepository.save(privilege);
-    }
-    return privilege;
-  }
-
-  private Role createRoleIfNotFound(String name, Collection<Permission> privileges) {
-    Role role = roleRepository.findByName(name);
-    if (role == null) {
-      role = new Role(name);
-      role.setPermissions(privileges);
-      roleRepository.save(role);
-    }
-    return role;
-  }
+//  public User addNewUser(String email) {
+//
+//    Permission readPrivilege = this.createPrivilegeIfNotFound("READ");
+//    Permission writePrivilege = this.createPrivilegeIfNotFound("WRITE");
+//    Permission fullControlPrivilege = this.createPrivilegeIfNotFound("FULL_CONTROL");
+//    List<Permission> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege, fullControlPrivilege);
+//
+//    this.createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
+//
+//    Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+//    User user = new User();
+//    user.setFirstName("Test");
+//    user.setLastName("Test");
+//    user.setPassword("passwordEncoder.encode(test)");
+//    user.setEmail("test@test.com");
+//    user.setRoles(Arrays.asList(adminRole));
+//    user.setEnabled(true);
+//    return userRepository.save(user);
+//  }
+//
+//  private Permission createPrivilegeIfNotFound(String name) {
+//    Permission privilege = permissionRepository.findByName(name);
+//    if (privilege == null) {
+//      privilege = new Permission(name);
+//      permissionRepository.save(privilege);
+//    }
+//    return privilege;
+//  }
+//
+//  private Role createRoleIfNotFound(String name, Collection<Permission> privileges) {
+//    Role role = roleRepository.findByName(name);
+//    if (role == null) {
+//      role = new Role(name);
+//      role.setPermissions(privileges);
+//      roleRepository.save(role);
+//    }
+//    return role;
+//  }
 }
