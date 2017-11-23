@@ -1,13 +1,6 @@
 box: duyviec/mvn-jdk8-git
 build:
   steps:
-   # Git configuration
-   - script:
-      name: Git configuration
-      code: |
-            git --version
-            git remote set-url origin https://viecduy@bitbucket.org/ecashservice/e-cash-core.git
-            git config --list
    # Build Project
    - script:
       name: Ecash Core Maven Build
@@ -15,5 +8,4 @@ build:
    # Deploy to BitBucket Repository
    - script:
       name: Deploy to BitBucket Repo
-      code: mvn deploy -s auth_settings.xml
-#       -Dsettings.security=auth_settings-security.xml
+      code: mvn -s auth_settings.xml clean deploy
