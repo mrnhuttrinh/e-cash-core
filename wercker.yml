@@ -8,4 +8,4 @@ build:
    # Deploy to BitBucket Repository
    - script:
       name: Deploy to BitBucket Repo
-      code: mvn -s auth_settings.xml clean deploy
+      code: mvn -s auth_settings.xml deploy
