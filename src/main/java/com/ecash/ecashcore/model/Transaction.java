@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -50,8 +51,7 @@ public class Transaction extends BaseModel {
   @Column(name = "amount")
   private Double amount;
   
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "transaction_id")
+  @Transient
   private TransactionDetail transactionDetail;
 
   public Transaction() {

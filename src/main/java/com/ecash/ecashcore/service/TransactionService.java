@@ -1,8 +1,20 @@
 package com.ecash.ecashcore.service;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.enums.TransactionTypeEnum;
+import com.ecash.ecashcore.exception.DataNotFoundException;
 import com.ecash.ecashcore.exception.EcashException;
 import com.ecash.ecashcore.exception.InvalidInputException;
 import com.ecash.ecashcore.exception.ValidationException;
@@ -27,16 +39,6 @@ import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.ITransactionRequestVO;
 import com.ecash.ecashcore.vo.RefundRequestVO;
 import com.ecash.ecashcore.vo.TargetAccountVO;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -150,14 +152,10 @@ public class TransactionService {
       throw new InvalidInputException("Required information is missing. The transaction Id is null or empty");
     }
 
-    // Get transaction from database
-    final Optional<Transaction> transaction = Optional.ofNullable(transactionRepository.findOne(transactionId));
-    if (!transaction.isPresent()) {
-      throw new InvalidInputException("Required information is missing. The transaction Id does not exist");
-    }
+    final Transaction transaction = identifyValidTransaction(transactionId);
 
     // Can not support refund transaction
-    if (transaction.get().getTransactionType().getTypeCode().equals(TransactionTypeEnum.REFUND.getName())) {
+    if (transaction.getTransactionType().getTypeCode().equals(TransactionTypeEnum.REFUND.getName())) {
       throw new InvalidInputException("Required information is missing. The transaction type does not support");
     }
 
@@ -166,24 +164,34 @@ public class TransactionService {
     // Check the origin transaction from request terminal
 
     // Refund account balance
-    refundAccountBalance(transaction.get().getaccount(), transaction.get(), transactionTime);
+    refundAccountBalance(transaction.getaccount(), transaction, transactionTime);
 
     // Record the transaction
     TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.REFUND.getName());
-    final Transaction refundTransaction = new Transaction(transaction.get().getaccount(), transactionType,
-        transactionTime, transaction.get().getAmount());
+    final Transaction refundTransaction = new Transaction(transaction.getaccount(), transactionType, transactionTime,
+        transaction.getAmount());
 
     // Record relate transaction
-    refundTransaction.setRelatedTransaction(transaction.get());
+    refundTransaction.setRelatedTransaction(transaction);
     transactionRepository.save(refundTransaction);
 
     // Record the transaction detail
-    TransactionDetail transactionDetail = transaction.get().getTransactionDetail();
+    TransactionDetail transactionDetail = transaction.getTransactionDetail();
     final TransactionDetail refundTransactionDetail = new TransactionDetail(refundTransaction, "Terminal canceled",
         transactionDetail.getMerchant());
     transactionDetailRepository.save(refundTransactionDetail);
 
     return refundTransaction;
+  }
+
+  private Transaction identifyValidTransaction(String transactionId) {
+    // Get transaction from database
+    final Optional<Transaction> transaction = Optional.ofNullable(transactionRepository.findOne(transactionId));
+    if (!transaction.isPresent()) {
+      throw new DataNotFoundException("Required information is missing. The transaction Id does not exist");
+    }
+
+    return transaction.get();
   }
 
   private void refundAccountBalance(final Account account, final Transaction transacion, final Date transactionTime) {

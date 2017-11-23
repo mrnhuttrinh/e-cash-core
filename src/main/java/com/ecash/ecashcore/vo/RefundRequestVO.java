@@ -3,7 +3,7 @@ package com.ecash.ecashcore.vo;
 public class RefundRequestVO {
 
   private String transactionId;
-  
+
   private ExtendedInformationVO extendedInformation;
 
   public String getTransactionId() {
@@ -13,7 +13,7 @@ public class RefundRequestVO {
   public void setTransactionId(String transactionId) {
     this.transactionId = transactionId;
   }
-  
+
   public ExtendedInformationVO getExtendedInformation() {
     return extendedInformation;
   }
