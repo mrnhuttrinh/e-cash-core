@@ -10,4 +10,5 @@
 # CI/CD Integration
     - CI/CD: https://app.wercker.com/duyviec/e-cash-core/runs
         1. Wercker to watch all change in https://bitbucket.org/ecashservice/e-cash-core.git
-        2. Using docker image to trigger build and deploy the code.
+        2. Using docker image to trigger build.
+        3. Only master branch will be deployed to bitbucket repository.
