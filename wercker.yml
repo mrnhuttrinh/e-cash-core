@@ -5,6 +5,7 @@ build:
    - script:
       name: Ecash Core Maven Build
       code: mvn -B clean verify package
+deploy-maven:
    # Deploy to BitBucket Repository
    - script:
       name: Deploy to BitBucket Repo
