@@ -1,7 +1,6 @@
 package com.ecash.ecashcore.model;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -10,14 +9,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "account")
@@ -28,33 +27,13 @@ public class Account extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "type_code", nullable = true)
-  @JsonManagedReference
-  private AccountType accountType;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "customer_id", nullable = true)
-  @JsonManagedReference
-  private Customer customer;
-
-  @Column(name = "account_name")
-  private String accountName;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "currency_code", nullable = true)
-  @JsonManagedReference
-  private CurrencyCode currencyCode;
-
   @Column(name = "date_opened")
+  @Temporal(TemporalType.TIMESTAMP)
   private Date dateOpened;
 
   @Column(name = "date_closed")
+  @Temporal(TemporalType.TIMESTAMP)
   private Date dateClosed;
-
-  @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
-  @JsonBackReference
-  private List<AccountHistory> accountHistories;
 
   @Column(name = "current_balance")
   private Double currentBalance;
@@ -62,16 +41,35 @@ public class Account extends BaseModel {
   @Column(name = "status")
   private String status;
 
+  @Column(name = "account_name")
+  private String accountName;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_code", nullable = false)
+  private AccountType accountType;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "customer_id", nullable = false)
+  private Customer customer;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "currency_code", nullable = false)
+  private CurrencyCode currencyCode;
+
   @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
-  @JsonBackReference
-  private List<AccountCard> accountCards;
+  private List<AccountHistory> accountHistories;
+
+  // @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+  // private List<AccountCard> accountCards;
+
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "accounts")
+  private List<Card> cards;
 
   public Account() {
     super();
   }
 
-  public Account(AccountType accountType, Customer customer,
-      CurrencyCode currencyCode) {
+  public Account(AccountType accountType, Customer customer, CurrencyCode currencyCode) {
     super();
     this.accountType = accountType;
     this.customer = customer;
@@ -150,20 +148,20 @@ public class Account extends BaseModel {
     this.status = status;
   }
 
-  public List<AccountCard> getAccountCards() {
-    return accountCards;
-  }
-
-  public void setAccountCards(List<AccountCard> accountCards) {
-    this.accountCards = accountCards;
-  }
-
-  @JsonBackReference
-  public List<Card> getCards() {
-    List<Card> cards = new LinkedList<>();
-    accountCards.stream().forEach(c -> cards.add(c.getCard()));
-    return cards;
-  }
+  // public List<AccountCard> getAccountCards() {
+  // return accountCards;
+  // }
+  //
+  // public void setAccountCards(List<AccountCard> accountCards) {
+  // this.accountCards = accountCards;
+  // }
+  //
+  // @JsonBackReference
+  // public List<Card> getCards() {
+  // List<Card> cards = new LinkedList<>();
+  // accountCards.stream().forEach(c -> cards.add(c.getCard()));
+  // return cards;
+  // }
 
   public List<AccountHistory> getAccountHistories() {
     return accountHistories;
@@ -171,5 +169,13 @@ public class Account extends BaseModel {
 
   public void setAccountHistories(List<AccountHistory> accountHistories) {
     this.accountHistories = accountHistories;
+  }
+
+  public List<Card> getCards() {
+    return cards;
+  }
+
+  public void setCards(List<Card> cards) {
+    this.cards = cards;
   }
 }

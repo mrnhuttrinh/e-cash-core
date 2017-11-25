@@ -1,6 +1,6 @@
 package com.ecash.ecashcore.model;
 
-import org.hibernate.annotations.GenericGenerator;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,8 +8,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "address")
@@ -19,10 +23,6 @@ public class Address extends BaseModel {
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "type_code", nullable = true)
-  private AddressType addressType;
 
   @Column(name = "line_1")
   private String line1;
@@ -41,6 +41,14 @@ public class Address extends BaseModel {
   private String country;
 
   private String status;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_code", nullable = true)
+  private AddressType addressType;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "address_id"), inverseJoinColumns = @JoinColumn(name = "customer_id"))
+  private List<Customer> customers;
 
   public String getId() {
     return id;
@@ -112,5 +120,13 @@ public class Address extends BaseModel {
 
   public void setStatus(String status) {
     this.status = status;
+  }
+
+  public List<Customer> getCustomers() {
+    return customers;
+  }
+
+  public void setCustomers(List<Customer> customers) {
+    this.customers = customers;
   }
 }

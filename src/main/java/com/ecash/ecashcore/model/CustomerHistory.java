@@ -11,6 +11,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "customer_history")
 public class CustomerHistory extends BaseModel {
@@ -20,18 +22,20 @@ public class CustomerHistory extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "customer_id", nullable = false)
-  private Customer customer;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "history_type", nullable = false)
-  private HistoryType type;
-
   @Column(name = "history_details", nullable = true)
   private String details;
 
   private String status;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JsonManagedReference
+  @JoinColumn(name = "customer_id", nullable = false)
+  private Customer customer;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JsonManagedReference
+  @JoinColumn(name = "history_type", nullable = false)
+  private HistoryType type;
 
   public String getId() {
     return id;

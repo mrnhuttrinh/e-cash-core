@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ecash.ecashcore.model.Account;
-import com.ecash.ecashcore.model.AccountCard;
 import com.ecash.ecashcore.model.Address;
 import com.ecash.ecashcore.model.Card;
 import com.ecash.ecashcore.model.Customer;
@@ -17,7 +16,6 @@ import com.ecash.ecashcore.model.CustomerIdentifyDocument;
 import com.ecash.ecashcore.model.IdentifyDocument;
 import com.ecash.ecashcore.model.Organization;
 import com.ecash.ecashcore.model.SCMSSync;
-import com.ecash.ecashcore.repository.AccountCardRepository;
 import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.AddressRepository;
 import com.ecash.ecashcore.repository.CardRepository;
@@ -42,8 +40,8 @@ public class CardService {
   @Autowired
   CardRepository cardRepository;
 
-  @Autowired
-  AccountCardRepository accountCardRepository;
+//  @Autowired
+//  AccountCardRepository accountCardRepository;
 
   @Autowired
   AddressRepository addressRepository;
@@ -107,10 +105,10 @@ public class CardService {
         Card card = inputCard.getCard();
         cardRepository.save(card);
 
-        AccountCard accountCard = new AccountCard();
-        accountCard.setAccount(account);
-        accountCard.setCard(card);
-        accountCardRepository.save(accountCard);
+//        AccountCard accountCard = new AccountCard();
+//        accountCard.setAccount(account);
+//        accountCard.setCard(card);
+//        accountCardRepository.save(accountCard);
       }
     }
   }

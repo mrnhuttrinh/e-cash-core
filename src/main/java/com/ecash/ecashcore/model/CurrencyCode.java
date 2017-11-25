@@ -25,6 +25,15 @@ public class CurrencyCode extends BaseModel {
   @JsonBackReference
   private List<Account> account;
 
+  public CurrencyCode() {
+    super();
+  }
+
+  public CurrencyCode(String code) {
+    super();
+    this.code = code;
+  }
+
   public String getCode() {
     return code;
   }

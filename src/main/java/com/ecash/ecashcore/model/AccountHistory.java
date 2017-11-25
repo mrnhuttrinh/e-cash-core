@@ -2,6 +2,8 @@ package com.ecash.ecashcore.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,10 +25,12 @@ public class AccountHistory extends BaseModel {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id", nullable = false)
+  @JsonManagedReference
   private Account account;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "history_type", nullable = false)
+  @JsonManagedReference
   private HistoryType type;
 
   @Column(name = "history_details", nullable = true)

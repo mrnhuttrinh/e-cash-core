@@ -1,6 +1,7 @@
 package com.ecash.ecashcore.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,10 +9,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "identify_document")
@@ -20,10 +25,6 @@ public class IdentifyDocument extends BaseModel {
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = true)
-  private IdentifyDocumentType identifyDocumentType;
 
   private String description;
 
@@ -39,6 +40,15 @@ public class IdentifyDocument extends BaseModel {
   private String placeOfIssue;
 
   private String status;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "type_code", nullable = true)
+  @JsonManagedReference
+  private IdentifyDocumentType identifyDocumentType;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "customer_identify_document", joinColumns = @JoinColumn(name = "identify_document_id"), inverseJoinColumns = @JoinColumn(name = "customer_id"))
+  private List<Customer> customers;
 
   public String getId() {
     return id;
@@ -102,5 +112,13 @@ public class IdentifyDocument extends BaseModel {
 
   public void setStatus(String status) {
     this.status = status;
+  }
+
+  public List<Customer> getCustomers() {
+    return customers;
+  }
+
+  public void setCustomers(List<Customer> customers) {
+    this.customers = customers;
   }
 }

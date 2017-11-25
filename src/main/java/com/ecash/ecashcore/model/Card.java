@@ -1,22 +1,23 @@
 package com.ecash.ecashcore.model;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "card")
@@ -28,10 +29,6 @@ public class Card extends BaseModel {
   @Column(name = "card_number")
   private String cardNumber;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code")
-  private CardType cardType;
-
   @Column(name = "status")
   private String status;
 
@@ -39,14 +36,23 @@ public class Card extends BaseModel {
   private String cardCode;
 
   @Column(name = "effective_date")
+  @Temporal(TemporalType.TIMESTAMP)
   private Date effectiveDate;
 
   @Column(name = "expiry_date")
+  @Temporal(TemporalType.TIMESTAMP)
   private Date expiryDate;
 
-  @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
-  @JsonBackReference
-  private List<AccountCard> accountCards;
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "type_code")
+  private CardType cardType;
+
+  // @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+  // private List<AccountCard> accountCards;
+
+  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+  @JoinTable(name = "account_card", joinColumns = @JoinColumn(name = "card_id", referencedColumnName = "card_number"), inverseJoinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"))
+  private List<Account> accounts;
 
   public String getCardNumber() {
     return cardNumber;
@@ -96,18 +102,18 @@ public class Card extends BaseModel {
     this.expiryDate = expiryDate;
   }
 
-  public List<AccountCard> getAccountCards() {
-    return accountCards;
-  }
-
-  public void setAccountCards(List<AccountCard> accountCards) {
-    this.accountCards = accountCards;
-  }
-
-  @JsonBackReference
-  public List<Account> getAccounts() {
-    List<Account> accounts = new LinkedList<>();
-    accountCards.stream().forEach(c -> accounts.add(c.getAccount()));
-    return accounts;
-  }
+  // public List<AccountCard> getAccountCards() {
+  // return accountCards;
+  // }
+  //
+  // public void setAccountCards(List<AccountCard> accountCards) {
+  // this.accountCards = accountCards;
+  // }
+  //
+  // @JsonBackReference
+  // public List<Account> getAccounts() {
+  // List<Account> accounts = new LinkedList<>();
+  // accountCards.stream().forEach(c -> accounts.add(c.getAccount()));
+  // return accounts;
+  // }
 }

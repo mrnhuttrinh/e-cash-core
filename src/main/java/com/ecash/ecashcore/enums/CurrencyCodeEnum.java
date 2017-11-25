@@ -1,7 +1,7 @@
 package com.ecash.ecashcore.enums;
 
 public enum CurrencyCodeEnum {
-  VND("VND");
+  VND("vnd");
 
   String name;
 
@@ -14,6 +14,6 @@ public enum CurrencyCodeEnum {
   }
 
   public String getValue() {
-    return this.toString();
+    return this.getName();
   }
 }

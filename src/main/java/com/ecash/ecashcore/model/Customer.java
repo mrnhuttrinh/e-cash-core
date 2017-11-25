@@ -9,7 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -17,9 +17,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "customer")
@@ -29,11 +26,6 @@ public class Customer extends BaseModel {
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JsonManagedReference
-  @JoinColumn(name = "type_code", nullable = false)
-  private CustomerType customerType;
 
   @Column(name = "scms_member_code")
   private String scmsMemberCode;
@@ -52,11 +44,6 @@ public class Customer extends BaseModel {
 
   @Column(name = "email")
   private String email;
-
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JsonManagedReference
-  @JoinColumn(name = "organization_id", nullable = true)
-  private Organization organization;
 
   @Column(name = "date_of_birth")
   @Temporal(TemporalType.DATE)
@@ -83,21 +70,24 @@ public class Customer extends BaseModel {
   @Column(name = "position")
   private String position;
 
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_code", nullable = false)
+  private CustomerType customerType;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "organization_id", nullable = false)
+  private Organization organization;
+
   @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-  @JsonBackReference
   private List<Account> accounts;
 
-  @OneToMany(fetch = FetchType.LAZY)
-  @JsonManagedReference
-  @JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "customers")
   private List<Address> addresses;
-  
-  @OneToMany(fetch = FetchType.LAZY)
-  @JsonManagedReference
-  @JoinTable(name = "customer_identify_document", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "identify_document_id"))
+
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "customers")
   private List<IdentifyDocument> identifyDocuments;
-  
-  @OneToMany(mappedBy = "customer")
+
+  @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
   private List<CustomerHistory> customerHistory;
 
   public String getId() {
@@ -267,5 +257,5 @@ public class Customer extends BaseModel {
   public void setCustomerHistory(List<CustomerHistory> customerHistory) {
     this.customerHistory = customerHistory;
   }
-  
+
 }
