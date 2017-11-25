@@ -31,8 +31,7 @@ public class Role extends BaseModel {
   @ManyToMany(mappedBy = "roles")
   private List<User> users = new ArrayList<>();
 
-  @JsonBackReference
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "roles_permissions", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
   private List<Permission> permissions;
 
