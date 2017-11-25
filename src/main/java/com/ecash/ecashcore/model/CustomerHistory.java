@@ -33,6 +33,9 @@ public class CustomerHistory extends BaseModel {
 
   private String status;
 
+  @Column(name = "created_by")
+  private String createdBy;
+
   public String getId() {
     return id;
   }
@@ -72,4 +75,13 @@ public class CustomerHistory extends BaseModel {
   public void setStatus(String status) {
     this.status = status;
   }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
 }
