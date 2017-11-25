@@ -9,11 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -50,9 +48,6 @@ public class Transaction extends BaseModel {
 
   @Column(name = "amount")
   private Double amount;
-  
-  @Transient
-  private TransactionDetail transactionDetail;
 
   public Transaction() {
     super();
@@ -112,13 +107,5 @@ public class Transaction extends BaseModel {
 
   public void setAmount(Double amount) {
     this.amount = amount;
-  }
-
-  public TransactionDetail getTransactionDetail() {
-    return transactionDetail;
-  }
-
-  public void setTransactionDetail(TransactionDetail transactionDetail) {
-    this.transactionDetail = transactionDetail;
   }
 }

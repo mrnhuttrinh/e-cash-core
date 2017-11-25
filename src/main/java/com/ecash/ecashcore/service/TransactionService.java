@@ -39,6 +39,7 @@ import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.ITransactionRequestVO;
 import com.ecash.ecashcore.vo.RefundRequestVO;
 import com.ecash.ecashcore.vo.TargetAccountVO;
+import com.ecash.ecashcore.vo.TransactionResponseVO;
 
 @Service
 @Transactional
@@ -65,12 +66,15 @@ public class TransactionService {
   @Autowired
   MerchantTerminalRepository merchantTerminalRepository;
 
-  public Transaction chargeRequest(ChargeRequestVO chargeRequest) {
+  public TransactionResponseVO chargeRequest(ChargeRequestVO chargeRequest) {
 
+    // validate
     validateTransactionRequest(chargeRequest);
 
+    // get account
     Account account = identifyValidAccount(chargeRequest.getCard().getNumber(), chargeRequest.getTargetAccount());
 
+    // calculate
     double remainAmount = account.getCurrentBalance() - chargeRequest.getAmount();
     if (remainAmount < 0) {
       throw new ValidationException("Account don't have enough money.");
@@ -81,9 +85,11 @@ public class TransactionService {
 
     Date transactionTime = Calendar.getInstance().getTime();
 
+    // save history
     BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
     balanceHistoryRepository.save(balanceHistory);
 
+    // save transaction
     TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.EXPENSE.getName());
     Transaction transaction = new Transaction(account, transactionType, transactionTime, chargeRequest.getAmount());
     transactionRepository.save(transaction);
@@ -92,13 +98,15 @@ public class TransactionService {
     MerchantTerminal merchantTerminal = identifyValidMerchantTerminal(
         extendedInformation.getAdditionalTerminalInfo().getTerminalId());
 
+    // save detail
     TransactionDetail transactionDetail = new TransactionDetail(transaction,
         extendedInformation.getTransactionDetails(), merchantTerminal.getMerchant());
     transactionDetailRepository.save(transactionDetail);
-    return transaction;
+
+    return new TransactionResponseVO(transaction.getId(), account.getAccountName(), transactionTime);
   }
 
-  public Transaction depositRequest(DepositRequestVO depositRequest) {
+  public TransactionResponseVO depositRequest(DepositRequestVO depositRequest) {
 
     // Validate require information
     validateTransactionRequest(depositRequest);
@@ -141,10 +149,10 @@ public class TransactionService {
         extendedInformation.getTransactionDetails(), merchantTerminal.getMerchant());
     transactionDetailRepository.save(transactionDetail);
 
-    return transaction;
+    return new TransactionResponseVO(transaction.getId(), account.getAccountName(), transactionTime);
   }
 
-  public Transaction refundRequest(RefundRequestVO refundRequest) {
+  public TransactionResponseVO refundRequest(RefundRequestVO refundRequest) {
 
     // Validate transactionId
     String transactionId = refundRequest.getTransactionId();
@@ -153,6 +161,11 @@ public class TransactionService {
     }
 
     final Transaction transaction = identifyValidTransaction(transactionId);
+
+    List<Transaction> transactions = transactionRepository.findByRelatedTransactionId(transactionId);
+    if (!transactions.isEmpty()) {
+      throw new ValidationException("Transaction has been refund.");
+    }
 
     // Can not support refund transaction
     if (transaction.getTransactionType().getTypeCode().equals(TransactionTypeEnum.REFUND.getName())) {
@@ -176,12 +189,17 @@ public class TransactionService {
     transactionRepository.save(refundTransaction);
 
     // Record the transaction detail
-    TransactionDetail transactionDetail = transaction.getTransactionDetail();
+    TransactionDetail transactionDetail = transactionDetailRepository.findByTransactionId(transaction.getId());
+    if (transactionDetail == null) {
+      throw new EcashException("Error when get transaction detail.");
+    }
+
     final TransactionDetail refundTransactionDetail = new TransactionDetail(refundTransaction, "Terminal canceled",
         transactionDetail.getMerchant());
     transactionDetailRepository.save(refundTransactionDetail);
 
-    return refundTransaction;
+    return new TransactionResponseVO(refundTransaction.getId(), transaction.getaccount().getAccountName(),
+        transactionTime);
   }
 
   private Transaction identifyValidTransaction(String transactionId) {
@@ -218,6 +236,12 @@ public class TransactionService {
     balanceHistoryRepository.save(balanceHistory);
   }
 
+  private void validateNegativeAmount(double amount) {
+    if (amount <= 0) {
+      throw new ValidationException("Amount must be greater than 0.");
+    }
+  }
+
   private boolean isOverflowBalance(double balance, double amount) {
     if (balance > 0) {
       return amount > (Double.MAX_VALUE - balance);
@@ -231,6 +255,8 @@ public class TransactionService {
         || transactionRequest.getExtendedInformation() == null) {
       throw new InvalidInputException("Required information is missing");
     }
+
+    validateNegativeAmount(transactionRequest.getAmount());
 
     ExtendedInformationVO extendedInformation = transactionRequest.getExtendedInformation();
     if (extendedInformation.getAdditionalTerminalInfo() == null) {
@@ -249,7 +275,7 @@ public class TransactionService {
     }
   }
 
-  private Account identifyValidAccount(String cardNumber, TargetAccountVO targetAccountVO) {
+  private Account identifyValidAccount(String cardNumber, TargetAccountVO targetAccount) {
 
     // check validate card
     Optional<Card> cardOptional = Optional.ofNullable(cardRepository.findByCardCode(cardNumber));
@@ -263,11 +289,11 @@ public class TransactionService {
 
     // get account
     String accountType;
-    if (targetAccountVO == null || targetAccountVO.getType() == null
-        || "".equalsIgnoreCase(targetAccountVO.getType().trim())) {
+    if (targetAccount == null || targetAccount.getType() == null
+        || "".equalsIgnoreCase(targetAccount.getType().trim())) {
       accountType = AccountTypeEnum.DEFAULT.getValue();
     } else {
-      accountType = targetAccountVO.getType().toUpperCase();
+      accountType = targetAccount.getType().toUpperCase();
     }
     List<Account> accounts = accountRepository.findByCardIdAndAccountType(card.getCardNumber(), accountType);
 
