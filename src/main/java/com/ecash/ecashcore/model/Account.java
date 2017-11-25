@@ -18,8 +18,14 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "account")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class, 
+    property = "id")
 public class Account extends BaseModel {
 
   @Id
@@ -58,9 +64,6 @@ public class Account extends BaseModel {
 
   @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
   private List<AccountHistory> accountHistories;
-
-  // @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
-  // private List<AccountCard> accountCards;
 
   @ManyToMany(fetch = FetchType.LAZY, mappedBy = "accounts")
   private List<Card> cards;
@@ -147,21 +150,6 @@ public class Account extends BaseModel {
   public void setStatus(String status) {
     this.status = status;
   }
-
-  // public List<AccountCard> getAccountCards() {
-  // return accountCards;
-  // }
-  //
-  // public void setAccountCards(List<AccountCard> accountCards) {
-  // this.accountCards = accountCards;
-  // }
-  //
-  // @JsonBackReference
-  // public List<Card> getCards() {
-  // List<Card> cards = new LinkedList<>();
-  // accountCards.stream().forEach(c -> cards.add(c.getCard()));
-  // return cards;
-  // }
 
   public List<AccountHistory> getAccountHistories() {
     return accountHistories;

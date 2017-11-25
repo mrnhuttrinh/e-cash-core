@@ -18,8 +18,14 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "customer")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class, 
+    property = "id")
 public class Customer extends BaseModel {
 
   @Id

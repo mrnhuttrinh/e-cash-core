@@ -19,8 +19,14 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "card")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class, 
+    property = "cardNumber")
 public class Card extends BaseModel {
 
   @Id
@@ -47,10 +53,7 @@ public class Card extends BaseModel {
   @JoinColumn(name = "type_code")
   private CardType cardType;
 
-  // @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
-  // private List<AccountCard> accountCards;
-
-  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
   @JoinTable(name = "account_card", joinColumns = @JoinColumn(name = "card_id", referencedColumnName = "card_number"), inverseJoinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"))
   private List<Account> accounts;
 
@@ -101,19 +104,4 @@ public class Card extends BaseModel {
   public void setExpiryDate(Date expiryDate) {
     this.expiryDate = expiryDate;
   }
-
-  // public List<AccountCard> getAccountCards() {
-  // return accountCards;
-  // }
-  //
-  // public void setAccountCards(List<AccountCard> accountCards) {
-  // this.accountCards = accountCards;
-  // }
-  //
-  // @JsonBackReference
-  // public List<Account> getAccounts() {
-  // List<Account> accounts = new LinkedList<>();
-  // accountCards.stream().forEach(c -> accounts.add(c.getAccount()));
-  // return accounts;
-  // }
 }

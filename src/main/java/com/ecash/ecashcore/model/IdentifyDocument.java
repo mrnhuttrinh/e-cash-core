@@ -16,8 +16,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 @Entity
 @Table(name = "identify_document")
 public class IdentifyDocument extends BaseModel {
@@ -43,7 +41,6 @@ public class IdentifyDocument extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
-  @JsonManagedReference
   private IdentifyDocumentType identifyDocumentType;
 
   @ManyToMany(fetch = FetchType.LAZY)

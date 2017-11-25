@@ -11,8 +11,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 @Entity
 @Table(name = "customer_history")
 public class CustomerHistory extends BaseModel {
@@ -28,12 +26,10 @@ public class CustomerHistory extends BaseModel {
   private String status;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JsonManagedReference
   @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JsonManagedReference
   @JoinColumn(name = "history_type", nullable = false)
   private HistoryType type;
 

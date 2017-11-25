@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.ecash.ecashcore.model.AccountType;
-@RestResource(exported = false)
 public interface AccountTypeRepository extends JpaRepository<AccountType, String> {
 
   @Override
