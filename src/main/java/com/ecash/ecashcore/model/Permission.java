@@ -28,6 +28,10 @@ public class Permission extends BaseModel {
   @ManyToMany(mappedBy = "permissions")
   private List<Role> roles = new ArrayList<>();
 
+  public Permission() {
+    super();
+  }
+
   public String getId() {
     return id;
   }
