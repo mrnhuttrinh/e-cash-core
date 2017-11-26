@@ -72,7 +72,7 @@ public class TransactionService {
     validateTransactionRequest(chargeRequest);
 
     // get account
-    Account account = identifyValidAccount(chargeRequest.getCard().getNumber(), chargeRequest.getExtendedInformation().getTargetAccount());
+    Account account = identifyValidAccount(chargeRequest.getCard().getNumber(), chargeRequest.getTargetAccount());
 
     // calculate
     double remainAmount = account.getCurrentBalance() - chargeRequest.getAmount();
@@ -164,7 +164,7 @@ public class TransactionService {
 
     List<Transaction> transactions = transactionRepository.findByRelatedTransactionId(transactionId);
     if (!transactions.isEmpty()) {
-      throw new ValidationException("Transaction has been refund.");
+      throw new ValidationException("Transaction had already been refunded.");
     }
 
     // Can not support refund transaction
