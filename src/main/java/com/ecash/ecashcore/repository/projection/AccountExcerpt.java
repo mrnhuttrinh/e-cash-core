@@ -7,6 +7,7 @@ import org.springframework.data.rest.core.config.Projection;
 
 import com.ecash.ecashcore.model.Account;
 import com.ecash.ecashcore.model.AccountType;
+import com.ecash.ecashcore.model.CurrencyCode;
 
 @Projection(name = "custom", types = Account.class)
 public interface AccountExcerpt {
@@ -24,4 +25,12 @@ public interface AccountExcerpt {
 
   @Value("#{target.accountType}")
   AccountType getAccountType();
+  
+  public CurrencyCode getCurrencyCode();
+  
+  @Value("#{target.customer.firstName}")
+  public String getCustomerFirstName();
+  
+  @Value("#{target.customer.lastName}")
+  public String getCustomerLastName();
 }
