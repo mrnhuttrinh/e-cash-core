@@ -12,8 +12,4 @@ public interface ITransactionRequestVO {
 	ExtendedInformationVO getExtendedInformation();
 
 	void setExtendedInformation(ExtendedInformationVO extendedInformation);
-
-	TargetAccountVO getTargetAccount();
-
-	void setTargetAccount(TargetAccountVO targetAccount);
 }

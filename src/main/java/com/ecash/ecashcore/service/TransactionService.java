@@ -72,7 +72,7 @@ public class TransactionService {
     validateTransactionRequest(chargeRequest);
 
     // get account
-    Account account = identifyValidAccount(chargeRequest.getCard().getNumber(), chargeRequest.getTargetAccount());
+    Account account = identifyValidAccount(chargeRequest.getCard().getNumber(), chargeRequest.getExtendedInformation().getTargetAccount());
 
     // calculate
     double remainAmount = account.getCurrentBalance() - chargeRequest.getAmount();
@@ -298,7 +298,7 @@ public class TransactionService {
     List<Account> accounts = accountRepository.findByCardIdAndAccountType(card.getCardNumber(), accountType);
 
     if (accounts.size() != 1) {
-      throw new EcashException("Error when get account.");
+      throw new ValidationException("Account not found.");
     }
 
     Account account = accounts.get(0);
