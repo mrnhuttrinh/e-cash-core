@@ -14,6 +14,21 @@ public abstract class Type extends BaseModel {
   @Column(name = "description", nullable = true)
   protected String description;
 
+  public Type() {
+    super();
+  }
+
+  public Type(String typeCode) {
+    super();
+    this.typeCode = typeCode;
+  }
+
+  public Type(String typeCode, String description) {
+    super();
+    this.typeCode = typeCode;
+    this.description = description;
+  }
+
   public String getTypeCode() {
     return typeCode;
   }

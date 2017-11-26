@@ -199,7 +199,7 @@ public class TransactionService {
     transactionDetailRepository.save(refundTransactionDetail);
 
     return new TransactionResponseVO(refundTransaction.getId(), transaction.getaccount().getAccountName(),
-        transactionTime);
+        transactionTime, transaction.getId());
   }
 
   private Transaction identifyValidTransaction(String transactionId) {

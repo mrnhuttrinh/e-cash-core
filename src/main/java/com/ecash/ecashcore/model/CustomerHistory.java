@@ -20,14 +20,6 @@ public class CustomerHistory extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "customer_id", nullable = false)
-  private Customer customer;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "history_type", nullable = false)
-  private HistoryType type;
-
   @Column(name = "history_details", nullable = true)
   private String details;
 
@@ -35,6 +27,14 @@ public class CustomerHistory extends BaseModel {
 
   @Column(name = "created_by")
   private String createdBy;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "customer_id", nullable = false)
+  private Customer customer;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "history_type", nullable = false)
+  private HistoryType type;
 
   public String getId() {
     return id;

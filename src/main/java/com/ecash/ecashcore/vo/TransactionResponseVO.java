@@ -6,13 +6,20 @@ public class TransactionResponseVO {
   private String id;
   private String account;
   private String relatedTransaction;
-  private String transactionType;
   private Date date;
 
   public TransactionResponseVO(String id, String account, Date date) {
     super();
     this.id = id;
     this.account = account;
+    this.date = date;
+  }
+
+  public TransactionResponseVO(String id, String account, Date date, String relatedTransaction) {
+    super();
+    this.id = id;
+    this.account = account;
+    this.relatedTransaction = relatedTransaction;
     this.date = date;
   }
 
@@ -38,14 +45,6 @@ public class TransactionResponseVO {
 
   public void setRelatedTransaction(String relatedTransaction) {
     this.relatedTransaction = relatedTransaction;
-  }
-
-  public String getTransactionType() {
-    return transactionType;
-  }
-
-  public void setTransactionType(String transactionType) {
-    this.transactionType = transactionType;
   }
 
   public Date getDate() {
