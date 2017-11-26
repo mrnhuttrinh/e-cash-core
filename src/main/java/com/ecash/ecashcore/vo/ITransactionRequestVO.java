@@ -1,15 +1,25 @@
 package com.ecash.ecashcore.vo;
 
 public interface ITransactionRequestVO {
-	CardInformationVO getCard();
+  default CardInformationVO getCard() {
+    return null;
+  }
 
-	void setCard(CardInformationVO card);
+  void setCard(CardInformationVO card);
 
-	Double getAmount();
+  default Double getAmount() {
+    return null;
+  }
 
-	void setAmount(Double amount);
+  void setAmount(Double amount);
 
-	ExtendedInformationVO getExtendedInformation();
+  default ExtendedInformationVO getExtendedInformation() {
+    return null;
+  }
 
-	void setExtendedInformation(ExtendedInformationVO extendedInformation);
+  void setExtendedInformation(ExtendedInformationVO extendedInformation);
+
+  default TargetAccountVO getTargetAccount() {
+    return null;
+  }
 }

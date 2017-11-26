@@ -1,6 +1,6 @@
 package com.ecash.ecashcore.vo;
 
-public class RefundRequestVO {
+public class RefundRequestVO implements ITransactionRequestVO {
 
   private String transactionId;
 
@@ -20,5 +20,17 @@ public class RefundRequestVO {
 
   public void setExtendedInformation(ExtendedInformationVO extendedInformation) {
     this.extendedInformation = extendedInformation;
+  }
+
+  @Override
+  public void setCard(CardInformationVO card) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void setAmount(Double amount) {
+    // TODO Auto-generated method stub
+    
   }
 }
