@@ -15,10 +15,14 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "user_account")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class, 
+    property = "id")
 public class User extends BaseModel {
 
   @Id
@@ -45,7 +49,6 @@ public class User extends BaseModel {
   @Column(name = "is_2fa")
   private boolean isUsing2FA;
 
-  @JsonManagedReference
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private List<Role> roles;
