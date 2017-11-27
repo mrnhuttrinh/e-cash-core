@@ -16,7 +16,9 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "user_account")
@@ -42,6 +44,7 @@ public class User extends BaseModel {
   private String email;
 
   @Column(length = 60)
+  @JsonProperty(access = Access.WRITE_ONLY)
   private String password;
 
   private boolean enabled;
