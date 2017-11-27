@@ -52,7 +52,7 @@ public class Customer extends BaseModel {
   private String email;
 
   @Column(name = "date_of_birth")
-  @Temporal(TemporalType.DATE)
+  @Temporal(TemporalType.TIMESTAMP)
   private Date dateOfBirth;
 
   @Column(name = "gender")
