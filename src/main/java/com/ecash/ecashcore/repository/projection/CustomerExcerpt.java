@@ -12,58 +12,52 @@ import com.ecash.ecashcore.model.CustomerHistory;
 import com.ecash.ecashcore.model.CustomerType;
 import com.ecash.ecashcore.model.IdentifyDocument;
 import com.ecash.ecashcore.model.Organization;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Projection(name = "custom", types = Customer.class)
 public interface CustomerExcerpt {
-  public String getId();
+  String getId();
 
-  public CustomerType getCustomerType();
+  CustomerType getCustomerType();
 
-  public String getScmsMemberCode();
+  String getScmsMemberCode();
 
-  public String getFirstName();
+  String getFirstName();
 
-  public String getLastName();
+  String getLastName();
 
-  public String getPhone1();
+  String getPhone1();
 
-  public String getPhone2();
+  String getPhone2();
 
-  public String getEmail();
+  String getEmail();
 
-  public Organization getOrganization();
+  Organization getOrganization();
 
-  public Integer getGender();
+  Integer getGender();
 
-  public Date getDateOfBirth();
+  Date getDateOfBirth();
 
+  Date getDateBecameCustomer();
 
-  public Date getDateBecameCustomer();
- 
-  public String getStatus();
+  String getStatus();
 
+  String getCountryCode();
 
-  public String getCountryCode();
+  String getOccupation();
 
+  String getTitle();
 
-  public String getOccupation();
+  String getPosition();
 
+  @JsonProperty(access = Access.WRITE_ONLY)
+  List<Account> getAccounts();
 
-  public String getTitle();
+  List<Address> getAddresses();
 
+  List<IdentifyDocument> getIdentifyDocuments();
 
-  public String getPosition();
+  List<CustomerHistory> getCustomerHistory();
 
-
-  public List<Account> getAccounts();
-
-
-  public List<Address> getAddresses();
-
-
-  public List<IdentifyDocument> getIdentifyDocuments();
-
-
-  public List<CustomerHistory> getCustomerHistory();
-  
 }

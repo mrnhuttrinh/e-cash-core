@@ -1,5 +1,11 @@
 package com.ecash.ecashcore.repository;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
@@ -9,6 +15,7 @@ import org.springframework.data.querydsl.binding.SingleValueBinding;
 import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.QCustomer;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.DateTimePath;
 import com.querydsl.core.types.dsl.StringPath;
 
 public interface CustomerRepository
@@ -23,13 +30,15 @@ public interface CustomerRepository
       }
     });
 
-    // bindings.bind(String.class).all(new MultiValueBinding<StringPath, String>() {
-    // @Override
-    // public Predicate bind(StringPath path, Collection<? extends String> values) {
-    // BooleanBuilder predicate = new BooleanBuilder();
-    // values.forEach(value -> predicate.or(path.containsIgnoreCase(value)));
-    // return predicate;
-    // }
-    // });
+    bindings.bind(Date.class).all((final DateTimePath<Date> path, final Collection<? extends Date> values) -> {
+      final List<? extends Date> dates = new ArrayList<>(values);
+      Collections.sort(dates);
+      if (dates.size() == 2) {
+        return path.between(dates.get(0), dates.get(1));
+      }
+      return path.eq(dates.get(0));
+      // throw new IllegalArgumentException("2 date params(from & to) expected for:" +
+      // path + " found:" + values);
+    });
   }
 }
