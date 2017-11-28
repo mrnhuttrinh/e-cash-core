@@ -38,6 +38,10 @@ public class UserService {
   public User getByUsername(String username) {
     return userRepository.findByUsername(username);
   }
+  
+  public User save(User user) {
+    return userRepository.save(user);
+  }
 
 //  public User addNewUser(String email) {
 //

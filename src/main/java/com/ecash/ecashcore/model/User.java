@@ -1,5 +1,6 @@
 package com.ecash.ecashcore.model;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -51,6 +52,9 @@ public class User extends BaseModel {
 
   @Column(name = "is_2fa")
   private boolean isUsing2FA;
+  
+  @Column(name = "last_login")
+  private Date lastLogin;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
@@ -153,5 +157,13 @@ public class User extends BaseModel {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((username == null) ? 0 : username.hashCode());
     return result;
+  }
+
+  public Date getLastLogin() {
+    return lastLogin;
+  }
+
+  public void setLastLogin(Date lastLogin) {
+    this.lastLogin = lastLogin;
   }
 }
