@@ -1,5 +1,6 @@
 package com.ecash.ecashcore.repository.projection;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,4 +30,7 @@ public interface UserExcerpt {
   
   @Value("#{target.roles}")
   List<Role> getRoles();
+  
+  Date getLastLogin();
+
 }
