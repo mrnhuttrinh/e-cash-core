@@ -1,10 +1,15 @@
 package com.ecash.ecashcore.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -26,6 +31,10 @@ public class Plan extends BaseModel {
   private Integer limit;
 
   private String status;
+  
+  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+  @JoinTable(name = "account_plan", joinColumns = @JoinColumn(name = "plan_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"))
+  private List<Account> accounts;
 
   public String getId() {
     return id;

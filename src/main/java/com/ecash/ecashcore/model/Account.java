@@ -67,6 +67,9 @@ public class Account extends BaseModel {
 
   @ManyToMany(fetch = FetchType.LAZY, mappedBy = "accounts")
   private List<Card> cards;
+  
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "accounts")
+  private List<Plan> plans;
 
   public Account() {
     super();
@@ -166,4 +169,13 @@ public class Account extends BaseModel {
   public void setCards(List<Card> cards) {
     this.cards = cards;
   }
+
+  public List<Plan> getPlans() {
+    return plans;
+  }
+
+  public void setPlans(List<Plan> plans) {
+    this.plans = plans;
+  }
+  
 }

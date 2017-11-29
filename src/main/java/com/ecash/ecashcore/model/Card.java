@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -49,8 +49,8 @@ public class Card extends BaseModel {
   @Temporal(TemporalType.TIMESTAMP)
   private Date expiryDate;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code")
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "type_code", nullable = false)
   private CardType cardType;
 
   @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
