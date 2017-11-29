@@ -1,5 +1,7 @@
 package com.ecash.ecashcore.repository.projection;
 
+import java.util.Date;
+
 import org.springframework.data.rest.core.config.Projection;
 
 import com.ecash.ecashcore.model.HistoryType;
@@ -15,4 +17,8 @@ public interface UserHistoryExcerpt {
   HistoryType getType();
   
   User getUser();
+  
+  Date getCreatedAt();
+  
+  Date getUpdatedAt();
 }
