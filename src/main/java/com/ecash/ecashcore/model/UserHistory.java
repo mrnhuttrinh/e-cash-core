@@ -15,9 +15,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "user_history")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class, 
-    property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class UserHistory extends BaseModel {
   @Id
   @GeneratedValue(generator = "system-uuid")
@@ -30,7 +28,7 @@ public class UserHistory extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
-  private User userId;
+  private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "history_type", nullable = false)
@@ -52,19 +50,19 @@ public class UserHistory extends BaseModel {
     this.createdBy = createdBy;
   }
 
-  public User getUserId() {
-    return userId;
-  }
-
-  public void setUserId(User userId) {
-    this.userId = userId;
-  }
-
   public HistoryType getType() {
     return type;
   }
 
   public void setType(HistoryType type) {
     this.type = type;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 }

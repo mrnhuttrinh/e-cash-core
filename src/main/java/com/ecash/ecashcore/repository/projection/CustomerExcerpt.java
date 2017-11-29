@@ -59,5 +59,7 @@ public interface CustomerExcerpt {
   List<IdentifyDocument> getIdentifyDocuments();
 
   List<CustomerHistory> getCustomerHistory();
+  
+  Date getLastLogin();
 
 }
