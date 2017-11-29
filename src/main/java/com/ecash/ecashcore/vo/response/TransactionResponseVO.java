@@ -1,4 +1,4 @@
-package com.ecash.ecashcore.vo;
+package com.ecash.ecashcore.vo.response;
 
 import java.util.Date;
 

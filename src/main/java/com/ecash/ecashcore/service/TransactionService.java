@@ -33,13 +33,13 @@ import com.ecash.ecashcore.repository.TransactionDetailRepository;
 import com.ecash.ecashcore.repository.TransactionRepository;
 import com.ecash.ecashcore.repository.TransactionTypeRepository;
 import com.ecash.ecashcore.util.StringUtils;
-import com.ecash.ecashcore.vo.ChargeRequestVO;
-import com.ecash.ecashcore.vo.DepositRequestVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
-import com.ecash.ecashcore.vo.ITransactionRequestVO;
-import com.ecash.ecashcore.vo.RefundRequestVO;
 import com.ecash.ecashcore.vo.TargetAccountVO;
-import com.ecash.ecashcore.vo.TransactionResponseVO;
+import com.ecash.ecashcore.vo.request.ChargeRequestVO;
+import com.ecash.ecashcore.vo.request.DepositRequestVO;
+import com.ecash.ecashcore.vo.request.ITransactionRequestVO;
+import com.ecash.ecashcore.vo.request.RefundRequestVO;
+import com.ecash.ecashcore.vo.response.TransactionResponseVO;
 
 @Service
 @Transactional
@@ -65,6 +65,12 @@ public class TransactionService {
 
   @Autowired
   MerchantTerminalRepository merchantTerminalRepository;
+
+  @Autowired
+  CardService cardService;
+
+  @Autowired
+  MerchantTerminalService merchantTerminalService;
 
   public TransactionResponseVO chargeRequest(ChargeRequestVO chargeRequest) {
 
@@ -95,8 +101,8 @@ public class TransactionService {
     transactionRepository.save(transaction);
 
     ExtendedInformationVO extendedInformation = chargeRequest.getExtendedInformation();
-    MerchantTerminal merchantTerminal = identifyValidMerchantTerminal(
-        extendedInformation.getAdditionalTerminalInfo().getTerminalId());
+    MerchantTerminal merchantTerminal = merchantTerminalService
+        .identifyValidMerchantTerminal(extendedInformation.getAdditionalTerminalInfo().getTerminalId());
 
     // save detail
     TransactionDetail transactionDetail = new TransactionDetail(transaction,
@@ -141,8 +147,8 @@ public class TransactionService {
 
     // Identify the merchant terminal
     ExtendedInformationVO extendedInformation = depositRequest.getExtendedInformation();
-    MerchantTerminal merchantTerminal = identifyValidMerchantTerminal(
-        extendedInformation.getAdditionalTerminalInfo().getTerminalId());
+    MerchantTerminal merchantTerminal = merchantTerminalService
+        .identifyValidMerchantTerminal(extendedInformation.getAdditionalTerminalInfo().getTerminalId());
 
     // Record the transaction detail
     TransactionDetail transactionDetail = new TransactionDetail(transaction,
@@ -276,16 +282,8 @@ public class TransactionService {
   }
 
   private Account identifyValidAccount(String cardNumber, TargetAccountVO targetAccount) {
-
     // check validate card
-    Optional<Card> cardOptional = Optional.ofNullable(cardRepository.findByCardCode(cardNumber));
-    if (!cardOptional.isPresent()) {
-      throw new ValidationException("Card number is not valid or not exist.");
-    } else if (!cardOptional.get().getStatus().equals(StatusEnum.ACTIVE.getValue())) {
-      throw new ValidationException("Card is inactive.");
-    }
-
-    Card card = cardOptional.get();
+    Card card = cardService.identifyValidCard(cardNumber);
 
     // get account
     String accountType;
@@ -307,15 +305,6 @@ public class TransactionService {
     }
 
     return account;
-  }
-
-  private MerchantTerminal identifyValidMerchantTerminal(String terminalId) {
-    Optional<MerchantTerminal> merchantTerminal = Optional.ofNullable(merchantTerminalRepository.findOne(terminalId));
-    if (!merchantTerminal.isPresent()) {
-      throw new ValidationException("Terminal id is not valid or not exist.");
-    }
-
-    return merchantTerminal.get();
   }
 
 }
