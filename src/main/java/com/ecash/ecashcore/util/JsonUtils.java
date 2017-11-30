@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class JsonUtil {
+public class JsonUtils {
 
   public static String objectToJsonString(Object obj) {
     ObjectWriter ow = new ObjectMapper().writer();

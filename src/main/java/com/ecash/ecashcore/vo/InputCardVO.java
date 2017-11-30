@@ -9,7 +9,7 @@ import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.IdentifyDocument;
 import com.ecash.ecashcore.model.Organization;
 import com.ecash.ecashcore.model.SCMSSync;
-import com.ecash.ecashcore.util.JsonUtil;
+import com.ecash.ecashcore.util.JsonUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class InputCardVO {
@@ -308,7 +308,7 @@ public class InputCardVO {
     scmsSync.setSyncCode(syncCode);
     scmsSync.setSyncTime(syncTime);
     scmsSync.setFinishFlag(finishFlag);
-    scmsSync.setSyncDetails(JsonUtil.objectToJsonString(this));
+    scmsSync.setSyncDetails(JsonUtils.objectToJsonString(this));
     return scmsSync;
   }
 

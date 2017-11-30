@@ -1,4 +1,8 @@
-package com.ecash.ecashcore.vo;
+package com.ecash.ecashcore.vo.request;
+
+import com.ecash.ecashcore.vo.CardInformationVO;
+import com.ecash.ecashcore.vo.ExtendedInformationVO;
+import com.ecash.ecashcore.vo.TargetAccountVO;
 
 public class ChargeRequestVO implements ITransactionRequestVO {
   private CardInformationVO card;
