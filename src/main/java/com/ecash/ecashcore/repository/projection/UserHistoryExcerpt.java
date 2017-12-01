@@ -21,4 +21,6 @@ public interface UserHistoryExcerpt {
   Date getCreatedAt();
   
   Date getUpdatedAt();
+  
+  String getDetails();
 }

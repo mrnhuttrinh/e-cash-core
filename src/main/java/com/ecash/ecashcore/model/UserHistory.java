@@ -1,5 +1,6 @@
 package com.ecash.ecashcore.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -33,6 +34,9 @@ public class UserHistory extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "history_type", nullable = false)
   private HistoryType type;
+  
+  @Column(name = "history_details", nullable = true)
+  private String details;
 
   public String getId() {
     return id;
@@ -64,5 +68,13 @@ public class UserHistory extends BaseModel {
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+  public String getDetails() {
+    return details;
+  }
+
+  public void setDetails(String details) {
+    this.details = details;
   }
 }
