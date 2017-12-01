@@ -1,26 +1,11 @@
 package com.ecash.ecashcore.model;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "card")
@@ -53,9 +38,9 @@ public class Card extends BaseModel {
   @JoinColumn(name = "type_code")
   private CardType cardType;
 
-  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-  @JoinTable(name = "account_card", joinColumns = @JoinColumn(name = "card_id", referencedColumnName = "card_number"), inverseJoinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"))
-  private List<Account> accounts;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "customer_id", nullable = false)
+  private Customer customer;
 
   public String getCardNumber() {
     return cardNumber;
@@ -103,5 +88,13 @@ public class Card extends BaseModel {
 
   public void setExpiryDate(Date expiryDate) {
     this.expiryDate = expiryDate;
+  }
+
+  public Customer getCustomer() {
+    return customer;
+  }
+
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
   }
 }

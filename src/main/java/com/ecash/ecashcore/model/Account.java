@@ -1,25 +1,12 @@
 package com.ecash.ecashcore.model;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "account")
@@ -58,15 +45,16 @@ public class Account extends BaseModel {
   @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "plan_id", nullable = false)
+  private Plan plan;
+
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "currency_code", nullable = false)
   private CurrencyCode currencyCode;
 
   @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
   private List<AccountHistory> accountHistories;
-
-  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "accounts")
-  private List<Card> cards;
 
   public Account() {
     super();
@@ -159,11 +147,11 @@ public class Account extends BaseModel {
     this.accountHistories = accountHistories;
   }
 
-  public List<Card> getCards() {
-    return cards;
+  public Plan getPlan() {
+    return plan;
   }
 
-  public void setCards(List<Card> cards) {
-    this.cards = cards;
+  public void setPlan(Plan plan) {
+    this.plan = plan;
   }
 }

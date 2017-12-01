@@ -1,22 +1,11 @@
 package com.ecash.ecashcore.model;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "transaction")
@@ -31,6 +20,11 @@ public class Transaction extends BaseModel {
   @JoinColumn(name = "account_id")
   @JsonManagedReference
   private Account account;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "card_id")
+  @JsonManagedReference
+  private Card card;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JsonBackReference
@@ -69,10 +63,6 @@ public class Transaction extends BaseModel {
     this.id = id;
   }
 
-  public Account getaccount() {
-    return account;
-  }
-
   public void setAccount(Account account) {
     this.account = account;
   }
@@ -107,5 +97,17 @@ public class Transaction extends BaseModel {
 
   public void setAmount(Double amount) {
     this.amount = amount;
+  }
+
+  public Account getAccount() {
+    return account;
+  }
+
+  public Card getCard() {
+    return card;
+  }
+
+  public void setCard(Card card) {
+    this.card = card;
   }
 }

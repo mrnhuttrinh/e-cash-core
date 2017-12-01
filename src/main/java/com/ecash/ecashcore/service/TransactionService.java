@@ -1,16 +1,5 @@
 package com.ecash.ecashcore.service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.enums.TransactionTypeEnum;
@@ -21,6 +10,7 @@ import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.Account;
 import com.ecash.ecashcore.model.BalanceHistory;
 import com.ecash.ecashcore.model.Card;
+import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.MerchantTerminal;
 import com.ecash.ecashcore.model.Transaction;
 import com.ecash.ecashcore.model.TransactionDetail;
@@ -28,6 +18,7 @@ import com.ecash.ecashcore.model.TransactionType;
 import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.BalanceHistoryRepository;
 import com.ecash.ecashcore.repository.CardRepository;
+import com.ecash.ecashcore.repository.CustomerRepository;
 import com.ecash.ecashcore.repository.MerchantTerminalRepository;
 import com.ecash.ecashcore.repository.TransactionDetailRepository;
 import com.ecash.ecashcore.repository.TransactionRepository;
@@ -40,6 +31,17 @@ import com.ecash.ecashcore.vo.request.DepositRequestVO;
 import com.ecash.ecashcore.vo.request.ITransactionRequestVO;
 import com.ecash.ecashcore.vo.request.RefundRequestVO;
 import com.ecash.ecashcore.vo.response.TransactionResponseVO;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -47,6 +49,9 @@ public class TransactionService {
 
   @Autowired
   CardRepository cardRepository;
+
+  @Autowired
+  CustomerRepository customerRepository;
 
   @Autowired
   AccountRepository accountRepository;
@@ -183,11 +188,11 @@ public class TransactionService {
     // Check the origin transaction from request terminal
 
     // Refund account balance
-    refundAccountBalance(transaction.getaccount(), transaction, transactionTime);
+    refundAccountBalance(transaction.getAccount(), transaction, transactionTime);
 
     // Record the transaction
     TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.REFUND.getName());
-    final Transaction refundTransaction = new Transaction(transaction.getaccount(), transactionType, transactionTime,
+    final Transaction refundTransaction = new Transaction(transaction.getAccount(), transactionType, transactionTime,
         transaction.getAmount());
 
     // Record relate transaction
@@ -204,7 +209,7 @@ public class TransactionService {
         transactionDetail.getMerchant());
     transactionDetailRepository.save(refundTransactionDetail);
 
-    return new TransactionResponseVO(refundTransaction.getId(), transaction.getaccount().getAccountName(),
+    return new TransactionResponseVO(refundTransaction.getId(), transaction.getAccount().getAccountName(),
         transactionTime, transaction.getId());
   }
 
@@ -293,18 +298,31 @@ public class TransactionService {
     } else {
       accountType = targetAccount.getType().toUpperCase();
     }
-    List<Account> accounts = accountRepository.findByCardIdAndAccountType(card.getCardNumber(), accountType);
 
-    if (accounts.size() != 1) {
+    Customer customer = card.getCustomer();
+
+    if (customer == null) {
+      throw new ValidationException("Card is invalid because customer is undefined.");
+    }
+
+    List<Account> accounts = customer.getAccounts();
+    Iterator<Account> accountIterator = accounts.iterator();
+    Account account = null;
+    while (accountIterator.hasNext()) {
+      Account currentAccount = accountIterator.next();
+      if (currentAccount.getAccountType().getTypeCode().equalsIgnoreCase(accountType)) {
+        account = currentAccount;
+      }
+    }
+
+    if (account == null) {
       throw new ValidationException("Account not found.");
+    } else {
+      if (!account.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
+        throw new ValidationException("Account is inactive.");
+      } else {
+        return account;
+      }
     }
-
-    Account account = accounts.get(0);
-    if (!account.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
-      throw new ValidationException("Account is inactive.");
-    }
-
-    return account;
   }
-
 }

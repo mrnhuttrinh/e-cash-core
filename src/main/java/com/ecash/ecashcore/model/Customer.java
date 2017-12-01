@@ -1,25 +1,12 @@
 package com.ecash.ecashcore.model;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.hibernate.annotations.GenericGenerator;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "customer")
@@ -86,6 +73,9 @@ public class Customer extends BaseModel {
 
   @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
   private List<Account> accounts;
+
+  @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+  private List<Card> cards;
 
   @ManyToMany(fetch = FetchType.LAZY, mappedBy = "customers")
   private List<Address> addresses;
@@ -264,4 +254,11 @@ public class Customer extends BaseModel {
     this.customerHistory = customerHistory;
   }
 
+  public List<Card> getCards() {
+    return cards;
+  }
+
+  public void setCards(List<Card> cards) {
+    this.cards = cards;
+  }
 }
