@@ -56,7 +56,7 @@ public interface CustomerExcerpt {
 
   List<Address> getAddresses();
 
-  List<IdentifyDocument> getIdentifyDocuments();
+  List<IdentifyDocumentExcerpt> getIdentifyDocuments();
 
   List<CustomerHistory> getCustomerHistory();
 
