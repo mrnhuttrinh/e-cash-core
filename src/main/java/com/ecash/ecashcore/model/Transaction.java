@@ -46,6 +46,9 @@ public class Transaction extends BaseModel {
   @JsonManagedReference
   @JoinColumn(name = "type_code")
   private TransactionType transactionType;
+  
+  @OneToOne(fetch = FetchType.LAZY, mappedBy = "transactionDetailId.transaction")
+  TransactionDetail transactionDetail;
 
   public Transaction() {
     super();
@@ -113,5 +116,13 @@ public class Transaction extends BaseModel {
 
   public void setCard(Card card) {
     this.card = card;
+  }
+
+  public TransactionDetail getTransactionDetail() {
+    return transactionDetail;
+  }
+
+  public void setTransactionDetail(TransactionDetail transactionDetail) {
+    this.transactionDetail = transactionDetail;
   }
 }

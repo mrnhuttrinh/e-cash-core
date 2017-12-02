@@ -8,9 +8,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "card_type")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class, 
-    property = "typeCode")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "typeCode")
 public class CardType extends Type {
 
 }
