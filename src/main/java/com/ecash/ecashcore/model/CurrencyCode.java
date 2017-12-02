@@ -8,10 +8,14 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "currency_code")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "code")
 public class CurrencyCode extends BaseModel {
 
   @Id
@@ -22,7 +26,7 @@ public class CurrencyCode extends BaseModel {
   private String text;
 
   @OneToMany(mappedBy = "currencyCode")
-  @JsonBackReference
+  @JsonProperty(access = Access.WRITE_ONLY)
   private List<Account> account;
 
   public CurrencyCode() {

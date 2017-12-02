@@ -12,15 +12,16 @@ import com.ecash.ecashcore.model.UserHistory;
 public interface UserHistoryExcerpt {
   String getId();
 
-  User getCreatedBy();
-  
-  HistoryType getType();
-  
-  User getUser();
-  
-  Date getCreatedAt();
-  
-  Date getUpdatedAt();
-  
   String getDetails();
+
+  User getCreatedBy();
+
+  User getUser();
+
+  HistoryType getType();
+
+  Date getCreatedAt();
+
+  Date getUpdatedAt();
+
 }

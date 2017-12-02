@@ -63,11 +63,11 @@ public class Customer extends BaseModel {
   @Column(name = "position")
   private String position;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = false)
   private CustomerType customerType;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "organization_id", nullable = false)
   private Organization organization;
 

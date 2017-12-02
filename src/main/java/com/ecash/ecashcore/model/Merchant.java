@@ -10,8 +10,12 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "merchant")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Merchant extends BaseModel {
 
   @Id
@@ -25,11 +29,11 @@ public class Merchant extends BaseModel {
 
   private String email;
 
+  private String status;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address_id", nullable = true)
   private Address address;
-
-  private String status;
 
   public String getId() {
     return id;

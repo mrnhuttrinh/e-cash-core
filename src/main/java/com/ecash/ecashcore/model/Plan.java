@@ -10,8 +10,14 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "plan")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class, 
+    property = "id")
 public class Plan extends BaseModel {
 
   @Id
@@ -19,13 +25,13 @@ public class Plan extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_code", nullable = true)
-  private PlanType planType;
-
   private Integer limit;
 
   private String status;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "type_code", nullable = true)
+  private PlanType planType;
 
   public String getId() {
     return id;

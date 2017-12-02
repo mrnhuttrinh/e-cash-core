@@ -3,7 +3,6 @@ package com.ecash.ecashcore.repository.projection;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
 import com.ecash.ecashcore.model.Role;
@@ -22,15 +21,14 @@ public interface UserExcerpt {
 
   String getEmail();
 
-  String getPassword();
+//  String getPassword();
 
   boolean isEnabled();
 
   boolean isUsing2FA();
   
-  @Value("#{target.roles}")
-  List<Role> getRoles();
-  
   Date getLastLogin();
+  
+  List<Role> getRoles();
 
 }
