@@ -6,4 +6,7 @@ import com.ecash.ecashcore.model.AccountType;
 
 @Projection(name = "custom", types = AccountType.class)
 public interface AccountTypeExcerpt extends BaseExcerpt {
+  String getTypeCode();
+  
+  String getDescription();
 }
