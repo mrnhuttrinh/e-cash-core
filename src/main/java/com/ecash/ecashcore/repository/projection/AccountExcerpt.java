@@ -26,7 +26,7 @@ public interface AccountExcerpt extends BaseExcerpt {
 
   public String getStatus();
 
-  public AccountType getAccountType();
+  public AccountTypeExcerpt getAccountType();
 
   public Customer getCustomer();
 
