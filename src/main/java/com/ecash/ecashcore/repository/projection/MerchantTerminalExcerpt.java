@@ -8,7 +8,7 @@ import com.ecash.ecashcore.model.Merchant;
 import com.ecash.ecashcore.model.MerchantTerminal;
 
 @Projection(name = "custom", types = MerchantTerminal.class)
-public interface MerchantTerminalExcerpt {
+public interface MerchantTerminalExcerpt extends BaseExcerpt {
 
   public String getId();
 

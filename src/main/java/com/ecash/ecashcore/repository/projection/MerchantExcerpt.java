@@ -6,7 +6,7 @@ import com.ecash.ecashcore.model.Address;
 import com.ecash.ecashcore.model.Merchant;
 
 @Projection(name = "custom", types = Merchant.class)
-public interface MerchantExcerpt {
+public interface MerchantExcerpt extends BaseExcerpt {
 
   public String getId();
 

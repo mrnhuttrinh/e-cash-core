@@ -8,7 +8,7 @@ import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.Organization;
 
 @Projection(name = "custom", types = Organization.class)
-public interface OrganizationExcerpt {
+public interface OrganizationExcerpt extends BaseExcerpt {
   String getId();
   
   String getShortName();

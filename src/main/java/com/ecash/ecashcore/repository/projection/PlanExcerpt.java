@@ -6,7 +6,7 @@ import com.ecash.ecashcore.model.Plan;
 import com.ecash.ecashcore.model.PlanType;
 
 @Projection(name = "custom", types = Plan.class)
-public interface PlanExcerpt {
+public interface PlanExcerpt extends BaseExcerpt {
 
   public String getId();
 

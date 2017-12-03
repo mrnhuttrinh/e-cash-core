@@ -13,7 +13,7 @@ import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.Plan;
 
 @Projection(name = "custom", types = Account.class)
-public interface AccountExcerpt {
+public interface AccountExcerpt extends BaseExcerpt {
   public String getId();
 
   public String getAccountName();

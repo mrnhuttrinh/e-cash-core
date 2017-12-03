@@ -9,7 +9,7 @@ import com.ecash.ecashcore.model.Role;
 import com.ecash.ecashcore.model.User;
 
 @Projection(name = "custom", types = User.class)
-public interface UserExcerpt {
+public interface UserExcerpt extends BaseExcerpt {
 
   String getId();
 

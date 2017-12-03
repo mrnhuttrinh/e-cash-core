@@ -9,7 +9,7 @@ import com.ecash.ecashcore.model.AddressType;
 import com.ecash.ecashcore.model.Customer;
 
 @Projection(name = "custom", types = Address.class)
-public interface AddressExcerpt {
+public interface AddressExcerpt extends BaseExcerpt {
 
   public String getId();
 

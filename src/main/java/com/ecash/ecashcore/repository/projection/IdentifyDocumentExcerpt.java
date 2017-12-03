@@ -10,7 +10,7 @@ import com.ecash.ecashcore.model.IdentifyDocument;
 import com.ecash.ecashcore.model.IdentifyDocumentType;
 
 @Projection(name = "custom", types = IdentifyDocument.class)
-public interface IdentifyDocumentExcerpt {
+public interface IdentifyDocumentExcerpt extends BaseExcerpt {
   public String getId();
 
   public String getDescription();

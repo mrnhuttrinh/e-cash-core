@@ -7,7 +7,7 @@ import org.springframework.data.rest.core.config.Projection;
 import com.ecash.ecashcore.model.DiscountByTime;
 
 @Projection(name = "custom", types = DiscountByTime.class)
-public interface DiscountByTimeExcerpt {
+public interface DiscountByTimeExcerpt extends BaseExcerpt {
 
   public String getId();
 

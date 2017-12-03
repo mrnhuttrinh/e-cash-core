@@ -7,7 +7,7 @@ import com.ecash.ecashcore.model.Merchant;
 import com.ecash.ecashcore.model.MerchantDiscountByTime;
 
 @Projection(name = "custom", types = MerchantDiscountByTime.class)
-public interface MerchantDiscountByTimeExcerpt {
+public interface MerchantDiscountByTimeExcerpt extends BaseExcerpt {
   
   public String getId();
 

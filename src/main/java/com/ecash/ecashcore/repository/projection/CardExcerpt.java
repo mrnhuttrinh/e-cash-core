@@ -9,7 +9,7 @@ import com.ecash.ecashcore.model.CardType;
 import com.ecash.ecashcore.model.Customer;
 
 @Projection(name = "custom", types = Card.class)
-public interface CardExcerpt {
+public interface CardExcerpt extends BaseExcerpt {
 
   public String getCardNumber();
 

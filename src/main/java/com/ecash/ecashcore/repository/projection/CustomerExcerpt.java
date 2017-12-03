@@ -11,11 +11,10 @@ import com.ecash.ecashcore.model.Card;
 import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.CustomerHistory;
 import com.ecash.ecashcore.model.CustomerType;
-import com.ecash.ecashcore.model.IdentifyDocument;
 import com.ecash.ecashcore.model.Organization;
 
 @Projection(name = "custom", types = Customer.class)
-public interface CustomerExcerpt {
+public interface CustomerExcerpt extends BaseExcerpt {
   String getId();
 
   String getScmsMemberCode();

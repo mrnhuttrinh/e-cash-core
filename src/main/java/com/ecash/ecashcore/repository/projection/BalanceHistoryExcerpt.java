@@ -8,7 +8,7 @@ import com.ecash.ecashcore.model.Account;
 import com.ecash.ecashcore.model.BalanceHistory;
 
 @Projection(name = "custom", types = BalanceHistory.class)
-public interface BalanceHistoryExcerpt {
+public interface BalanceHistoryExcerpt extends BaseExcerpt {
 
   public String getId();
 

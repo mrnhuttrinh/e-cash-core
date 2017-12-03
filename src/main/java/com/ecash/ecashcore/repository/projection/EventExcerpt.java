@@ -9,7 +9,7 @@ import com.ecash.ecashcore.model.Event;
 import com.ecash.ecashcore.model.EventType;
 
 @Projection(name = "custom", types = Event.class)
-public interface EventExcerpt {
+public interface EventExcerpt extends BaseExcerpt {
 
   public String getId();
 

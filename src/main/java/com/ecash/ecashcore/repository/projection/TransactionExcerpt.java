@@ -11,7 +11,7 @@ import com.ecash.ecashcore.model.TransactionDetail;
 import com.ecash.ecashcore.model.TransactionType;
 
 @Projection(name = "custom", types = Transaction.class)
-public interface TransactionExcerpt {
+public interface TransactionExcerpt extends BaseExcerpt {
 
   public String getId();
 

@@ -7,7 +7,7 @@ import com.ecash.ecashcore.model.CardHistory;
 import com.ecash.ecashcore.model.HistoryType;
 
 @Projection(name = "custom", types = CardHistory.class)
-public interface CardHistoryExcerpt {
+public interface CardHistoryExcerpt extends BaseExcerpt {
 
   public String getId();
 

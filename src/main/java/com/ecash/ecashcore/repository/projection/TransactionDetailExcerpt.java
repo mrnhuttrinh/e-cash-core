@@ -8,7 +8,7 @@ import com.ecash.ecashcore.model.Transaction;
 import com.ecash.ecashcore.model.TransactionDetail;
 
 @Projection(name = "custom", types = TransactionDetail.class)
-public interface TransactionDetailExcerpt {
+public interface TransactionDetailExcerpt extends BaseExcerpt {
 
   @Value("#{target.transactionDetailId.transaction}")
   public Transaction getTransaction();
