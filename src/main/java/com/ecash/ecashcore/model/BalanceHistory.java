@@ -15,8 +15,12 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "balance_history")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BalanceHistory extends BaseModel {
 
   @Id
@@ -28,12 +32,12 @@ public class BalanceHistory extends BaseModel {
   @Temporal(TemporalType.TIMESTAMP)
   private Date date;
 
+  @Column(name = "balance")
+  private Double balance;
+
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id")
   private Account account;
-
-  @Column(name = "balance")
-  private Double balance;
 
   public BalanceHistory(Date date, Account account, Double balance) {
     super();

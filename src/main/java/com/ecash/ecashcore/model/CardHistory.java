@@ -12,13 +12,22 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "card_history")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class CardHistory extends BaseModel {
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
+
+  @Column(name = "history_details", nullable = true)
+  private String details;
+
+  private String status;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "card_number", nullable = false)
@@ -27,11 +36,6 @@ public class CardHistory extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "history_type", nullable = false)
   private HistoryType type;
-
-  @Column(name = "history_details", nullable = true)
-  private String details;
-
-  private String status;
 
   public CardHistory() {
     super();

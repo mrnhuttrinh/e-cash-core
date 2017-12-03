@@ -200,7 +200,7 @@ public class TransactionService {
     transactionRepository.save(refundTransaction);
 
     // Record the transaction detail
-    TransactionDetail transactionDetail = transactionDetailRepository.findByTransactionId(transaction.getId());
+    TransactionDetail transactionDetail = transaction.getTransactionDetail();
     if (transactionDetail == null) {
       throw new EcashException("Error when get transaction detail.");
     }

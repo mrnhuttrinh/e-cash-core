@@ -137,7 +137,7 @@ public class CardService {
   public Card identifyValidCard(String cardNumber) {
     // check validate card
     Card card = this.identifyCard(cardNumber);
-    if (card.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
+    if (!card.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
       throw new ValidationException("Card is inactive.");
     }
 

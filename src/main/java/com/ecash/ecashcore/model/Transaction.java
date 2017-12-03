@@ -1,7 +1,10 @@
 package com.ecash.ecashcore.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -9,12 +12,20 @@ import java.util.Date;
 
 @Entity
 @Table(name = "transaction")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Transaction extends BaseModel {
 
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
+
+  @Column(name = "date")
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date date;
+
+  @Column(name = "amount")
+  private Double amount;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id")
@@ -35,13 +46,9 @@ public class Transaction extends BaseModel {
   @JsonManagedReference
   @JoinColumn(name = "type_code")
   private TransactionType transactionType;
-
-  @Column(name = "date")
-  @Temporal(TemporalType.TIMESTAMP)
-  private Date date;
-
-  @Column(name = "amount")
-  private Double amount;
+  
+  @OneToOne(fetch = FetchType.LAZY, mappedBy = "transactionDetailId.transaction")
+  TransactionDetail transactionDetail;
 
   public Transaction() {
     super();
@@ -109,5 +116,13 @@ public class Transaction extends BaseModel {
 
   public void setCard(Card card) {
     this.card = card;
+  }
+
+  public TransactionDetail getTransactionDetail() {
+    return transactionDetail;
+  }
+
+  public void setTransactionDetail(TransactionDetail transactionDetail) {
+    this.transactionDetail = transactionDetail;
   }
 }

@@ -18,20 +18,19 @@ public class TransactionDetail extends BaseModel {
   @Column(name = "detail")
   private String detail;
 
+  @Column(name = "status")
+  private String status;
+
   // TODO: remove nullable = true
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merchant_id", nullable = true)
   private Merchant merchant;
 
-  @Column(name = "status")
-  private String status;
-
   public TransactionDetail() {
     super();
   }
 
-  public TransactionDetail(Transaction transaction, String detail,
-      Merchant merchant) {
+  public TransactionDetail(Transaction transaction, String detail, Merchant merchant) {
     super();
     this.transactionDetailId = new TransactionDetailId(transaction);
     this.detail = detail;

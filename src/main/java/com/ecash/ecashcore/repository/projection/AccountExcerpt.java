@@ -1,36 +1,38 @@
 package com.ecash.ecashcore.repository.projection;
 
 import java.util.Date;
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
 import com.ecash.ecashcore.model.Account;
+import com.ecash.ecashcore.model.AccountHistory;
 import com.ecash.ecashcore.model.AccountType;
 import com.ecash.ecashcore.model.CurrencyCode;
+import com.ecash.ecashcore.model.Customer;
+import com.ecash.ecashcore.model.Plan;
 
 @Projection(name = "custom", types = Account.class)
-public interface AccountExcerpt {
-  String getId();
+public interface AccountExcerpt extends BaseExcerpt {
+  public String getId();
 
-  String getAccountName();
+  public String getAccountName();
 
-  Date getDateOpened();
+  public Date getDateOpened();
 
-  Date getDateClosed();
+  public Date getDateClosed();
 
-  Double getCurrentBalance();
+  public Double getCurrentBalance();
 
-  String getStatus();
+  public String getStatus();
 
-  @Value("#{target.accountType}")
-  AccountType getAccountType();
-  
+  public AccountType getAccountType();
+
+  public Customer getCustomer();
+
+  public Plan getPlan();
+
   public CurrencyCode getCurrencyCode();
-  
-  @Value("#{target.customer.firstName}")
-  public String getCustomerFirstName();
-  
-  @Value("#{target.customer.lastName}")
-  public String getCustomerLastName();
+
+  public List<AccountHistory> getAccountHistories();
 }

@@ -9,9 +9,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "card")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class, 
-    property = "cardNumber")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "cardNumber")
 public class Card extends BaseModel {
 
   @Id
@@ -38,7 +36,7 @@ public class Card extends BaseModel {
   @JoinColumn(name = "type_code")
   private CardType cardType;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;
 

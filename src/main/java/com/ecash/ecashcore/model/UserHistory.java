@@ -22,6 +22,9 @@ public class UserHistory extends BaseModel {
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
+  
+  @Column(name = "history_details", nullable = true)
+  private String details;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "created_by", nullable = true)
@@ -34,9 +37,6 @@ public class UserHistory extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "history_type", nullable = false)
   private HistoryType type;
-  
-  @Column(name = "history_details", nullable = true)
-  private String details;
 
   public String getId() {
     return id;

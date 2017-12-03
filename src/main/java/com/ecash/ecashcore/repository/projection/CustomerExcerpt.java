@@ -7,19 +7,15 @@ import org.springframework.data.rest.core.config.Projection;
 
 import com.ecash.ecashcore.model.Account;
 import com.ecash.ecashcore.model.Address;
+import com.ecash.ecashcore.model.Card;
 import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.CustomerHistory;
 import com.ecash.ecashcore.model.CustomerType;
-import com.ecash.ecashcore.model.IdentifyDocument;
 import com.ecash.ecashcore.model.Organization;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Projection(name = "custom", types = Customer.class)
-public interface CustomerExcerpt {
+public interface CustomerExcerpt extends BaseExcerpt {
   String getId();
-
-  CustomerType getCustomerType();
 
   String getScmsMemberCode();
 
@@ -32,8 +28,6 @@ public interface CustomerExcerpt {
   String getPhone2();
 
   String getEmail();
-
-  Organization getOrganization();
 
   Integer getGender();
 
@@ -51,12 +45,17 @@ public interface CustomerExcerpt {
 
   String getPosition();
 
-  @JsonProperty(access = Access.WRITE_ONLY)
+  CustomerType getCustomerType();
+
+  Organization getOrganization();
+
   List<Account> getAccounts();
+
+  List<Card> getCards();
 
   List<Address> getAddresses();
 
-  List<IdentifyDocument> getIdentifyDocuments();
+  List<IdentifyDocumentExcerpt> getIdentifyDocuments();
 
   List<CustomerHistory> getCustomerHistory();
 

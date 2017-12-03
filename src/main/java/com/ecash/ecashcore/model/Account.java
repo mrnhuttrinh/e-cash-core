@@ -10,15 +10,16 @@ import java.util.List;
 
 @Entity
 @Table(name = "account")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class, 
-    property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account extends BaseModel {
 
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
+  
+  @Column(name = "account_name")
+  private String accountName;
 
   @Column(name = "date_opened")
   @Temporal(TemporalType.TIMESTAMP)
@@ -34,14 +35,11 @@ public class Account extends BaseModel {
   @Column(name = "status")
   private String status;
 
-  @Column(name = "account_name")
-  private String accountName;
-
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = false)
   private AccountType accountType;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;
 
@@ -49,7 +47,7 @@ public class Account extends BaseModel {
   @JoinColumn(name = "plan_id", nullable = false)
   private Plan plan;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "currency_code", nullable = false)
   private CurrencyCode currencyCode;
 

@@ -2,6 +2,9 @@ package com.ecash.ecashcore.model;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +17,9 @@ import java.util.Date;
 
 @Entity
 @Table(name = "merchant_terminal")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class, 
+    property = "id")
 public class MerchantTerminal extends BaseModel {
 
   @Id

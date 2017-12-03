@@ -9,17 +9,26 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "event")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Event extends BaseModel {
 
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date date;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id", nullable = true)
@@ -28,8 +37,6 @@ public class Event extends BaseModel {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_code", nullable = true)
   private EventType eventType;
-
-  private Date date;
 
   public String getId() {
     return id;
