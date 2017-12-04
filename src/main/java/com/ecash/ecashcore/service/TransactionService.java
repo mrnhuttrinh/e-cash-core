@@ -85,20 +85,21 @@ public class TransactionService {
     // get account
     Account account = identifyValidAccount(chargeRequest.getCard().getNumber(), chargeRequest.getTargetAccount());
 
+    Date transactionTime = Calendar.getInstance().getTime();
+
+    // save history
+    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
+    balanceHistoryRepository.save(balanceHistory);
+
     // calculate
     double remainAmount = account.getCurrentBalance() - chargeRequest.getAmount();
     if (remainAmount < 0) {
       throw new ValidationException("Account don't have enough money.");
     }
 
+    // Update balance value
     account.setCurrentBalance(remainAmount);
     accountRepository.save(account);
-
-    Date transactionTime = Calendar.getInstance().getTime();
-
-    // save history
-    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
-    balanceHistoryRepository.save(balanceHistory);
 
     // save transaction
     TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.EXPENSE.getName());
@@ -135,15 +136,15 @@ public class TransactionService {
       throw new InvalidInputException("Required information is missing. The disposite amount's too large");
     }
 
-    // Update balance value
-    account.setCurrentBalance(account.getCurrentBalance() + depositRequest.getAmount());
-    accountRepository.save(account);
-
     Date transactionTime = Calendar.getInstance().getTime();
 
     // Record the balance history
     BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
     balanceHistoryRepository.save(balanceHistory);
+
+    // Update balance value
+    account.setCurrentBalance(account.getCurrentBalance() + depositRequest.getAmount());
+    accountRepository.save(account);
 
     // Record the transaction
     TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.DEPOSIT.getName());
@@ -225,6 +226,11 @@ public class TransactionService {
 
   private void refundAccountBalance(final Account account, final Transaction transacion, final Date transactionTime) {
 
+    // Record the balance history
+    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
+    balanceHistoryRepository.save(balanceHistory);
+
+    // Update account balance
     switch (transacion.getTransactionType().getTypeCode()) {
     case "DEPOSIT":
       account.setCurrentBalance(account.getCurrentBalance() - transacion.getAmount());
@@ -241,10 +247,6 @@ public class TransactionService {
     }
 
     accountRepository.save(account);
-
-    // Record the balance history
-    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account, account.getCurrentBalance());
-    balanceHistoryRepository.save(balanceHistory);
   }
 
   private void validateNegativeAmount(double amount) {

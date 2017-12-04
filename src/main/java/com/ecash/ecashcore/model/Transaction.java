@@ -1,14 +1,23 @@
 package com.ecash.ecashcore.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "transaction")
@@ -29,21 +38,17 @@ public class Transaction extends BaseModel {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id")
-  @JsonManagedReference
   private Account account;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "card_id")
-  @JsonManagedReference
   private Card card;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JsonBackReference
   @JoinColumn(name = "related_transaction_id")
   private Transaction relatedTransaction;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JsonManagedReference
   @JoinColumn(name = "type_code")
   private TransactionType transactionType;
   

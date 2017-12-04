@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
@@ -29,7 +28,6 @@ public class Permission extends BaseModel {
 
   private String name;
 
-  @JsonManagedReference
   @ManyToMany(mappedBy = "permissions")
   private List<Role> roles = new ArrayList<>();
 
