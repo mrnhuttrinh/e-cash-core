@@ -17,4 +17,8 @@ public interface MerchantTerminalExcerpt extends BaseExcerpt {
   public Date getPubKeyExpireDate();
 
   public Merchant getMerchant();
+  
+  public String getName();
+  
+  public String getStatus();
 }

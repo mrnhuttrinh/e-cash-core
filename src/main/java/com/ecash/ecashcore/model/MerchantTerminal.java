@@ -36,6 +36,10 @@ public class MerchantTerminal extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merchant_id", nullable = false)
   private Merchant merchant;
+  
+  private String status;
+  
+  private String name;
 
   public String getId() {
     return id;
@@ -67,6 +71,22 @@ public class MerchantTerminal extends BaseModel {
 
   public void setMerchant(Merchant merchant) {
     this.merchant = merchant;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 }
