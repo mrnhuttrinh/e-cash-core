@@ -7,14 +7,11 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "identify_document_type")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "typeCode")
 public class IdentifyDocumentType extends Type {
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "identifyDocumentType")
