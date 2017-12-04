@@ -16,6 +16,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.ecash.ecashcore.model.QTransaction;
 import com.ecash.ecashcore.model.Transaction;
+import com.ecash.ecashcore.util.DateTimeUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.DateTimePath;
 import com.querydsl.core.types.dsl.Expressions;
@@ -43,10 +44,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
       if (dates.size() == 2) {
         return path.between(dates.get(0), dates.get(1));
       }
-      return Expressions.stringTemplate("DATE_FORMAT({0}, {1})", path, "%m/%d/%Y")
-          .likeIgnoreCase(Expressions.stringTemplate("DATE_FORMAT({0}, {1})", dates.get(0), "%m/%d/%Y"));
-      // throw new IllegalArgumentException("2 date params(from & to) expected for:" +
-      // path + " found:" + values);
+      
+      // Expressions "to_char" only work in postgresql
+      return Expressions.stringTemplate("to_char({0}, {1})", path, DateTimeUtils.DEFAULT_FORMAT)
+          .likeIgnoreCase(DateTimeUtils.toDefaultFormatString(dates.get(0)));
     });
 
     bindings.bind(Double.class).all((final NumberPath<Double> path, final Collection<? extends Double> values) -> {
