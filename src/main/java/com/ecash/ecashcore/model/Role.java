@@ -15,7 +15,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
@@ -32,7 +31,6 @@ public class Role extends BaseModel {
 
   private String name;
 
-  @JsonManagedReference
   @ManyToMany(mappedBy = "roles")
   private List<User> users = new ArrayList<>();
 

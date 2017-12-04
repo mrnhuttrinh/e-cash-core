@@ -1,6 +1,5 @@
 package com.ecash.ecashcore.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,25 +16,27 @@ public class AuditLog extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
+  private String type;
+
   private String category;
 
   private String status;
 
-  private String parameters;
+  private String parameter;
 
-  @Column(name = "return_value")
-  private String returnValue;
+  private String result;
 
   public AuditLog() {
     super();
   }
 
-  public AuditLog(String category, String status, String parameters, String returnValue) {
+  public AuditLog(String type, String category, String status, String parameter, String result) {
     super();
+    this.type = type;
     this.category = category;
     this.status = status;
-    this.parameters = parameters;
-    this.returnValue = returnValue;
+    this.parameter = parameter;
+    this.result = result;
   }
 
   public String getId() {
@@ -62,19 +63,27 @@ public class AuditLog extends BaseModel {
     this.status = status;
   }
 
-  public String getParameters() {
-    return parameters;
+  public String getType() {
+    return type;
   }
 
-  public void setParameters(String parameters) {
-    this.parameters = parameters;
+  public void setType(String type) {
+    this.type = type;
   }
 
-  public String getReturnValue() {
-    return returnValue;
+  public String getParameter() {
+    return parameter;
   }
 
-  public void setReturnValue(String returnValue) {
-    this.returnValue = returnValue;
+  public void setParameter(String parameter) {
+    this.parameter = parameter;
+  }
+
+  public String getResult() {
+    return result;
+  }
+
+  public void setResult(String result) {
+    this.result = result;
   }
 }
