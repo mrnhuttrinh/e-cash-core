@@ -7,7 +7,6 @@ import org.springframework.data.rest.core.config.Projection;
 
 import com.ecash.ecashcore.model.Account;
 import com.ecash.ecashcore.model.AccountHistory;
-import com.ecash.ecashcore.model.AccountType;
 import com.ecash.ecashcore.model.CurrencyCode;
 import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.Plan;

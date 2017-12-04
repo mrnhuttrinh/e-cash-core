@@ -5,5 +5,5 @@ import org.springframework.data.rest.core.config.Projection;
 import com.ecash.ecashcore.model.CardType;
 
 @Projection(name = "custom", types = CardType.class)
-public interface CardTypeExcerpt extends BaseExcerpt {
+public interface CardTypeExcerpt extends TypeExcerpt {
 }
