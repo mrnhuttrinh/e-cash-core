@@ -2,7 +2,6 @@ package com.ecash.ecashcore.repository.projection;
 
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.HistoryType;
 import com.ecash.ecashcore.model.User;
 import com.ecash.ecashcore.model.UserHistory;
 
@@ -16,6 +15,6 @@ public interface UserHistoryExcerpt extends BaseExcerpt {
 
   User getUser();
 
-  HistoryType getType();
+  HistoryTypeExcerpt getType();
 
 }
