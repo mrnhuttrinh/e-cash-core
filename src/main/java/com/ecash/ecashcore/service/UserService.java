@@ -1,19 +1,14 @@
 package com.ecash.ecashcore.service;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ecash.ecashcore.model.Permission;
-import com.ecash.ecashcore.model.Role;
 import com.ecash.ecashcore.model.User;
 import com.ecash.ecashcore.repository.PermissionRepository;
-import com.ecash.ecashcore.repository.RoleRepository;
 import com.ecash.ecashcore.repository.UserRepository;
+import com.querydsl.core.types.Predicate;
 
 @Service
 @Transactional
@@ -21,8 +16,8 @@ public class UserService {
   @Autowired
   private UserRepository userRepository;
 
-  @Autowired
-  private RoleRepository roleRepository;
+//  @Autowired
+//  private RoleRepository roleRepository;
 
   @Autowired
   PermissionRepository permissionRepository;
@@ -41,6 +36,10 @@ public class UserService {
   
   public User save(User user) {
     return userRepository.save(user);
+  }
+  
+  public Iterable<User> findAll(Predicate predicate, Pageable pageable) {
+    return userRepository.findAll(predicate, pageable);
   }
 
 //  public User addNewUser(String email) {

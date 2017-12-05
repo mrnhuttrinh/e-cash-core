@@ -1,5 +1,18 @@
 package com.ecash.ecashcore.service;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.enums.TransactionTypeEnum;
@@ -31,17 +44,7 @@ import com.ecash.ecashcore.vo.request.DepositRequestVO;
 import com.ecash.ecashcore.vo.request.ITransactionRequestVO;
 import com.ecash.ecashcore.vo.request.RefundRequestVO;
 import com.ecash.ecashcore.vo.response.TransactionResponseVO;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import com.querydsl.core.types.Predicate;
 
 @Service
 @Transactional
@@ -326,5 +329,9 @@ public class TransactionService {
         return account;
       }
     }
+  }
+  
+  public Iterable<Transaction> findAll(Predicate predicate, Pageable pageable) {
+    return transactionRepository.findAll(predicate, pageable);
   }
 }
