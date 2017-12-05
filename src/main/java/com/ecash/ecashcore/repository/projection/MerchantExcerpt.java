@@ -17,6 +17,8 @@ public interface MerchantExcerpt extends BaseExcerpt {
   public String getStatus();
 
   public Address getAddress();
+  
+  public String getPhone();
 
   public void setPhone(String phone);
 
