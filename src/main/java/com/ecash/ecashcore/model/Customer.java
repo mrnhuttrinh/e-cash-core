@@ -1,18 +1,28 @@
 package com.ecash.ecashcore.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 @Entity
 @Table(name = "customer")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class, 
-    property = "id")
 public class Customer extends BaseModel {
 
   @Id
@@ -71,18 +81,23 @@ public class Customer extends BaseModel {
   @JoinColumn(name = "organization_id", nullable = false)
   private Organization organization;
 
+  @JsonProperty(access = Access.WRITE_ONLY)
   @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
   private List<Account> accounts;
 
+  @JsonProperty(access = Access.WRITE_ONLY)
   @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
   private List<Card> cards;
 
+  @JsonProperty(access = Access.WRITE_ONLY)
   @ManyToMany(fetch = FetchType.LAZY, mappedBy = "customers")
   private List<Address> addresses;
 
+  @JsonProperty(access = Access.WRITE_ONLY)
   @ManyToMany(fetch = FetchType.LAZY, mappedBy = "customers")
   private List<IdentifyDocument> identifyDocuments;
 
+  @JsonProperty(access = Access.WRITE_ONLY)
   @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
   private List<CustomerHistory> customerHistory;
 

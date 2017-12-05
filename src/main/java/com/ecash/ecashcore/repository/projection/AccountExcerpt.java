@@ -9,7 +9,6 @@ import com.ecash.ecashcore.model.Account;
 import com.ecash.ecashcore.model.AccountHistory;
 import com.ecash.ecashcore.model.CurrencyCode;
 import com.ecash.ecashcore.model.Customer;
-import com.ecash.ecashcore.model.Plan;
 
 @Projection(name = "custom", types = Account.class)
 public interface AccountExcerpt extends BaseExcerpt {
@@ -29,7 +28,7 @@ public interface AccountExcerpt extends BaseExcerpt {
 
   public Customer getCustomer();
 
-  public Plan getPlan();
+  public PlanExcerpt getPlan();
 
   public CurrencyCode getCurrencyCode();
 

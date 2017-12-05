@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "card")
@@ -39,6 +40,9 @@ public class Card extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;
+  
+  @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+  private List<CardHistory> cardHistories;
 
   public String getCardNumber() {
     return cardNumber;
@@ -95,4 +99,13 @@ public class Card extends BaseModel {
   public void setCustomer(Customer customer) {
     this.customer = customer;
   }
+
+  public List<CardHistory> getCardHistories() {
+    return cardHistories;
+  }
+
+  public void setCardHistories(List<CardHistory> cardHistories) {
+    this.cardHistories = cardHistories;
+  }
+  
 }
