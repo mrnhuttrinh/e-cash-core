@@ -55,12 +55,13 @@ public class Transaction extends BaseModel {
     super();
   }
 
-  public Transaction(Account account, TransactionType transactionType, Date date, Double amount) {
+  public Transaction(Account account, TransactionType transactionType, Date date, Double amount, Card card) {
     super();
     this.account = account;
     this.transactionType = transactionType;
     this.date = date;
     this.amount = amount;
+    this.card = card;
   }
 
   public String getId() {

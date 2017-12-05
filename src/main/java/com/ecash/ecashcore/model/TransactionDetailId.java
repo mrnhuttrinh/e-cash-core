@@ -7,6 +7,9 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 @Embeddable
 public class TransactionDetailId implements Serializable {
 
@@ -17,6 +20,7 @@ public class TransactionDetailId implements Serializable {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "transaction_id")
+  @JsonProperty(access = Access.WRITE_ONLY)
   Transaction transaction;
 
   public TransactionDetailId() {

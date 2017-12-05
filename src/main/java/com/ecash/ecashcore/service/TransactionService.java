@@ -85,8 +85,11 @@ public class TransactionService {
     // validate
     validateTransactionRequest(chargeRequest);
 
+    // check validate card
+    Card card = cardService.identifyValidCard(chargeRequest.getCard().getNumber());
+
     // get account
-    Account account = identifyValidAccount(chargeRequest.getCard().getNumber(), chargeRequest.getTargetAccount());
+    Account account = identifyValidAccount(card, chargeRequest.getTargetAccount());
 
     Date transactionTime = Calendar.getInstance().getTime();
 
@@ -106,7 +109,8 @@ public class TransactionService {
 
     // save transaction
     TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.EXPENSE.getName());
-    Transaction transaction = new Transaction(account, transactionType, transactionTime, chargeRequest.getAmount());
+    Transaction transaction = new Transaction(account, transactionType, transactionTime, chargeRequest.getAmount(),
+        card);
     transactionRepository.save(transaction);
 
     ExtendedInformationVO extendedInformation = chargeRequest.getExtendedInformation();
@@ -126,8 +130,11 @@ public class TransactionService {
     // Validate require information
     validateTransactionRequest(depositRequest);
 
-    // Check valid card information
-    Account account = identifyValidAccount(depositRequest.getCard().getNumber(), depositRequest.getTargetAccount());
+    // check validate card
+    Card card = cardService.identifyValidCard(depositRequest.getCard().getNumber());
+
+    // Check valid account information
+    Account account = identifyValidAccount(card, depositRequest.getTargetAccount());
 
     // Check valid number.
     if (depositRequest.getAmount() <= 0) {
@@ -151,7 +158,8 @@ public class TransactionService {
 
     // Record the transaction
     TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.DEPOSIT.getName());
-    Transaction transaction = new Transaction(account, transactionType, transactionTime, depositRequest.getAmount());
+    Transaction transaction = new Transaction(account, transactionType, transactionTime, depositRequest.getAmount(),
+        card);
     transactionRepository.save(transaction);
 
     // Identify the merchant terminal
@@ -197,7 +205,7 @@ public class TransactionService {
     // Record the transaction
     TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.REFUND.getName());
     final Transaction refundTransaction = new Transaction(transaction.getAccount(), transactionType, transactionTime,
-        transaction.getAmount());
+        transaction.getAmount(), transaction.getCard());
 
     // Record relate transaction
     refundTransaction.setRelatedTransaction(transaction);
@@ -291,9 +299,7 @@ public class TransactionService {
     }
   }
 
-  private Account identifyValidAccount(String cardNumber, TargetAccountVO targetAccount) {
-    // check validate card
-    Card card = cardService.identifyValidCard(cardNumber);
+  private Account identifyValidAccount(Card card, TargetAccountVO targetAccount) {
 
     // get account
     String accountType;
@@ -330,7 +336,7 @@ public class TransactionService {
       }
     }
   }
-  
+
   public Iterable<Transaction> findAll(Predicate predicate, Pageable pageable) {
     return transactionRepository.findAll(predicate, pageable);
   }
