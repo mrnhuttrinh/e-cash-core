@@ -12,7 +12,10 @@ import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.InputCardVO;
 import com.ecash.ecashcore.vo.request.UpdateCardStatusRequestVO;
+import com.querydsl.core.types.Predicate;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -160,4 +163,9 @@ public class CardService {
     }
     return cardStatusEnum;
   }
+
+  public Iterable<Card> findAll(Predicate predicate, Pageable pageable) {
+    return cardRepository.findAll(predicate, pageable);
+  }
+  
 }
