@@ -1,60 +1,32 @@
 package com.ecash.ecashcore.service;
 
-import com.ecash.ecashcore.enums.CardStatusEnum;
-import com.ecash.ecashcore.enums.HistoryTypeEnum;
-import com.ecash.ecashcore.enums.StatusEnum;
-import com.ecash.ecashcore.exception.EcashException;
-import com.ecash.ecashcore.exception.InvalidInputException;
-import com.ecash.ecashcore.exception.ValidationException;
-import com.ecash.ecashcore.model.*;
-import com.ecash.ecashcore.repository.*;
-import com.ecash.ecashcore.util.JsonUtils;
-import com.ecash.ecashcore.util.StringUtils;
-import com.ecash.ecashcore.vo.InputCardVO;
-import com.ecash.ecashcore.vo.request.UpdateCardStatusRequestVO;
-import com.querydsl.core.types.Predicate;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.ecash.ecashcore.enums.CardStatusEnum;
+import com.ecash.ecashcore.enums.HistoryTypeEnum;
+import com.ecash.ecashcore.enums.StatusEnum;
+import com.ecash.ecashcore.exception.EcashException;
+import com.ecash.ecashcore.exception.InvalidInputException;
+import com.ecash.ecashcore.exception.ValidationException;
+import com.ecash.ecashcore.model.Card;
+import com.ecash.ecashcore.model.CardHistory;
+import com.ecash.ecashcore.model.HistoryType;
+import com.ecash.ecashcore.repository.CardHistoryRepository;
+import com.ecash.ecashcore.repository.CardRepository;
+import com.ecash.ecashcore.repository.HistoryTypeRepository;
+import com.ecash.ecashcore.util.JsonUtils;
+import com.ecash.ecashcore.util.StringUtils;
+import com.ecash.ecashcore.vo.request.UpdateCardStatusRequestVO;
+import com.querydsl.core.types.Predicate;
 
 @Service
 @Transactional
 public class CardService {
-
-  @Autowired
-  SCMSSyncRepository scmsSyncRepository;
-
-  @Autowired
-  AccountRepository accountRepository;
-
-  @Autowired
-  CardRepository cardRepository;
-
-  @Autowired
-  AddressRepository addressRepository;
-
-  @Autowired
-  CustomerRepository customerRepository;
-
-  @Autowired
-  CustomerAddressRepository customerAddressRepository;
-
-  @Autowired
-  OrganizationRepository organizationRepository;
-
-  @Autowired
-  IdentifyDocumentRepository identifyDocumentRepository;
-
-  @Autowired
-  CustomerIdentifyDocumentsRepository customerIdentifyDocumentsRepository;
-
-  @Autowired
-  CardTypeRepository cardTypeRepository;
 
   @Autowired
   CardHistoryRepository cardHistoryRepository;
@@ -62,53 +34,8 @@ public class CardService {
   @Autowired
   HistoryTypeRepository historyTypeRepository;
 
-  public void saveCardInput(List<InputCardVO> inputCards) {
-    for (InputCardVO inputCard : inputCards) {
-      SCMSSync scmsSync = inputCard.getSCMSSync();
-      Optional<SCMSSync> oldSync = Optional.ofNullable(scmsSyncRepository.findBySyncCode(scmsSync.getSyncCode()));
-
-      if (!oldSync.isPresent()) {
-        scmsSyncRepository.save(scmsSync);
-
-        Address address = inputCard.getCustomerAddress();
-        addressRepository.save(address);
-
-        Organization organization = organizationRepository.save(inputCard.getOrganization());
-
-        Customer customer = inputCard.getCustomer();
-        customer.setOrganization(organization);
-        customerRepository.save(customer);
-
-        IdentifyDocument identifyCard = inputCard.getIdentifyCard();
-        IdentifyDocument passportCard = inputCard.getPassportCard();
-        identifyDocumentRepository.save(identifyCard);
-        identifyDocumentRepository.save(passportCard);
-
-        CustomerIdentifyDocument customerIdentifyCard = new CustomerIdentifyDocument();
-        customerIdentifyCard.setCustomer(customer);
-        customerIdentifyCard.setIdentifyDocument(identifyCard);
-        customerIdentifyDocumentsRepository.save(customerIdentifyCard);
-
-        CustomerIdentifyDocument customerPassportCard = new CustomerIdentifyDocument();
-        customerPassportCard.setCustomer(customer);
-        customerPassportCard.setIdentifyDocument(passportCard);
-        customerIdentifyDocumentsRepository.save(customerPassportCard);
-
-        CustomerAddress customerAddress = new CustomerAddress();
-        customerAddress.setAddress(address);
-        customerAddress.setCustomer(customer);
-        customerAddressRepository.save(customerAddress);
-
-        Account account = inputCard.getAccount();
-        account.setCustomer(customer);
-        accountRepository.save(account);
-
-        Card card = inputCard.getCard();
-        card.setCustomer(customer);
-        cardRepository.save(card);
-      }
-    }
-  }
+  @Autowired
+  CardRepository cardRepository;
 
   public Card updateCardStatus(UpdateCardStatusRequestVO request) {
     // validate input

@@ -15,12 +15,11 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "address")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Address extends BaseModel {
 
   @Id
@@ -52,6 +51,7 @@ public class Address extends BaseModel {
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "customer_address", joinColumns = @JoinColumn(name = "address_id"), inverseJoinColumns = @JoinColumn(name = "customer_id"))
+  @JsonProperty(access = Access.WRITE_ONLY)
   private List<Customer> customers;
 
   public String getId() {

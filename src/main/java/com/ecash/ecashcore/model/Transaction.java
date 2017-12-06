@@ -16,12 +16,8 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 @Entity
 @Table(name = "transaction")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Transaction extends BaseModel {
 
   @Id
@@ -59,12 +55,13 @@ public class Transaction extends BaseModel {
     super();
   }
 
-  public Transaction(Account account, TransactionType transactionType, Date date, Double amount) {
+  public Transaction(Account account, TransactionType transactionType, Date date, Double amount, Card card) {
     super();
     this.account = account;
     this.transactionType = transactionType;
     this.date = date;
     this.amount = amount;
+    this.card = card;
   }
 
   public String getId() {

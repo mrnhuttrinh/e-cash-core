@@ -15,9 +15,9 @@ public class AuditLogService {
   @Autowired
   AuditLogRepository auditLogRepository;
 
-//  public Page<AuditLog> findAll(Predicate predicate, Pageable pageable) {
-//    return auditLogRepository.findAll(predicate, pageable);
-//  }
+  public Page<AuditLog> findAll(Predicate predicate, Pageable pageable) {
+    return auditLogRepository.findAll(predicate, pageable);
+  }
 
   public AuditLog save(AuditLog auditLog) {
     return auditLogRepository.save(auditLog);
