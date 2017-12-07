@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.CardStatusEnum;
 import com.ecash.ecashcore.enums.HistoryTypeEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
@@ -21,6 +22,7 @@ import com.ecash.ecashcore.repository.CardRepository;
 import com.ecash.ecashcore.repository.HistoryTypeRepository;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.util.StringUtils;
+import com.ecash.ecashcore.vo.HistoryVO;
 import com.ecash.ecashcore.vo.request.UpdateCardStatusRequestVO;
 import com.querydsl.core.types.Predicate;
 
@@ -54,7 +56,12 @@ public class CardService {
 
     // save card history
     HistoryType historyType = historyTypeRepository.findOne(HistoryTypeEnum.UPDATED.toString());
-    CardHistory cardHistory = new CardHistory(card, historyType, JsonUtils.objectToJsonString(card));
+    HistoryVO history = new HistoryVO();
+
+    history.getPrevious().put(StringConstant.STATUS, card.getStatus());
+    history.getNext().put(StringConstant.STATUS, status.getValue());
+
+    CardHistory cardHistory = new CardHistory(card, historyType, JsonUtils.objectToJsonString(history));
     cardHistoryRepository.save(cardHistory);
 
     // update
@@ -94,5 +101,5 @@ public class CardService {
   public Iterable<Card> findAll(Predicate predicate, Pageable pageable) {
     return cardRepository.findAll(predicate, pageable);
   }
-  
+
 }
