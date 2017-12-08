@@ -36,6 +36,9 @@ public class CardHistory extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "history_type", nullable = false)
   private HistoryType type;
+  
+  @Column(name = "created_by", nullable = true)
+  private String createdBy;
 
   public CardHistory() {
     super();
@@ -87,4 +90,13 @@ public class CardHistory extends BaseModel {
   public void setStatus(String status) {
     this.status = status;
   }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
 }

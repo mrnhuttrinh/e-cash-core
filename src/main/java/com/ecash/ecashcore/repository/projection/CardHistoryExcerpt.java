@@ -18,4 +18,7 @@ public interface CardHistoryExcerpt extends BaseExcerpt {
   public Card getCard();
 
   public HistoryType getType();
+
+  public String getCreatedBy();
+
 }
