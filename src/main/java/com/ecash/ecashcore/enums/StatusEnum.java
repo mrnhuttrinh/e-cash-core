@@ -19,4 +19,12 @@ public enum StatusEnum {
   public String getValue() {
     return this.toString();
   }
+  
+  public static StatusEnum getEnumByKey(String key) {
+    try {
+      return StatusEnum.valueOf(key);
+    } catch(Exception e) {
+      return null;
+    }
+  }
 }

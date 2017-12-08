@@ -38,6 +38,9 @@ public class AccountHistory extends BaseModel {
   @JoinColumn(name = "history_type", nullable = false)
   private HistoryType type;
 
+  @Column(name = "created_by", nullable = true)
+  private String createdBy;
+
   public String getId() {
     return id;
   }
@@ -77,4 +80,13 @@ public class AccountHistory extends BaseModel {
   public void setStatus(String status) {
     this.status = status;
   }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
 }

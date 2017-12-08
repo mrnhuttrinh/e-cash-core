@@ -17,4 +17,7 @@ public interface AccountHistoryExcerpt extends BaseExcerpt {
   public Account getAccount();
 
   public HistoryType getType();
+
+  public String getCreatedBy();
+
 }
