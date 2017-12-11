@@ -37,6 +37,18 @@ public class UserHistory extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "history_type", nullable = false)
   private HistoryType type;
+  
+  public UserHistory() {
+    super();
+  }
+  
+  public UserHistory(User user, User createdBy, HistoryType type, String details) {
+    super();
+    this.user = user;
+    this.createdBy = createdBy;
+    this.type = type;
+    this.details = details;
+  }
 
   public String getId() {
     return id;

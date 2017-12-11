@@ -55,6 +55,9 @@ public class User extends BaseModel {
   
   @Column(name = "last_login")
   private Date lastLogin;
+  
+  @Column(name = "setting")
+  private String setting;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
@@ -165,5 +168,13 @@ public class User extends BaseModel {
 
   public void setLastLogin(Date lastLogin) {
     this.lastLogin = lastLogin;
+  }
+
+  public String getSetting() {
+    return setting;
+  }
+
+  public void setSetting(String setting) {
+    this.setting = setting;
   }
 }

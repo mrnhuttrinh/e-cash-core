@@ -30,5 +30,7 @@ public interface UserExcerpt extends BaseExcerpt {
   Date getLastLogin();
   
   List<Role> getRoles();
+  
+  String getSetting();
 
 }
