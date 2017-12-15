@@ -309,31 +309,20 @@ public class TransactionService {
     } else {
       accountType = targetAccount.getType().toUpperCase();
     }
-
-    Customer customer = card.getCustomer();
-
-    if (customer == null) {
-      throw new ValidationException("Card is invalid because customer is undefined.");
-    }
-
-    List<Account> accounts = customer.getAccounts();
-    Iterator<Account> accountIterator = accounts.iterator();
-    Account account = null;
-    while (accountIterator.hasNext()) {
-      Account currentAccount = accountIterator.next();
-      if (currentAccount.getAccountType().getTypeCode().equalsIgnoreCase(accountType)) {
-        account = currentAccount;
-      }
-    }
+    Account account = card.getAccount();
 
     if (account == null) {
-      throw new ValidationException("Account not found.");
+      throw new ValidationException("Card is invalid because account is undefined.");
+    }
+
+    if (!account.getAccountType().getTypeCode().equalsIgnoreCase(accountType)) {
+      throw new ValidationException("Card is invalid because account not match.");
+    }
+
+    if (!account.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
+      throw new ValidationException("Account is inactive.");
     } else {
-      if (!account.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
-        throw new ValidationException("Account is inactive.");
-      } else {
-        return account;
-      }
+      return account;
     }
   }
 

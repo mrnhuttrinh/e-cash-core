@@ -85,10 +85,6 @@ public class Customer extends BaseModel {
   private List<Account> accounts;
 
   @JsonProperty(access = Access.WRITE_ONLY)
-  @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-  private List<Card> cards;
-
-  @JsonProperty(access = Access.WRITE_ONLY)
   @ManyToMany(fetch = FetchType.LAZY, mappedBy = "customers")
   private List<Address> addresses;
 
@@ -266,13 +262,5 @@ public class Customer extends BaseModel {
 
   public void setCustomerHistory(List<CustomerHistory> customerHistory) {
     this.customerHistory = customerHistory;
-  }
-
-  public List<Card> getCards() {
-    return cards;
-  }
-
-  public void setCards(List<Card> cards) {
-    this.cards = cards;
   }
 }

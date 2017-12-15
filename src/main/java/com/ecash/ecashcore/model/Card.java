@@ -53,12 +53,16 @@ public class Card extends BaseModel {
   private CardType cardType;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "customer_id", nullable = false)
-  private Customer customer;
+  @JoinColumn(name = "account_id", nullable = false)
+  private Account account;
   
   @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
   @JsonProperty(access = Access.WRITE_ONLY)
   private List<CardHistory> cardHistories;
+  
+  @JsonProperty(access = Access.WRITE_ONLY)
+  @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+  private List<Wallet> wallets;
 
   public String getCardNumber() {
     return cardNumber;
@@ -108,20 +112,28 @@ public class Card extends BaseModel {
     this.expiryDate = expiryDate;
   }
 
-  public Customer getCustomer() {
-    return customer;
-  }
-
-  public void setCustomer(Customer customer) {
-    this.customer = customer;
-  }
-
   public List<CardHistory> getCardHistories() {
     return cardHistories;
   }
 
   public void setCardHistories(List<CardHistory> cardHistories) {
     this.cardHistories = cardHistories;
+  }
+
+  public Account getAccount() {
+    return account;
+  }
+
+  public void setAccount(Account account) {
+    this.account = account;
+  }
+
+  public List<Wallet> getWallets() {
+    return wallets;
+  }
+
+  public void setWallets(List<Wallet> wallets) {
+    this.wallets = wallets;
   }
   
 }

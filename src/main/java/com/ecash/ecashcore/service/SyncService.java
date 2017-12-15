@@ -112,7 +112,7 @@ public class SyncService {
         accountRepository.save(account);
 
         Card card = inputCard.getCard();
-        card.setCustomer(customer);
+        card.setAccount(account);
         cardRepository.save(card);
       }
     }

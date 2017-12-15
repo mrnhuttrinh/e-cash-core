@@ -19,8 +19,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "account")
@@ -68,6 +68,10 @@ public class Account extends BaseModel {
   @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
   @JsonProperty(access = Access.WRITE_ONLY)
   private List<AccountHistory> accountHistories;
+  
+  @JsonProperty(access = Access.WRITE_ONLY)
+  @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+  private List<Card> cards;
 
   public Account() {
     super();
@@ -166,5 +170,14 @@ public class Account extends BaseModel {
 
   public void setPlan(Plan plan) {
     this.plan = plan;
+  }
+  
+
+  public List<Card> getCards() {
+    return cards;
+  }
+
+  public void setCards(List<Card> cards) {
+    this.cards = cards;
   }
 }
