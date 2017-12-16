@@ -7,7 +7,6 @@ import org.springframework.data.rest.core.config.Projection;
 
 import com.ecash.ecashcore.model.Account;
 import com.ecash.ecashcore.model.Address;
-import com.ecash.ecashcore.model.Card;
 import com.ecash.ecashcore.model.Customer;
 import com.ecash.ecashcore.model.CustomerHistory;
 import com.ecash.ecashcore.model.CustomerType;
@@ -50,8 +49,6 @@ public interface CustomerExcerpt extends BaseExcerpt {
   Organization getOrganization();
 
   List<Account> getAccounts();
-
-  List<Card> getCards();
 
   List<Address> getAddresses();
 

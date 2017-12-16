@@ -27,11 +27,5 @@ public interface CardExcerpt extends BaseExcerpt {
 
   public CardType getCardType();
 
-  public Customer getCustomer();
-  
-  @Value("#{target.customer.accounts}") 
-  List<Account> getAccounts();
-  
-  public List<CardHistory> getCardHistories();
   
 }

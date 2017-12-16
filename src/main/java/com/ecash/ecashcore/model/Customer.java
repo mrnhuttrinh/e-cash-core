@@ -81,6 +81,7 @@ public class Customer extends BaseModel {
   @JoinColumn(name = "organization_id", nullable = false)
   private Organization organization;
 
+  @JsonProperty(access = Access.WRITE_ONLY)
   @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
   private List<Account> accounts;
 
