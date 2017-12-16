@@ -1,10 +1,9 @@
 package com.ecash.ecashcore.repository.projection;
 
+import com.ecash.ecashcore.model.cms.Account;
+import com.ecash.ecashcore.model.cms.AccountHistory;
+import com.ecash.ecashcore.model.cms.AccountHistoryType;
 import org.springframework.data.rest.core.config.Projection;
-
-import com.ecash.ecashcore.model.Account;
-import com.ecash.ecashcore.model.AccountHistory;
-import com.ecash.ecashcore.model.HistoryType;
 
 @Projection(name = "custom", types = AccountHistory.class)
 public interface AccountHistoryExcerpt extends BaseExcerpt {
@@ -16,7 +15,7 @@ public interface AccountHistoryExcerpt extends BaseExcerpt {
 
   public Account getAccount();
 
-  public HistoryType getType();
+  public AccountHistoryType getType();
 
   public String getCreatedBy();
 

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ecash.ecashcore.model.Merchant;
+import com.ecash.ecashcore.model.cms.Merchant;
 import com.ecash.ecashcore.repository.MerchantRepository;
 import com.querydsl.core.types.Predicate;
 

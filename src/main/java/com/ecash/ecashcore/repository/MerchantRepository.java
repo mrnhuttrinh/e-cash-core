@@ -1,22 +1,21 @@
 package com.ecash.ecashcore.repository;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
+import com.ecash.ecashcore.model.cms.Merchant;
+import com.ecash.ecashcore.model.cms.QMerchant;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.DateTimePath;
+import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.SingleValueBinding;
 
-import com.ecash.ecashcore.model.Merchant;
-import com.ecash.ecashcore.model.QMerchant;
-import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.dsl.DateTimePath;
-import com.querydsl.core.types.dsl.StringPath;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public interface MerchantRepository extends JpaRepository<Merchant, String>,
   QueryDslPredicateExecutor<Merchant>, QuerydslBinderCustomizer<QMerchant>{

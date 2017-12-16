@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.ecash.ecashcore.model.cms.QTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
@@ -14,8 +15,7 @@ import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.SingleValueBinding;
 import org.springframework.data.repository.query.Param;
 
-import com.ecash.ecashcore.model.QTransaction;
-import com.ecash.ecashcore.model.Transaction;
+import com.ecash.ecashcore.model.cms.Transaction;
 import com.ecash.ecashcore.util.DateTimeUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.DateTimePath;

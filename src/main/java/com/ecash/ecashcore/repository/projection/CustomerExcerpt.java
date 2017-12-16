@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.Account;
-import com.ecash.ecashcore.model.Address;
-import com.ecash.ecashcore.model.Customer;
-import com.ecash.ecashcore.model.CustomerHistory;
-import com.ecash.ecashcore.model.CustomerType;
-import com.ecash.ecashcore.model.Organization;
+import com.ecash.ecashcore.model.cms.Account;
+import com.ecash.ecashcore.model.cms.Address;
+import com.ecash.ecashcore.model.cms.Customer;
+import com.ecash.ecashcore.model.cms.CustomerHistory;
+import com.ecash.ecashcore.model.cms.CustomerType;
+import com.ecash.ecashcore.model.cms.Organization;
 
 @Projection(name = "custom", types = Customer.class)
 public interface CustomerExcerpt extends BaseExcerpt {

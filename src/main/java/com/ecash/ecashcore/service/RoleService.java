@@ -3,7 +3,7 @@ package com.ecash.ecashcore.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ecash.ecashcore.model.Role;
+import com.ecash.ecashcore.model.cms.Role;
 import com.ecash.ecashcore.repository.RoleRepository;
 
 @Service

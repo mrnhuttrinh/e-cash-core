@@ -1,13 +1,13 @@
 package com.ecash.ecashcore.enums;
 
 public enum HistoryTypeEnum {
-  ADDED("ADDED"),
-  CREATED("CREATED"),
-  DELETED("DELETED"),
-  LOCKED("LOCKED"),
-  PASSWORD_CHANGED("PASSWORD_CHANGED"),
-  UNLOCKED("UNLOCKED"),
-  UPDATED("UPDATED");
+//  ADDED("ADDED"),
+//  CREATED("CREATED"),
+//  DELETED("DELETED"),
+//  LOCKED("LOCKED"),
+//  PASSWORD_CHANGED("PASSWORD_CHANGED"),
+//  UNLOCKED("UNLOCKED");
+  TA("TA");
 
   String name;
 

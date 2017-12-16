@@ -3,9 +3,9 @@ package com.ecash.ecashcore.repository.projection;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.Merchant;
-import com.ecash.ecashcore.model.Transaction;
-import com.ecash.ecashcore.model.TransactionDetail;
+import com.ecash.ecashcore.model.cms.Merchant;
+import com.ecash.ecashcore.model.cms.Transaction;
+import com.ecash.ecashcore.model.cms.TransactionDetail;
 
 @Projection(name = "custom", types = TransactionDetail.class)
 public interface TransactionDetailExcerpt extends BaseExcerpt {

@@ -1,7 +1,7 @@
 package com.ecash.ecashcore.repository;
 
-import com.ecash.ecashcore.model.Account;
-import com.ecash.ecashcore.model.QAccount;
+import com.ecash.ecashcore.model.cms.Account;
+import com.ecash.ecashcore.model.cms.QAccount;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.DateTimePath;
 import com.querydsl.core.types.dsl.StringPath;

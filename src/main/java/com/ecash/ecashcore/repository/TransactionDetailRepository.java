@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.ecash.ecashcore.model.TransactionDetail;
+import com.ecash.ecashcore.model.cms.TransactionDetail;
 
 public interface TransactionDetailRepository extends JpaRepository<TransactionDetail, String> {
 

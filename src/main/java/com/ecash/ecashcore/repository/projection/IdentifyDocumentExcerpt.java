@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.Customer;
-import com.ecash.ecashcore.model.IdentifyDocument;
-import com.ecash.ecashcore.model.IdentifyDocumentType;
+import com.ecash.ecashcore.model.cms.Customer;
+import com.ecash.ecashcore.model.cms.IdentifyDocument;
+import com.ecash.ecashcore.model.cms.IdentifyDocumentType;
 
 @Projection(name = "custom", types = IdentifyDocument.class)
 public interface IdentifyDocumentExcerpt extends BaseExcerpt {

@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ecash.ecashcore.exception.ValidationException;
-import com.ecash.ecashcore.model.MerchantTerminal;
+import com.ecash.ecashcore.model.cms.MerchantTerminal;
 import com.ecash.ecashcore.repository.MerchantTerminalRepository;
 import com.querydsl.core.types.Predicate;
 

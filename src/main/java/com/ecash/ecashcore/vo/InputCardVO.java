@@ -2,13 +2,13 @@ package com.ecash.ecashcore.vo;
 
 import java.util.Date;
 
-import com.ecash.ecashcore.model.Account;
-import com.ecash.ecashcore.model.Address;
-import com.ecash.ecashcore.model.Card;
-import com.ecash.ecashcore.model.Customer;
-import com.ecash.ecashcore.model.IdentifyDocument;
-import com.ecash.ecashcore.model.Organization;
-import com.ecash.ecashcore.model.SCMSSync;
+import com.ecash.ecashcore.model.cms.Account;
+import com.ecash.ecashcore.model.cms.Address;
+import com.ecash.ecashcore.model.cms.Card;
+import com.ecash.ecashcore.model.cms.Customer;
+import com.ecash.ecashcore.model.cms.IdentifyDocument;
+import com.ecash.ecashcore.model.cms.Organization;
+import com.ecash.ecashcore.model.cms.SCMSSync;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
