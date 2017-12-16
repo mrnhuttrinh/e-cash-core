@@ -2,7 +2,6 @@ package com.ecash.ecashcore.service;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,14 +19,13 @@ import com.ecash.ecashcore.exception.DataNotFoundException;
 import com.ecash.ecashcore.exception.EcashException;
 import com.ecash.ecashcore.exception.InvalidInputException;
 import com.ecash.ecashcore.exception.ValidationException;
-import com.ecash.ecashcore.model.Account;
-import com.ecash.ecashcore.model.BalanceHistory;
-import com.ecash.ecashcore.model.Card;
-import com.ecash.ecashcore.model.Customer;
-import com.ecash.ecashcore.model.MerchantTerminal;
-import com.ecash.ecashcore.model.Transaction;
-import com.ecash.ecashcore.model.TransactionDetail;
-import com.ecash.ecashcore.model.TransactionType;
+import com.ecash.ecashcore.model.cms.Account;
+import com.ecash.ecashcore.model.cms.BalanceHistory;
+import com.ecash.ecashcore.model.cms.Card;
+import com.ecash.ecashcore.model.cms.MerchantTerminal;
+import com.ecash.ecashcore.model.cms.Transaction;
+import com.ecash.ecashcore.model.cms.TransactionDetail;
+import com.ecash.ecashcore.model.cms.TransactionType;
 import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.BalanceHistoryRepository;
 import com.ecash.ecashcore.repository.CardRepository;
@@ -309,31 +307,20 @@ public class TransactionService {
     } else {
       accountType = targetAccount.getType().toUpperCase();
     }
-
-    Customer customer = card.getCustomer();
-
-    if (customer == null) {
-      throw new ValidationException("Card is invalid because customer is undefined.");
-    }
-
-    List<Account> accounts = customer.getAccounts();
-    Iterator<Account> accountIterator = accounts.iterator();
-    Account account = null;
-    while (accountIterator.hasNext()) {
-      Account currentAccount = accountIterator.next();
-      if (currentAccount.getAccountType().getTypeCode().equalsIgnoreCase(accountType)) {
-        account = currentAccount;
-      }
-    }
+    Account account = card.getAccount();
 
     if (account == null) {
-      throw new ValidationException("Account not found.");
+      throw new ValidationException("Card is invalid because account is undefined.");
+    }
+
+    if (!account.getAccountType().getTypeCode().equalsIgnoreCase(accountType)) {
+      throw new ValidationException("Card is invalid because account not match.");
+    }
+
+    if (!account.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
+      throw new ValidationException("Account is inactive.");
     } else {
-      if (!account.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
-        throw new ValidationException("Account is inactive.");
-      } else {
-        return account;
-      }
+      return account;
     }
   }
 

@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ecash.ecashcore.model.AuditLog;
+import com.ecash.ecashcore.model.cms.AuditLog;
 import com.ecash.ecashcore.repository.AuditLogRepository;
 import com.querydsl.core.types.Predicate;
 

@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.Role;
-import com.ecash.ecashcore.model.User;
+import com.ecash.ecashcore.model.cms.Role;
+import com.ecash.ecashcore.model.cms.User;
 
 @Projection(name = "custom", types = User.class)
 public interface UserExcerpt extends BaseExcerpt {

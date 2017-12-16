@@ -3,7 +3,7 @@ package com.ecash.ecashcore.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
-import com.ecash.ecashcore.model.CustomerType;
+import com.ecash.ecashcore.model.cms.CustomerType;
 
 public interface CustomerTypeRepository extends JpaRepository<CustomerType, String> {
 

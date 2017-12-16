@@ -1,11 +1,9 @@
 package com.ecash.ecashcore.repository.projection;
 
+import com.ecash.ecashcore.model.AbstractHistoryType;
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.HistoryType;
-import com.ecash.ecashcore.model.User;
-
-@Projection(name = "custom", types = HistoryType.class)
+@Projection(name = "custom", types = AbstractHistoryType.class)
 public interface HistoryTypeExcerpt extends BaseExcerpt {
   public String getType();
   

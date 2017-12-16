@@ -1,23 +1,21 @@
 package com.ecash.ecashcore.service;
 
-import java.util.List;
-
+import com.ecash.ecashcore.enums.StatusEnum;
+import com.ecash.ecashcore.exception.ValidationException;
+import com.ecash.ecashcore.model.cms.Account;
+import com.ecash.ecashcore.model.cms.AccountHistory;
+import com.ecash.ecashcore.model.cms.AccountHistoryType;
+import com.ecash.ecashcore.repository.AccountHistoryRepository;
+import com.ecash.ecashcore.repository.AccountHistoryTypeRepository;
+import com.ecash.ecashcore.repository.AccountRepository;
+import com.querydsl.core.types.Predicate;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ecash.ecashcore.enums.HistoryTypeEnum;
-import com.ecash.ecashcore.enums.StatusEnum;
-import com.ecash.ecashcore.exception.ValidationException;
-import com.ecash.ecashcore.model.Account;
-import com.ecash.ecashcore.model.AccountHistory;
-import com.ecash.ecashcore.model.HistoryType;
-import com.ecash.ecashcore.repository.AccountHistoryRepository;
-import com.ecash.ecashcore.repository.AccountRepository;
-import com.ecash.ecashcore.repository.HistoryTypeRepository;
-import com.querydsl.core.types.Predicate;
+import java.util.List;
 
 @Service
 public class AccountService {
@@ -26,8 +24,8 @@ public class AccountService {
   AccountRepository accountRepository;
   
   @Autowired
-  HistoryTypeRepository historyTypeRepository;
-  
+  AccountHistoryTypeRepository accountHistoryTypeRepository;
+
   @Autowired
   AccountHistoryRepository accountHistoryRepository;
 
@@ -56,8 +54,8 @@ public class AccountService {
     history.setStatus(StatusEnum.ACTIVE.getValue());
     history.setDetails((new JSONObject()).put("previous", previous).put("next", next).toString());
     history.setCreatedBy(userName);
-    HistoryType historyType = historyTypeRepository.findOne(HistoryTypeEnum.UPDATED.toString());
-    history.setType(historyType);
+    AccountHistoryType accountHistoryType = accountHistoryTypeRepository.findOne(AccountHistoryType.UPDATED);
+    history.setType(accountHistoryType);
     accountHistoryRepository.save(history);
     account.setStatus(newAccount.getStatus());
     accountRepository.save(account);

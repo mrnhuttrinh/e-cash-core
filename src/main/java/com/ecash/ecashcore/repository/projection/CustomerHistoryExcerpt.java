@@ -1,9 +1,8 @@
 package com.ecash.ecashcore.repository.projection;
 
+import com.ecash.ecashcore.model.cms.CustomerHistory;
+import com.ecash.ecashcore.model.cms.CustomerHistoryType;
 import org.springframework.data.rest.core.config.Projection;
-
-import com.ecash.ecashcore.model.CustomerHistory;
-import com.ecash.ecashcore.model.HistoryType;
 
 @Projection(name = "custom", types = CustomerHistory.class)
 public interface CustomerHistoryExcerpt extends BaseExcerpt {
@@ -17,5 +16,5 @@ public interface CustomerHistoryExcerpt extends BaseExcerpt {
 
   CustomerExcerpt getCustomer();
 
-  HistoryType getType();
+  CustomerHistoryType getType();
 }

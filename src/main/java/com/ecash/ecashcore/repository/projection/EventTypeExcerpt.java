@@ -1,9 +1,8 @@
 package com.ecash.ecashcore.repository.projection;
 
+import com.ecash.ecashcore.model.cms.AccountEventType;
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.EventType;
-
-@Projection(name = "custom", types = EventType.class)
+@Projection(name = "custom", types = AccountEventType.class)
 public interface EventTypeExcerpt extends TypeExcerpt {
 }

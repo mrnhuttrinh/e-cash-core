@@ -2,7 +2,7 @@ package com.ecash.ecashcore.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ecash.ecashcore.model.Plan;
+import com.ecash.ecashcore.model.cms.Plan;
 
 public interface PlanRepository extends JpaRepository<Plan, String> {
 }

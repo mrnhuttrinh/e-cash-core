@@ -1,7 +1,16 @@
 package com.ecash.ecashcore.service;
 
-import java.util.Map;
-
+import com.ecash.ecashcore.constants.StringConstant;
+import com.ecash.ecashcore.model.cms.User;
+import com.ecash.ecashcore.model.cms.UserHistory;
+import com.ecash.ecashcore.model.cms.UserHistoryType;
+import com.ecash.ecashcore.repository.PermissionRepository;
+import com.ecash.ecashcore.repository.UserHistoryRepository;
+import com.ecash.ecashcore.repository.UserHistoryTypeRepository;
+import com.ecash.ecashcore.repository.UserRepository;
+import com.ecash.ecashcore.util.JsonUtils;
+import com.ecash.ecashcore.vo.HistoryVO;
+import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -9,18 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ecash.ecashcore.constants.StringConstant;
-import com.ecash.ecashcore.enums.HistoryTypeEnum;
-import com.ecash.ecashcore.model.HistoryType;
-import com.ecash.ecashcore.model.User;
-import com.ecash.ecashcore.model.UserHistory;
-import com.ecash.ecashcore.repository.HistoryTypeRepository;
-import com.ecash.ecashcore.repository.PermissionRepository;
-import com.ecash.ecashcore.repository.UserHistoryRepository;
-import com.ecash.ecashcore.repository.UserRepository;
-import com.ecash.ecashcore.util.JsonUtils;
-import com.ecash.ecashcore.vo.HistoryVO;
-import com.querydsl.core.types.Predicate;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -35,7 +33,7 @@ public class UserService {
 //  private RoleRepository roleRepository;
   
   @Autowired
-  HistoryTypeRepository historyTypeRepository;
+  UserHistoryTypeRepository userHistoryTypeRepository;
 
   @Autowired
   PermissionRepository permissionRepository;
@@ -65,7 +63,7 @@ public class UserService {
     user.setPassword(newPassword);
     user.encodePassword(passwordEncoder);
     // create user history
-    HistoryType historyType = historyTypeRepository.findOne(HistoryTypeEnum.PASSWORD_CHANGED.toString());
+    UserHistoryType historyType = userHistoryTypeRepository.findOne(UserHistoryType.PASSWORD_CHANGED);
     HistoryVO history = new HistoryVO();
     history.getPrevious().put(StringConstant.PASSWORD, "old password");
     history.getNext().put(StringConstant.PASSWORD, "new password");
@@ -82,7 +80,7 @@ public class UserService {
     
     // create user history
     User createdBy = userRepository.findByUsername(currentUsername);
-    HistoryType historyType = historyTypeRepository.findOne(HistoryTypeEnum.PASSWORD_CHANGED.toString());
+    UserHistoryType historyType = userHistoryTypeRepository.findOne(UserHistoryType.PASSWORD_CHANGED);
     HistoryVO history = new HistoryVO();
     history.getPrevious().put(StringConstant.PASSWORD, "old password");
     history.getNext().put(StringConstant.PASSWORD, "new password");
@@ -98,16 +96,16 @@ public class UserService {
     String newStatus = null;
     if (status.equals("ACTIVE")) {
       user.setEnabled(false);
-      historyStringType = HistoryTypeEnum.LOCKED.toString();
+      historyStringType = UserHistoryType.LOCKED;
       newStatus = "INACTIVE";
     } else {
       user.setEnabled(true);
-      historyStringType = HistoryTypeEnum.UNLOCKED.toString();
+      historyStringType = UserHistoryType.UNLOCKED;
       newStatus = "ACTIVE";
     }
     // create user history
     User createdBy = userRepository.findByUsername(currentUsername);
-    HistoryType historyType = historyTypeRepository.findOne(historyStringType);
+    UserHistoryType historyType = userHistoryTypeRepository.findOne(historyStringType);
     HistoryVO history = new HistoryVO();
     history.getPrevious().put(StringConstant.STATUS, status);
     history.getNext().put(StringConstant.STATUS, newStatus);
@@ -128,7 +126,7 @@ public class UserService {
     jsonObject.put(key, value);
     String newSetting = JsonUtils.objectToJsonString(jsonObject);
     // create user history
-    HistoryType historyType = historyTypeRepository.findOne(HistoryTypeEnum.UPDATED.toString());
+    UserHistoryType historyType = userHistoryTypeRepository.findOne(UserHistoryType.UPDATED);
     HistoryVO history = new HistoryVO();
     history.getPrevious().put(StringConstant.SETTING, oldSetting);
     history.getNext().put(StringConstant.SETTING, newSetting);

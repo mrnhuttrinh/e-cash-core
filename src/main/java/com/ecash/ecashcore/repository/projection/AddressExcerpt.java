@@ -1,12 +1,11 @@
 package com.ecash.ecashcore.repository.projection;
 
-import java.util.List;
-
+import com.ecash.ecashcore.model.cms.Address;
+import com.ecash.ecashcore.model.cms.AddressType;
+import com.ecash.ecashcore.model.cms.Customer;
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.Address;
-import com.ecash.ecashcore.model.AddressType;
-import com.ecash.ecashcore.model.Customer;
+import java.util.List;
 
 @Projection(name = "custom", types = Address.class)
 public interface AddressExcerpt extends BaseExcerpt {

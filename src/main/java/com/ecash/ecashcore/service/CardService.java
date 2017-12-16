@@ -1,30 +1,28 @@
 package com.ecash.ecashcore.service;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.CardStatusEnum;
-import com.ecash.ecashcore.enums.HistoryTypeEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.exception.EcashException;
 import com.ecash.ecashcore.exception.InvalidInputException;
 import com.ecash.ecashcore.exception.ValidationException;
-import com.ecash.ecashcore.model.Card;
-import com.ecash.ecashcore.model.CardHistory;
-import com.ecash.ecashcore.model.HistoryType;
+import com.ecash.ecashcore.model.cms.Card;
+import com.ecash.ecashcore.model.cms.CardHistory;
+import com.ecash.ecashcore.model.cms.CardHistoryType;
 import com.ecash.ecashcore.repository.CardHistoryRepository;
+import com.ecash.ecashcore.repository.CardHistoryTypeRepository;
 import com.ecash.ecashcore.repository.CardRepository;
-import com.ecash.ecashcore.repository.HistoryTypeRepository;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.HistoryVO;
 import com.ecash.ecashcore.vo.request.UpdateCardStatusRequestVO;
 import com.querydsl.core.types.Predicate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -34,7 +32,7 @@ public class CardService {
   CardHistoryRepository cardHistoryRepository;
 
   @Autowired
-  HistoryTypeRepository historyTypeRepository;
+  CardHistoryTypeRepository cardHistoryTypeRepository;
 
   @Autowired
   CardRepository cardRepository;
@@ -55,7 +53,7 @@ public class CardService {
     }
 
     // save card history
-    HistoryType historyType = historyTypeRepository.findOne(HistoryTypeEnum.UPDATED.toString());
+    CardHistoryType historyType = cardHistoryTypeRepository.findOne(CardHistoryType.UPDATED);
     HistoryVO history = new HistoryVO();
 
     history.getPrevious().put(StringConstant.STATUS, card.getStatus());

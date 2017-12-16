@@ -2,13 +2,13 @@ package com.ecash.ecashcore.repository.projection;
 
 import java.util.Date;
 
+import com.ecash.ecashcore.model.cms.AccountEvent;
+import com.ecash.ecashcore.model.cms.AccountEventType;
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.Account;
-import com.ecash.ecashcore.model.Event;
-import com.ecash.ecashcore.model.EventType;
+import com.ecash.ecashcore.model.cms.Account;
 
-@Projection(name = "custom", types = Event.class)
+@Projection(name = "custom", types = AccountEvent.class)
 public interface EventExcerpt extends BaseExcerpt {
 
   public String getId();
@@ -17,5 +17,5 @@ public interface EventExcerpt extends BaseExcerpt {
 
   public Account getAccount();
 
-  public EventType getEventType();
+  public AccountEventType getEventType();
 }

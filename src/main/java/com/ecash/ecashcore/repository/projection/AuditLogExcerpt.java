@@ -2,7 +2,7 @@ package com.ecash.ecashcore.repository.projection;
 
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.AuditLog;
+import com.ecash.ecashcore.model.cms.AuditLog;
 
 @Projection(name = "custom", types = AuditLog.class)
 public interface AuditLogExcerpt extends BaseExcerpt {

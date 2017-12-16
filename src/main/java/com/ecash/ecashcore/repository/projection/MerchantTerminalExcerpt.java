@@ -4,8 +4,8 @@ import java.util.Date;
 
 import org.springframework.data.rest.core.config.Projection;
 
-import com.ecash.ecashcore.model.Merchant;
-import com.ecash.ecashcore.model.MerchantTerminal;
+import com.ecash.ecashcore.model.cms.Merchant;
+import com.ecash.ecashcore.model.cms.MerchantTerminal;
 
 @Projection(name = "custom", types = MerchantTerminal.class)
 public interface MerchantTerminalExcerpt extends BaseExcerpt {
