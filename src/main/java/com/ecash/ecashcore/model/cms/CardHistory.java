@@ -19,6 +19,10 @@ public class CardHistory extends AbstractHistory<CardHistoryType> {
   @JoinColumn(name = "card_number", nullable = false)
   private Card card;
 
+  public CardHistory() {
+
+  }
+
   public CardHistory(Card card, CardHistoryType type, String details) {
     super(type);
     this.card = card;
