@@ -11,17 +11,17 @@ public abstract class AbstractHistoryType extends BaseModel {
   public static String LOCKED = "LOCKED";
   public static String UNLOCKED = "UNLOCKED";
   @Id
-  private String typeCode;
+  private String type;
   private String name;
   private String description;
   private String status;
 
-  public String getTypeCode() {
-    return typeCode;
+  public String getType() {
+    return type;
   }
 
-  public void setTypeCode(String typeCode) {
-    this.typeCode = typeCode;
+  public void setType(String type) {
+    this.type = type;
   }
 
   public String getName() {
