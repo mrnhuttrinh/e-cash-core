@@ -18,7 +18,7 @@ public class Customer extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @Column(name = "scms_member_code")
+  @Column(name = "scms_member_code", unique = true, nullable = false)
   private String scmsMemberCode;
 
   @Column(name = "first_name")

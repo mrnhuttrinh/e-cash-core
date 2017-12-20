@@ -12,7 +12,7 @@ import com.ecash.ecashcore.model.cms.SCMSSync;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class InputCardVO {
+public class SyncVO {
   private String syncCode;
   private Date syncTime;
   private Boolean finishFlag;
@@ -316,7 +316,6 @@ public class InputCardVO {
   public Card getCard() {
     Card card = new Card();
     card.setCardCode(cardCode);
-    card.setStatus(status);
     card.setEffectiveDate(effectiveDate);
     card.setExpiryDate(expiryDate);
     card.setStatus(status);
@@ -380,7 +379,7 @@ public class InputCardVO {
     IdentifyDocument identifyDocument = new IdentifyDocument();
     identifyDocument.setNumber(passportNumber);
     identifyDocument.setDateOfIssue(passportIssuingDate);
-    identifyDocument.setDateOfIssue(passportExpiryDate);
+    identifyDocument.setDateOfExpiry(passportExpiryDate);
     identifyDocument.setPlaceOfIssue(passportIssuingAuthority);
     return identifyDocument;
   }

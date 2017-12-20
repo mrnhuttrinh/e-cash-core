@@ -2,8 +2,10 @@ package com.ecash.ecashcore.repository;
 
 import com.ecash.ecashcore.model.cms.Card;
 import com.ecash.ecashcore.model.cms.QCard;
+import com.ecash.ecashcore.util.DateTimeUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.DateTimePath;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
@@ -34,8 +36,12 @@ public interface CardRepository extends JpaRepository<Card, String>, QueryDslPre
       if (dates.size() == 2) {
         return path.between(dates.get(0), dates.get(1));
       }
-      return path.eq(dates.get(0));
+      
+      // Expressions "to_char" only work in postgresql
+      return Expressions.stringTemplate("to_char({0}, {1})", path, DateTimeUtils.DEFAULT_FORMAT)
+          .likeIgnoreCase(DateTimeUtils.toDefaultFormatString(dates.get(0)));
     });
   }
+  
   Card findByCardCode(String cardCode);
 }

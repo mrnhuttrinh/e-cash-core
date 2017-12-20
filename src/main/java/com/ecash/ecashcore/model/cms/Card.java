@@ -25,7 +25,7 @@ public class Card extends BaseModel {
   @Column(name = "status")
   private String status;
 
-  @Column(name = "card_code", unique = true)
+  @Column(name = "card_code", unique = true, nullable = false)
   private String cardCode;
 
   @Column(name = "effective_date")
@@ -43,11 +43,11 @@ public class Card extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id", nullable = false)
   private Account account;
-  
+
   @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
   @JsonProperty(access = Access.WRITE_ONLY)
   private List<CardHistory> cardHistories;
-  
+
   @JsonProperty(access = Access.WRITE_ONLY)
   @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
   private List<Wallet> wallets;
@@ -123,5 +123,5 @@ public class Card extends BaseModel {
   public void setWallets(List<Wallet> wallets) {
     this.wallets = wallets;
   }
-  
+
 }
