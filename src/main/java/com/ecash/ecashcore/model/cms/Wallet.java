@@ -27,7 +27,7 @@ public class Wallet extends BaseModel {
   @Column(name = "name")
   private String name;
   
-  @Column(name = "provider")
+  @Column(name = "provider", nullable = false)
   private String provider;
   
   @ManyToOne(fetch = FetchType.LAZY)

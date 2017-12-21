@@ -13,7 +13,8 @@ public enum CurrencyCodeEnum {
     return name;
   }
 
-  public String getValue() {
-    return this.getName();
+  @Override
+  public String toString() {
+    return this.name;
   }
 }

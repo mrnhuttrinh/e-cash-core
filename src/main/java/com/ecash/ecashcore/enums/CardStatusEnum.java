@@ -12,17 +12,18 @@ public enum CardStatusEnum {
     this.status = status;
   }
 
-  public String getValue() {
-    return this.toString();
+  @Override
+  public String toString() {
+    return this.status;
   }
 
   public String getStatus() {
-    return status;
+    return this.status;
   }
 
   public static CardStatusEnum findByStatus(String status) {
     for (CardStatusEnum value : values()) {
-      if (value.getValue().equalsIgnoreCase(status)) {
+      if (value.getStatus().equalsIgnoreCase(status)) {
         return value;
       }
     }

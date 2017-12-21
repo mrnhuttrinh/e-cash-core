@@ -16,7 +16,8 @@ public enum TransactionTypeEnum {
     return name;
   }
 
-  public String getValue() {
-    return this.toString();
+  @Override
+  public String toString() {
+    return this.name;
   }
 }

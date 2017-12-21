@@ -84,11 +84,11 @@ public class EWallet extends BaseModel {
     this.dateClosed = dateClosed;
   }
 
-  public double getCurrentBalance() {
+  public Double getCurrentBalance() {
     return currentBalance;
   }
 
-  public void setCurrentBalance(double currentBalance) {
+  public void setCurrentBalance(Double currentBalance) {
     this.currentBalance = currentBalance;
   }
 

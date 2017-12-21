@@ -51,7 +51,7 @@ public class AccountService {
     next.put("status", newAccount.getStatus());
     AccountHistory history = new AccountHistory();
     history.setAccount(account);
-    history.setStatus(StatusEnum.ACTIVE.getValue());
+    history.setStatus(StatusEnum.ACTIVE.toString());
     history.setDetails((new JSONObject()).put("previous", previous).put("next", next).toString());
     history.setCreatedBy(userName);
     AccountHistoryType accountHistoryType = accountHistoryTypeRepository.findOne(AccountHistoryType.UPDATED);

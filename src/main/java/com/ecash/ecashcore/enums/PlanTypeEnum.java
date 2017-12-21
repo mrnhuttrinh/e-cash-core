@@ -1,12 +1,11 @@
 package com.ecash.ecashcore.enums;
 
-public enum AccountTypeEnum {
-  DEFAULT("DEFAULT"),
-  DEBIT("DEBIT");
+public enum PlanTypeEnum {
+  DEFAULT("DEFAULT");
 
   String name;
 
-  private AccountTypeEnum(String name) {
+  private PlanTypeEnum(String name) {
     this.name = name;
   }
 

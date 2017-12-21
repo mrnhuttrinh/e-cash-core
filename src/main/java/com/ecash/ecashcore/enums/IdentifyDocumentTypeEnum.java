@@ -1,12 +1,12 @@
 package com.ecash.ecashcore.enums;
 
-public enum AccountTypeEnum {
-  DEFAULT("DEFAULT"),
-  DEBIT("DEBIT");
+public enum IdentifyDocumentTypeEnum {
+  IDENTIFY_CARD("IDENTIFY_CARD"),
+  PASSPORT_CARD("PASSPORT_CARD");
 
   String name;
 
-  private AccountTypeEnum(String name) {
+  private IdentifyDocumentTypeEnum(String name) {
     this.name = name;
   }
 

@@ -48,8 +48,8 @@ public class CardService {
     Card card = identifyCard(request.getCard().getNumber());
     CardStatusEnum status = validateCardStatus(request.getStatus());
 
-    if (card.getStatus().equalsIgnoreCase(status.getValue())) {
-      throw new EcashException("Error: card status is " + status.getValue() + " already.");
+    if (card.getStatus().equalsIgnoreCase(status.toString())) {
+      throw new EcashException("Error: card status is " + status.toString() + " already.");
     }
 
     // save card history
@@ -57,13 +57,13 @@ public class CardService {
     HistoryVO history = new HistoryVO();
 
     history.getPrevious().put(StringConstant.STATUS, card.getStatus());
-    history.getNext().put(StringConstant.STATUS, status.getValue());
+    history.getNext().put(StringConstant.STATUS, status.toString());
 
     CardHistory cardHistory = new CardHistory(card, historyType, JsonUtils.objectToJsonString(history));
     cardHistoryRepository.save(cardHistory);
 
     // update
-    card.setStatus(status.getValue());
+    card.setStatus(status.toString());
     cardRepository.save(card);
 
     return card;
@@ -72,7 +72,7 @@ public class CardService {
   public Card identifyValidCard(String cardNumber) {
     // check validate card
     Card card = this.identifyCard(cardNumber);
-    if (!card.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
+    if (!card.getStatus().equals(StatusEnum.ACTIVE.toString())) {
       throw new ValidationException("Card is inactive.");
     }
 
