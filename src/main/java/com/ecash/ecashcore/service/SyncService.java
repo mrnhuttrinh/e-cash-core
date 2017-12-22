@@ -127,7 +127,6 @@ public class SyncService {
 
         Customer customer = syncCustomer(syncData.getCustomer(), organization);
 
-        // TODO: check unique or delete old address
         syncAddress(syncData.getCustomerAddress(), customer);
 
         syncIdentifyCard(syncData.getIdentifyCard(), customer);
@@ -162,27 +161,46 @@ public class SyncService {
       wallet.setCard(card);
 
       eWallet = new EWallet();
+      eWallet.setCurrentBalance(Double.valueOf(0));
       eWallet.setTypeCode(eWalletTypeRepository.findByTypeCode(EWalletTypeEnum.DEFAULT.toString()));
     }
 
     cardRepository.save(card);
     if (wallet != null & eWallet != null) {
       eWalletRepository.save(eWallet);
-      
-//      wallet.set
+
+      wallet.setRefId(eWallet.getId());
       walletRepository.save(wallet);
     }
     return card;
   }
 
-  private Address syncAddress(Address address, Customer customer) {
-    address.setAddressType(addressTypeRepository.findByTypeCode(AddressTypeEnum.DEFAULT.toString()));
-    addressRepository.save(address);
+  private Address syncAddress(Address syncAddress, Customer customer) {
 
-    CustomerAddress customerAddress = new CustomerAddress();
-    customerAddress.setAddress(address);
-    customerAddress.setCustomer(customer);
-    customerAddressRepository.save(customerAddress);
+    List<Address> addresses = addressRepository.findByLine1AndLine2AndCountry(syncAddress.getLine1(),
+        syncAddress.getLine2(), syncAddress.getCountry());
+
+    Address address = null;
+    boolean isContain = true;
+    if (addresses.isEmpty()) {
+      address = syncAddress;
+
+      address.setAddressType(addressTypeRepository.findByTypeCode(AddressTypeEnum.DEFAULT.toString()));
+      addressRepository.save(address);
+
+      isContain = false;
+    } else {
+      address = addresses.get(0);
+
+      isContain = address.getCustomers().stream().anyMatch(t -> t.getId() == customer.getId());
+    }
+
+    if (!isContain) {
+      CustomerAddress customerAddress = new CustomerAddress();
+      customerAddress.setAddress(address);
+      customerAddress.setCustomer(customer);
+      customerAddressRepository.save(customerAddress);
+    }
 
     return address;
   }

@@ -27,6 +27,9 @@ public class Wallet extends BaseModel {
   @Column(name = "name")
   private String name;
   
+  @Column(name = "ref_id")
+  private String refId;
+  
   @Column(name = "provider", nullable = false)
   private String provider;
   
@@ -64,6 +67,14 @@ public class Wallet extends BaseModel {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getRefId() {
+    return refId;
+  }
+
+  public void setRefId(String refId) {
+    this.refId = refId;
   }
 
   public String getProvider() {
