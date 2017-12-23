@@ -8,7 +8,7 @@ import javax.persistence.MappedSuperclass;
 public abstract class Type extends BaseModel {
 
   @Id
-  @Column(name = "type_code", nullable = false)
+  @Column(name = "type_code", nullable = false, unique = true)
   protected String typeCode;
 
   @Column(name = "description", nullable = true)

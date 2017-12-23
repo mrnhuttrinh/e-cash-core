@@ -1,22 +1,19 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.hibernate.annotations.GenericGenerator;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.ecash.ecashcore.model.BaseModel;
 
 @Entity
 @Table(name = "scms_sync")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class, 
-    property = "id")
 public class SCMSSync extends BaseModel {
 
   @Id
@@ -24,7 +21,7 @@ public class SCMSSync extends BaseModel {
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   private String id;
 
-  @Column(name = "sync_code", nullable = false)
+  @Column(name = "sync_code", nullable = false, unique = true)
   private String syncCode;
 
   @Column(name = "sync_time")

@@ -32,4 +32,6 @@ public interface AccountTypeRepository extends JpaRepository<AccountType, String
   @Override
   @RestResource(exported = false)
   <S extends AccountType> List<S> save(Iterable<S> entities);
+  
+  AccountType findByTypeCode(String typeCode);
 }

@@ -14,4 +14,6 @@ public interface CustomerTypeRepository extends JpaRepository<CustomerType, Stri
   @Override
   @RestResource(exported = false)
   void delete(CustomerType entity);
+  
+  CustomerType findByTypeCode(String typeCode);
 }

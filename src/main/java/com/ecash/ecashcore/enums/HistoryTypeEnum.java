@@ -19,7 +19,8 @@ public enum HistoryTypeEnum {
     return name;
   }
 
-  public String getValue() {
-    return this.toString();
+  @Override
+  public String toString() {
+    return this.name;
   }
 }

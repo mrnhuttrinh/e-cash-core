@@ -303,7 +303,7 @@ public class TransactionService {
     String accountType;
     if (targetAccount == null || targetAccount.getType() == null
         || "".equalsIgnoreCase(targetAccount.getType().trim())) {
-      accountType = AccountTypeEnum.DEFAULT.getValue();
+      accountType = AccountTypeEnum.DEFAULT.toString();
     } else {
       accountType = targetAccount.getType().toUpperCase();
     }
@@ -317,7 +317,7 @@ public class TransactionService {
       throw new ValidationException("Card is invalid because account not match.");
     }
 
-    if (!account.getStatus().equals(StatusEnum.ACTIVE.getValue())) {
+    if (!account.getStatus().equals(StatusEnum.ACTIVE.toString())) {
       throw new ValidationException("Account is inactive.");
     } else {
       return account;

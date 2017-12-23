@@ -14,15 +14,12 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.ecash.ecashcore.model.BaseModel;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.ecash.ecashcore.model.BaseModel;
 
 @Entity
 @Table(name = "identify_document")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class IdentifyDocument extends BaseModel {
   @Id
   @GeneratedValue(generator = "system-uuid")
@@ -31,6 +28,7 @@ public class IdentifyDocument extends BaseModel {
 
   private String description;
 
+  @Column(name = "number", unique = true, nullable = false)
   private String number;
 
   @Column(name = "date_of_issue")

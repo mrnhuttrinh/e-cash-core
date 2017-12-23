@@ -16,10 +16,11 @@ public enum StatusEnum {
     return name;
   }
 
-  public String getValue() {
-    return this.toString();
+  @Override
+  public String toString() {
+    return this.name;
   }
-  
+
   public static StatusEnum getEnumByKey(String key) {
     try {
       return StatusEnum.valueOf(key);
