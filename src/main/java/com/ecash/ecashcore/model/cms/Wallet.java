@@ -36,6 +36,8 @@ public class Wallet extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "card_id", nullable = false)
   private Card card;
+  
+  private String status;
 
   public String getId() {
     return id;
@@ -83,6 +85,14 @@ public class Wallet extends BaseModel {
 
   public void setProvider(String provider) {
     this.provider = provider;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
   
 }

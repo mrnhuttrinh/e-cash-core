@@ -14,4 +14,7 @@ public interface CurrencyCodeRepository extends JpaRepository<CurrencyCode, Stri
   @Override
   @RestResource(exported = false)
   void delete(CurrencyCode entity);
+  
+  @RestResource(exported = false)
+  CurrencyCode findByCode(String code);
 }

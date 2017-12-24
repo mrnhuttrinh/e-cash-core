@@ -17,4 +17,7 @@ public interface WalletExcerpt extends BaseExcerpt {
   public String getName();
 
   public String getProvider();
+
+  public String getStatus();
+
 }

@@ -26,7 +26,7 @@ public class EWallet extends BaseModel {
 
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "type_code", nullable = false)
-  private EWalletType typeCode;
+  private EWalletType eWalletType;
 
   @Column(name = "date_opened")
   @Temporal(TemporalType.TIMESTAMP)
@@ -52,12 +52,12 @@ public class EWallet extends BaseModel {
     this.id = id;
   }
 
-  public EWalletType getTypeCode() {
-    return typeCode;
+  public EWalletType getEWalletType() {
+    return eWalletType;
   }
 
-  public void setTypeCode(EWalletType typeCode) {
-    this.typeCode = typeCode;
+  public void setEWalletType(EWalletType eWalletType) {
+    this.eWalletType = eWalletType;
   }
 
   public Date getDateOpened() {

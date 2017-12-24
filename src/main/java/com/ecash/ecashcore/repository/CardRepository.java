@@ -42,6 +42,9 @@ public interface CardRepository extends JpaRepository<Card, String>, QueryDslPre
           .likeIgnoreCase(DateTimeUtils.toDefaultFormatString(dates.get(0)));
     });
   }
-  
+
   Card findByCardCode(String cardCode);
+  
+  Card findByCardNumber(String cardNumber);
+
 }

@@ -12,7 +12,6 @@ import com.ecash.ecashcore.enums.AddressTypeEnum;
 import com.ecash.ecashcore.enums.CardTypeEnum;
 import com.ecash.ecashcore.enums.CurrencyCodeEnum;
 import com.ecash.ecashcore.enums.CustomerTypeEnum;
-import com.ecash.ecashcore.enums.EWalletTypeEnum;
 import com.ecash.ecashcore.enums.IdentifyDocumentTypeEnum;
 import com.ecash.ecashcore.enums.PlanTypeEnum;
 import com.ecash.ecashcore.model.cms.Account;
@@ -25,7 +24,6 @@ import com.ecash.ecashcore.model.cms.IdentifyDocument;
 import com.ecash.ecashcore.model.cms.Organization;
 import com.ecash.ecashcore.model.cms.SCMSSync;
 import com.ecash.ecashcore.model.cms.Wallet;
-import com.ecash.ecashcore.model.wallet.EWallet;
 import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.AccountTypeRepository;
 import com.ecash.ecashcore.repository.AddressRepository;
@@ -38,8 +36,6 @@ import com.ecash.ecashcore.repository.CustomerAddressRepository;
 import com.ecash.ecashcore.repository.CustomerIdentifyDocumentsRepository;
 import com.ecash.ecashcore.repository.CustomerRepository;
 import com.ecash.ecashcore.repository.CustomerTypeRepository;
-import com.ecash.ecashcore.repository.EWalletRepository;
-import com.ecash.ecashcore.repository.EWalletTypeRepository;
 import com.ecash.ecashcore.repository.IdentifyDocumentRepository;
 import com.ecash.ecashcore.repository.IdentifyDocumentTypeRepository;
 import com.ecash.ecashcore.repository.OrganizationRepository;
@@ -105,15 +101,10 @@ public class SyncService {
 
   @Autowired
   CurrencyCodeRepository currencyCodeRepository;
-
+  
   @Autowired
-  EWalletTypeRepository eWalletTypeRepository;
+  WalletService walletService;
 
-  @Autowired
-  EWalletRepository eWalletRepository;
-
-  private static final String SWT = "SWT";
-  private static final String DEFAULT = "DEFAULT";
 
   public void sync(List<SyncVO> syncDatas) {
     for (SyncVO syncData : syncDatas) {
@@ -141,8 +132,6 @@ public class SyncService {
 
   private Card syncCard(Card syncCard, Account account) {
     Card card = cardRepository.findByCardCode(syncCard.getCardCode());
-    Wallet wallet = null;
-    EWallet eWallet = null;
     if (card != null) {
       card.setEffectiveDate(syncCard.getEffectiveDate());
       card.setExpiryDate(syncCard.getExpiryDate());
@@ -150,28 +139,13 @@ public class SyncService {
     } else {
       card = syncCard;
       card.setAccount(account);
-
       card.setCardType(cardTypeRepository.findByTypeCode(CardTypeEnum.DEFAULT.toString()));
-
-      // create wallet
-      // TODO: filled missing fields
-      wallet = new Wallet();
-      wallet.setProvider(SWT);
-      wallet.setType(DEFAULT);
+      Wallet wallet = new Wallet();
       wallet.setCard(card);
-
-      eWallet = new EWallet();
-      eWallet.setCurrentBalance(Double.valueOf(0));
-      eWallet.setTypeCode(eWalletTypeRepository.findByTypeCode(EWalletTypeEnum.DEFAULT.toString()));
+      walletService.createWallet(wallet);
     }
 
     cardRepository.save(card);
-    if (wallet != null & eWallet != null) {
-      eWalletRepository.save(eWallet);
-
-      wallet.setRefId(eWallet.getId());
-      walletRepository.save(wallet);
-    }
     return card;
   }
 
