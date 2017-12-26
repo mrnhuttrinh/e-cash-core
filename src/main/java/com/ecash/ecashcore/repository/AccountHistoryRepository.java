@@ -1,7 +1,7 @@
 package com.ecash.ecashcore.repository;
 
 import com.ecash.ecashcore.model.cms.AccountHistory;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.ecash.ecashcore.model.cms.QAccountHistory;
 
-public interface AccountHistoryRepository extends JpaRepository<AccountHistory, String> {
+public interface AccountHistoryRepository extends BaseQuerydslRepository<AccountHistory, String, QAccountHistory> {
 }

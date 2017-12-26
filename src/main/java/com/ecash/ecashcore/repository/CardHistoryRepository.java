@@ -1,8 +1,7 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.ecash.ecashcore.model.cms.CardHistory;
+import com.ecash.ecashcore.model.cms.QCardHistory;
 
-public interface CardHistoryRepository extends JpaRepository<CardHistory, String> {
+public interface CardHistoryRepository extends BaseQuerydslRepository<CardHistory, String, QCardHistory> {
 }
