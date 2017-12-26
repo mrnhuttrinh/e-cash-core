@@ -1,9 +1,8 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.ecash.ecashcore.model.cms.BalanceHistory;
+import com.ecash.ecashcore.model.cms.QBalanceHistory;
 
-public interface BalanceHistoryRepository extends JpaRepository<BalanceHistory, String> {
+public interface BalanceHistoryRepository extends BaseQuerydslRepository<BalanceHistory, String, QBalanceHistory> {
 
 }

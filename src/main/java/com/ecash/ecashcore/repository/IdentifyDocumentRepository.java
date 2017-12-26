@@ -1,9 +1,10 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.ecash.ecashcore.model.cms.IdentifyDocument;
-public interface IdentifyDocumentRepository extends JpaRepository<IdentifyDocument, String> {
-  
+import com.ecash.ecashcore.model.cms.QIdentifyDocument;
+
+public interface IdentifyDocumentRepository
+    extends BaseQuerydslRepository<IdentifyDocument, String, QIdentifyDocument> {
+
   IdentifyDocument findByNumber(String number);
 }

@@ -1,9 +1,10 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.ecash.ecashcore.model.cms.IdentifyDocumentType;
+import com.ecash.ecashcore.model.cms.QIdentifyDocumentType;
 
-public interface IdentifyDocumentTypeRepository extends JpaRepository<IdentifyDocumentType, String> {
+public interface IdentifyDocumentTypeRepository
+    extends BaseQuerydslRepository<IdentifyDocumentType, String, QIdentifyDocumentType> {
+
   IdentifyDocumentType findByTypeCode(String typeCode);
 }

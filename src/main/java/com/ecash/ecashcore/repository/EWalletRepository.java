@@ -1,9 +1,8 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.ecash.ecashcore.model.wallet.EWallet;
+import com.ecash.ecashcore.model.wallet.QEWallet;
 
-public interface EWalletRepository extends JpaRepository<EWallet, String> {
+public interface EWalletRepository extends BaseQuerydslRepository<EWallet, String, QEWallet> {
 
 }

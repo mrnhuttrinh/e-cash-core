@@ -2,12 +2,12 @@ package com.ecash.ecashcore.repository;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.ecash.ecashcore.model.cms.AccountType;
+import com.ecash.ecashcore.model.cms.QAccountType;
 
-public interface AccountTypeRepository extends JpaRepository<AccountType, String> {
+public interface AccountTypeRepository extends BaseQuerydslRepository<AccountType, String, QAccountType>  {
 
   @Override
   @RestResource(exported = false)
@@ -32,6 +32,6 @@ public interface AccountTypeRepository extends JpaRepository<AccountType, String
   @Override
   @RestResource(exported = false)
   <S extends AccountType> List<S> save(Iterable<S> entities);
-  
+
   AccountType findByTypeCode(String typeCode);
 }

@@ -1,8 +1,9 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.ecash.ecashcore.model.cms.AddressType;
-public interface AddressTypeRepository extends JpaRepository<AddressType, String> {
+import com.ecash.ecashcore.model.cms.QAddressType;
+
+public interface AddressTypeRepository extends BaseQuerydslRepository<AddressType, String, QAddressType> {
+  
   AddressType findByTypeCode(String typeCode);
 }
