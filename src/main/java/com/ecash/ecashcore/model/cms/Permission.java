@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -26,6 +27,9 @@ public class Permission extends BaseModel {
   private String id;
 
   private String name;
+  
+  @Column(name = "display_name")
+  private String displayName;
 
   @ManyToMany(mappedBy = "permissions")
   private List<Role> roles = new ArrayList<>();
@@ -48,6 +52,16 @@ public class Permission extends BaseModel {
 
   public void setName(String name) {
     this.name = name;
+  }
+  
+  
+
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
   public List<Role> getRoles() {
