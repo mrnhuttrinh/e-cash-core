@@ -15,7 +15,7 @@ public interface RoleExcerpt extends BaseExcerpt {
 
   public String getName();
 
-  public List<User> getUsers();
+//  public List<User> getUsers();
 
   public List<Permission> getPermissions();
 }

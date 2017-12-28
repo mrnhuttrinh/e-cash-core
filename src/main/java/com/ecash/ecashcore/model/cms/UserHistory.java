@@ -18,6 +18,10 @@ public class UserHistory extends AbstractHistory<UserHistoryType> {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
+  
+  public UserHistory() {
+    super();
+  }
 
   public UserHistory(User user, User createdBy, UserHistoryType type, String details) {
     super(type);

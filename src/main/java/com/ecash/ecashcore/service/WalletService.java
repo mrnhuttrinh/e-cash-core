@@ -13,7 +13,7 @@ import com.ecash.ecashcore.model.cms.Wallet;
 import com.ecash.ecashcore.model.wallet.EWallet;
 import com.ecash.ecashcore.repository.CardRepository;
 import com.ecash.ecashcore.repository.EWalletTypeRepository;
-import com.ecash.ecashcore.repository.EwalletRepository;
+import com.ecash.ecashcore.repository.EWalletRepository;
 import com.ecash.ecashcore.repository.WalletRepository;
 import com.querydsl.core.types.Predicate;
 
@@ -27,7 +27,7 @@ public class WalletService {
   WalletRepository walletRepository;
   
   @Autowired
-  EwalletRepository eWalletRepository;
+  EWalletRepository eWalletRepository;
   
   @Autowired
   EWalletTypeRepository eWalletTypeRepository;
@@ -48,24 +48,30 @@ public class WalletService {
     wallet.setCreatedAt(new Date());
     wallet.setName(data.getName());
     wallet.setStatus(StatusEnum.ACTIVE.getName());
+    
     EWallet eWallet = new EWallet();
     eWallet.setCurrentBalance(Double.valueOf(0));
     eWallet.setEWalletType(eWalletTypeRepository.findByTypeCode(EWalletTypeEnum.DEFAULT.toString()));
     eWallet.setDateOpened(new Date());
     eWallet.setStatus(StatusEnum.ACTIVE.getName());
     eWalletRepository.save(eWallet);
+    
     wallet.setRefId(eWallet.getId());
     return walletRepository.save(wallet);
   }
 
   public Wallet disconnectWallet(String id) {
     Wallet wallet = walletRepository.getOne(id);
+    
     if (wallet == null) {
       return null;
     }
+    
+    // DEACTIVE
     wallet.setCard(null);
     wallet.setStatus(StatusEnum.DEACTIVE.getName());
     wallet.setRefId(null);
+    
     return walletRepository.save(wallet);
   }
 

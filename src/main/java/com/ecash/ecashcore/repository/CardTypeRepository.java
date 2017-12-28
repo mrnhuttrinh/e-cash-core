@@ -1,11 +1,11 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.ecash.ecashcore.model.cms.CardType;
+import com.ecash.ecashcore.model.cms.QCardType;
 
-public interface CardTypeRepository extends JpaRepository<CardType, String> {
+public interface CardTypeRepository extends BaseQuerydslRepository<CardType, String, QCardType> {
 
   @Override
   @RestResource(exported = false)

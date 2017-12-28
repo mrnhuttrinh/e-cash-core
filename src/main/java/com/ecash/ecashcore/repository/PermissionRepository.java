@@ -1,10 +1,9 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.ecash.ecashcore.model.cms.Permission;
+import com.ecash.ecashcore.model.cms.QPermission;
 
-public interface PermissionRepository extends JpaRepository<Permission, String> {
+public interface PermissionRepository extends BaseQuerydslRepository<Permission, String, QPermission> {
 
   Permission findByName(String name);
 

@@ -1,11 +1,11 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.ecash.ecashcore.model.cms.CurrencyCode;
+import com.ecash.ecashcore.model.cms.QCurrencyCode;
 
-public interface CurrencyCodeRepository extends JpaRepository<CurrencyCode, String> {
+public interface CurrencyCodeRepository extends BaseQuerydslRepository<CurrencyCode, String, QCurrencyCode> {
 
   @Override
   @RestResource(exported = false)
@@ -14,7 +14,7 @@ public interface CurrencyCodeRepository extends JpaRepository<CurrencyCode, Stri
   @Override
   @RestResource(exported = false)
   void delete(CurrencyCode entity);
-  
+
   @RestResource(exported = false)
   CurrencyCode findByCode(String code);
 }
