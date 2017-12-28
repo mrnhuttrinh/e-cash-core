@@ -1,9 +1,12 @@
 package com.ecash.ecashcore.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,7 @@ import com.ecash.ecashcore.model.cms.CustomerIdentifyDocument;
 import com.ecash.ecashcore.model.cms.IdentifyDocument;
 import com.ecash.ecashcore.model.cms.Organization;
 import com.ecash.ecashcore.model.cms.SCMSSync;
+import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.Wallet;
 import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.AccountTypeRepository;
@@ -41,7 +45,9 @@ import com.ecash.ecashcore.repository.IdentifyDocumentTypeRepository;
 import com.ecash.ecashcore.repository.OrganizationRepository;
 import com.ecash.ecashcore.repository.PlanRepository;
 import com.ecash.ecashcore.repository.SCMSSyncRepository;
+import com.ecash.ecashcore.repository.UserRepository;
 import com.ecash.ecashcore.repository.WalletRepository;
+import com.ecash.ecashcore.util.DateTimeUtils;
 import com.ecash.ecashcore.vo.SyncVO;
 
 @Service
@@ -101,10 +107,15 @@ public class SyncService {
 
   @Autowired
   CurrencyCodeRepository currencyCodeRepository;
-  
+
   @Autowired
   WalletService walletService;
 
+  @Autowired
+  RoleService roleService;
+
+  @Autowired
+  UserRepository userRepository;
 
   public void sync(List<SyncVO> syncDatas) {
     for (SyncVO syncData : syncDatas) {
@@ -126,7 +137,28 @@ public class SyncService {
         Account account = syncAccount(syncData.getAccount(), customer);
 
         syncCard(syncData.getCard(), account);
+
+        syncUser(customer);
       }
+    }
+  }
+
+  private void syncUser(Customer customer) {
+    User user = userRepository.findByUsername(customer.getScmsMemberCode());
+    if (user == null) {
+      user = new User();
+      user.setEmail(customer.getEmail());
+      user.setEnabled(true);
+      user.setFirstName(customer.getFirstName());
+      user.setLastName(customer.getLastName());
+      user.setUsername(customer.getScmsMemberCode());
+      // default password is date of birth with format: yyyyMMdd 
+      PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+      user.setPassword(DateTimeUtils.datetoString(customer.getDateOfBirth(), DateTimeUtils.DEFAULT_FORMAT_SHORT_DATE));
+      user.encodePassword(passwordEncoder);
+      user.setRoles(Arrays.asList(roleService.getRoleUSER()));
+
+      userRepository.save(user);
     }
   }
 
