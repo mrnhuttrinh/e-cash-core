@@ -10,13 +10,19 @@ import com.querydsl.core.types.Predicate;
 
 @Service
 public class RoleService {
-  @Autowired RoleRepository roleRepository;
-  
+
+  @Autowired
+  RoleRepository roleRepository;
+
   public Role getByName(String name) {
     return roleRepository.findByName(name);
   }
-  
+
   public Iterable<Role> findAll(Predicate predicate, Pageable pageable) {
     return roleRepository.findAll(predicate, pageable);
+  }
+
+  public Role getRoleUSER() {
+    return getByName(Role.ROLE_USER);
   }
 }
