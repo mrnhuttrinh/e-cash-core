@@ -12,6 +12,5 @@ public interface HistoryTypeExcerpt extends BaseExcerpt {
   public String getDescription();
   
   public String getStatus();
-  
-  public String getDisplayName();
+
 }
