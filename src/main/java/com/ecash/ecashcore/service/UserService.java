@@ -1,6 +1,8 @@
 package com.ecash.ecashcore.service;
 
 import com.ecash.ecashcore.constants.StringConstant;
+import com.ecash.ecashcore.enums.StatusEnum;
+import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.UserHistory;
 import com.ecash.ecashcore.model.cms.UserHistoryType;
@@ -11,6 +13,9 @@ import com.ecash.ecashcore.repository.UserRepository;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.vo.HistoryVO;
 import com.querydsl.core.types.Predicate;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -56,6 +61,24 @@ public class UserService {
 
   public Iterable<User> findAll(Predicate predicate, Pageable pageable) {
     return userRepository.findAll(predicate, pageable);
+  }
+  
+  public User updateInformation(User user, String currentUsername) {
+    User oldInformation = userRepository.findOne(user.getId());
+    if (oldInformation == null) {
+      throw new ValidationException("User is not exist.");
+    }
+    // create user history
+    User createdBy = userRepository.findByUsername(currentUsername);
+    UserHistoryType historyType = userHistoryTypeRepository.findOne(UserHistoryType.UPDATED);
+    HistoryVO history = new HistoryVO();
+    history.getPrevious().put("roles", oldInformation.getRoles());
+    history.getNext().put("roles", user.getRoles());
+    UserHistory userHistory = new UserHistory(user, createdBy, historyType, JsonUtils.objectToJsonString(history));
+    userHistoryRepository.save(userHistory);
+    
+    userRepository.save(user);
+    return user;
   }
 
   public User changePassword(User user, String newPassword) {
