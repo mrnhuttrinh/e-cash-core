@@ -17,9 +17,6 @@ public class HistoryType extends BaseModel {
   private String description;
   private String status;
 
-  @Column(name = "display_name")
-  private String displayName;
-
   public String getType() {
     return type;
   }
@@ -51,13 +48,4 @@ public class HistoryType extends BaseModel {
   public void setStatus(String status) {
     this.status = status;
   }
-
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
-  }
-
 }

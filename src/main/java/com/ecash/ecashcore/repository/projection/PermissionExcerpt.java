@@ -15,4 +15,6 @@ public interface PermissionExcerpt extends BaseExcerpt {
   String getName();
   
   List<Role> getRoles();
+  
+  String getDisplayName();
 }

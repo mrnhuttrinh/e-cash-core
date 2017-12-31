@@ -24,6 +24,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
     generator = ObjectIdGenerators.PropertyGenerator.class, 
     property = "id")
 public class Role extends BaseModel {
+  
+  // DEFAULT ROLE NAMES
+  public static String ROLE_USER = "USER";
+  public static String ROLE_ADMIN = "ADMIN";
 
   @Id
   @GeneratedValue(generator = "system-uuid")
@@ -35,7 +39,7 @@ public class Role extends BaseModel {
   @ManyToMany(mappedBy = "roles")
   private List<User> users = new ArrayList<>();
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "roles_permissions", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
   private List<Permission> permissions;
 
