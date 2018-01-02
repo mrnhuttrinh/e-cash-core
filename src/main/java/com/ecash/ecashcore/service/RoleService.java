@@ -1,10 +1,14 @@
 package com.ecash.ecashcore.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.ecash.ecashcore.model.cms.Permission;
 import com.ecash.ecashcore.model.cms.Role;
+import com.ecash.ecashcore.repository.PermissionRepository;
 import com.ecash.ecashcore.repository.RoleRepository;
 import com.querydsl.core.types.Predicate;
 
@@ -13,6 +17,9 @@ public class RoleService {
 
   @Autowired
   RoleRepository roleRepository;
+
+  @Autowired
+  PermissionRepository permissionRepository;
 
   public Role getByName(String name) {
     return roleRepository.findByName(name);
@@ -24,5 +31,14 @@ public class RoleService {
 
   public Role getRoleUSER() {
     return getByName(Role.ROLE_USER);
+  }
+
+  public Role findById(String id) {
+    return roleRepository.findOne(id);
+  }
+
+  public Role updateRolePermission(Role role, List<Permission> permissions) {
+    role.setPermissions(permissions);
+    return roleRepository.save(role);
   }
 }
