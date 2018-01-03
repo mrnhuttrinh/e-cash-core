@@ -74,7 +74,6 @@ public class CardStatementService
           cardStatementVO.getCardStatementDetailVO().getTransactionTypeCode()));
       
       cardStatement.setUpdatedAt(new Date());
-      cardStatementRepository.save(cardStatement);
     }
     else
     {
@@ -84,8 +83,8 @@ public class CardStatementService
           .setPaymentAmount(cardStatement.getPaymentAmount()
               + calculatePayment(cardStatementVO.getPaymentAmount(),
                   cardStatementVO.getCardStatementDetailVO().getTransactionTypeCode()));
-      cardStatementRepository.save(cardStatement);
     }
+    cardStatementRepository.save(cardStatement);
     // Save cardstatement detail
     cardStatementDetail = new CardStatementDetail();
     cardStatementDetail.setCardStatement(cardStatement);

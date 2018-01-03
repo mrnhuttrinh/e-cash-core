@@ -406,4 +406,15 @@ public class TransactionService
     });
     return listTransactionVO;
   }
+
+  public List<TransactionVO> findMerchantTransactionByDateBetween(Date fromDate, Date toDate)
+  {
+    List<TransactionVO> listTransactionVO = new ArrayList<>();
+    List<Transaction> temp = transactionRepository.findByDateBetween(fromDate,
+        toDate);
+    temp.stream().filter(tran -> tran.getTransactionDetail() != null).forEach(transaction -> {
+      listTransactionVO.add(modelMapper.map(transaction, TransactionVO.class));
+    });
+    return listTransactionVO;
+  }
 }
