@@ -63,13 +63,12 @@ public class UserService {
     return userRepository.findAll(predicate, pageable);
   }
   
-  public User updateInformation(User user, String currentUsername) {
+  public User updateInformation(User user, User createdBy) {
     User oldInformation = userRepository.findOne(user.getId());
     if (oldInformation == null) {
       throw new ValidationException("User is not exist.");
     }
     // create user history
-    User createdBy = userRepository.findByUsername(currentUsername);
     UserHistoryType historyType = userHistoryTypeRepository.findOne(UserHistoryType.UPDATED);
     HistoryVO history = new HistoryVO();
     history.getPrevious().put("roles", oldInformation.getRoles());
@@ -97,13 +96,12 @@ public class UserService {
     return userRepository.save(user);
   }
 
-  public User resetPassword(User user, String currentUsername, String newPassword) {
+  public User resetPassword(User user, User createdBy, String newPassword) {
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     user.setPassword(newPassword);
     user.encodePassword(passwordEncoder);
 
     // create user history
-    User createdBy = userRepository.findByUsername(currentUsername);
     UserHistoryType historyType = userHistoryTypeRepository.findOne(UserHistoryType.PASSWORD_CHANGED);
     HistoryVO history = new HistoryVO();
     history.getPrevious().put(StringConstant.PASSWORD, StringConstant.OLD_PASSWORD);
@@ -115,7 +113,7 @@ public class UserService {
     return userRepository.save(user);
   }
 
-  public User updateStatus(User user, String status, String currentUsername) {
+  public User updateStatus(User user, String status, User createdBy) {
     String historyStringType = null;
 
     String newStatus = null;
@@ -130,7 +128,6 @@ public class UserService {
     }
 
     // create user history
-    User createdBy = userRepository.findByUsername(currentUsername);
     UserHistoryType historyType = userHistoryTypeRepository.findOne(historyStringType);
     HistoryVO history = new HistoryVO();
     history.getPrevious().put(StringConstant.STATUS, status);

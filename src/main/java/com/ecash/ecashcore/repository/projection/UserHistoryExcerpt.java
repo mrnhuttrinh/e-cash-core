@@ -11,7 +11,7 @@ public interface UserHistoryExcerpt extends BaseExcerpt {
 
   String getDetails();
 
-  User getCreatedBy();
+  String getCreatedBy();
 
   User getUser();
 
