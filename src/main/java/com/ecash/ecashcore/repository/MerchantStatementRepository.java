@@ -3,11 +3,10 @@ package com.ecash.ecashcore.repository;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
-
 import com.ecash.ecashcore.model.cms.MerchantStatement;
+import com.ecash.ecashcore.model.cms.QMerchantStatement;
 
-public interface MerchantStatementRepository extends CrudRepository<MerchantStatement, String>
+public interface MerchantStatementRepository extends BaseQuerydslRepository<MerchantStatement, String, QMerchantStatement>
 {
   List<MerchantStatement> findByMerchantIdAndDueDateBetween(String merchantId, Date dueDateFrom,
       Date dueDateTo);
