@@ -3,10 +3,12 @@ package com.ecash.ecashcore.service;
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.exception.ValidationException;
+import com.ecash.ecashcore.model.cms.Role;
 import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.UserHistory;
 import com.ecash.ecashcore.model.cms.UserHistoryType;
 import com.ecash.ecashcore.repository.PermissionRepository;
+import com.ecash.ecashcore.repository.RoleRepository;
 import com.ecash.ecashcore.repository.UserHistoryRepository;
 import com.ecash.ecashcore.repository.UserHistoryTypeRepository;
 import com.ecash.ecashcore.repository.UserRepository;
@@ -18,11 +20,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -34,8 +40,8 @@ public class UserService {
   @Autowired
   private UserHistoryRepository userHistoryRepository;
 
-  // @Autowired
-  // private RoleRepository roleRepository;
+   @Autowired
+   private RoleRepository roleRepository;
 
   @Autowired
   UserHistoryTypeRepository userHistoryTypeRepository;
@@ -161,5 +167,30 @@ public class UserService {
 
     user.setSetting(newSetting);
     return userRepository.save(user);
+  }
+  
+  public User addNewUser(User newUser, String currentUsername) throws Exception {
+      
+      User emailUser = userRepository.findByEmail(newUser.getEmail());
+      if (emailUser != null) {
+          throw new Exception("Email is exists");
+      }
+      User usernameUser = userRepository.findByUsername(newUser.getUsername());
+      if (usernameUser != null) {
+          throw new Exception("Username is exists");
+      }
+
+      newUser = this.save(newUser);
+      
+      // create user history
+      User currentUser = userRepository.findByUsername(currentUsername);
+      String userJson = JsonUtils.objectToJsonString(newUser);
+      UserHistoryType historyType = userHistoryTypeRepository.findOne(UserHistoryType.CREATED);
+      HistoryVO history = new HistoryVO();
+      history.getPrevious().put(StringConstant.PREVIOUS, "");
+      history.getNext().put(StringConstant.PREVIOUS, userJson);
+      UserHistory userHistory = new UserHistory(newUser, currentUser, historyType, JsonUtils.objectToJsonString(history));
+      userHistoryRepository.save(userHistory);
+      return newUser;
   }
 }
