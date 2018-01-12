@@ -41,4 +41,13 @@ public class RoleService {
     role.setPermissions(permissions);
     return roleRepository.save(role);
   }
+  
+  public Role addNewRole(String roleName) throws Exception {
+    Role roleExistence = roleRepository.findByNameIgnoreCase(roleName);
+    if (roleExistence != null) {
+      throw new Exception("Role name is exists");
+    }
+    Role newRole = new Role(roleName);
+    return roleRepository.save(newRole);
+  }
 }
