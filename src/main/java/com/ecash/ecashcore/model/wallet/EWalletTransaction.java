@@ -16,6 +16,8 @@ import java.util.Date;
 @Table(name = "e_wallet_transaction")
 public class EWalletTransaction extends BaseModel {
 
+  public static String SUCCESS = "SUCCESS";
+
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
@@ -38,6 +40,20 @@ public class EWalletTransaction extends BaseModel {
   private Double amount;
 
   private String status;
+
+  public EWalletTransaction()
+  {
+    super();
+  }
+
+  public EWalletTransaction(EWallet walletId, EWalletTransactionType transactionType, Date date, Double amount, String status) {
+    super();
+    this.walletId = walletId;
+    this.transactionType = transactionType;
+    this.date = date;
+    this.amount = amount;
+    this.status = status;
+  }
 
   public String getId() {
     return id;

@@ -2,7 +2,7 @@ package com.ecash.ecashcore.vo.request;
 
 import com.ecash.ecashcore.vo.CardInformationVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
-import com.ecash.ecashcore.vo.TargetAccountVO;
+import com.ecash.ecashcore.vo.TargetVO;
 
 public interface ITransactionRequestVO {
   default CardInformationVO getCard() {
@@ -23,7 +23,7 @@ public interface ITransactionRequestVO {
 
   void setExtendedInformation(ExtendedInformationVO extendedInformation);
 
-  default TargetAccountVO getTargetAccount() {
+  default TargetVO getTarget() {
     return null;
   }
 }
