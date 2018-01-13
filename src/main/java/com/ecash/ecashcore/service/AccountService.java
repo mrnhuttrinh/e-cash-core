@@ -55,16 +55,19 @@ public class AccountService {
     JSONObject next = new JSONObject();
     next.put(StringConstant.STATUS, newAccount.getStatus());
 
-    JSONObject status = new JSONObject();
-    status.put(StringConstant.PREVIOUS, previous).put(StringConstant.NEXT, next);
+    JSONObject details = new JSONObject();
+    details.put(StringConstant.PREVIOUS, previous).put(StringConstant.NEXT, next);
 
     AccountHistory history = new AccountHistory();
     history.setAccount(account);
     history.setStatus(StatusEnum.ACTIVE.toString());
-    history.setDetails(status.toString());
+    history.setDetails(details.toString());
     history.setCreatedBy(userName);
-
-    AccountHistoryType accountHistoryType = accountHistoryTypeRepository.findOne(AccountHistoryType.UPDATED);
+    String type = AccountHistoryType.LOCKED;
+    if (newAccount.getStatus().equals(StatusEnum.ACTIVE.toString())) {
+      type = AccountHistoryType.UNLOCKED;
+    }
+    AccountHistoryType accountHistoryType = accountHistoryTypeRepository.findOne(type);
     history.setType(accountHistoryType);
     accountHistoryRepository.save(history);
 
