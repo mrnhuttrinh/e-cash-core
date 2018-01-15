@@ -39,6 +39,14 @@ public class Wallet extends BaseModel {
   
   private String status;
 
+  public Wallet() {}
+
+  public Wallet(String type, Card card, String status) {
+    this.type = type;
+    this.card = card;
+    this.status = status;
+  }
+
   public String getId() {
     return id;
   }

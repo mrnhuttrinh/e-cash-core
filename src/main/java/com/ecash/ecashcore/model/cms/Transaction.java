@@ -1,22 +1,10 @@
 package com.ecash.ecashcore.model.cms;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
+import com.ecash.ecashcore.model.BaseModel;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.ecash.ecashcore.model.BaseModel;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity(name = "Transaction")
 @Table(name = "transaction")
@@ -71,6 +59,13 @@ public class Transaction extends BaseModel
     this.date = date;
     this.amount = amount;
     this.card = card;
+  }
+
+  public static Transaction activeOf(Account account, TransactionType transactionType, Date date, Double amount,
+                                     Card card) {
+    Transaction transaction = new Transaction(account, transactionType, date, amount, card);
+    transaction.setStatus("ACTIVE");
+    return transaction;
   }
 
   public String getId()

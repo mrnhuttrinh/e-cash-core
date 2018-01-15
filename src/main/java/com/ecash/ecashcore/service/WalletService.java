@@ -1,21 +1,20 @@
 package com.ecash.ecashcore.service;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ecash.ecashcore.enums.EWalletTypeEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.model.cms.Wallet;
 import com.ecash.ecashcore.model.wallet.EWallet;
 import com.ecash.ecashcore.repository.CardRepository;
 import com.ecash.ecashcore.repository.EWalletRepository;
-import com.ecash.ecashcore.repository.EwalletTypeRepository;
+import com.ecash.ecashcore.repository.EWalletTypeRepository;
 import com.ecash.ecashcore.repository.WalletRepository;
 import com.querydsl.core.types.Predicate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 @Service
 @Transactional
@@ -30,7 +29,7 @@ public class WalletService {
   EWalletRepository eWalletRepository;
   
   @Autowired
-  EwalletTypeRepository eWalletTypeRepository;
+  EWalletTypeRepository eWalletTypeRepository;
   
   @Autowired
   CardRepository cardRepository;

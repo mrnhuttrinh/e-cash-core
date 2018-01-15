@@ -3,7 +3,7 @@ package com.ecash.ecashcore.vo;
 public class ExtendedInformationVO {
   private TerminalInformationVO additionalTerminalInfo;
   private String transactionDetails;
-  private TargetAccountVO targetAccount;
+  private TargetVO targetAccount;
 
   public TerminalInformationVO getAdditionalTerminalInfo() {
     return additionalTerminalInfo;
@@ -21,11 +21,11 @@ public class ExtendedInformationVO {
     this.transactionDetails = transactionDetails;
   }
 
-  public TargetAccountVO getTargetAccount() {
+  public TargetVO getTargetAccount() {
     return targetAccount;
   }
 
-  public void setTargetAccount(TargetAccountVO targetAccount) {
-    this.targetAccount = targetAccount;
+  public void setTargetAccount(TargetVO target) {
+    this.targetAccount = target;
   }
 }

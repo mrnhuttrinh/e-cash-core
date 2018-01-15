@@ -2,7 +2,7 @@ package com.ecash.ecashcore.vo.request;
 
 import com.ecash.ecashcore.vo.CardInformationVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
-import com.ecash.ecashcore.vo.TargetAccountVO;
+import com.ecash.ecashcore.vo.TargetVO;
 
 public class ChargeRequestVO implements ITransactionRequestVO {
   private CardInformationVO card;
@@ -34,7 +34,7 @@ public class ChargeRequestVO implements ITransactionRequestVO {
   }
 
   @Override
-  public TargetAccountVO getTargetAccount() {
+  public TargetVO getTarget() {
     if (this.getExtendedInformation() != null) {
       return this.getExtendedInformation().getTargetAccount();
     }
