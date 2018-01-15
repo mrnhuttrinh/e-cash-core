@@ -378,7 +378,7 @@ public class TransactionService {
     Wallet sampleWallet = new Wallet(walletType, card, CMSWalletStatusEnum.ACTIVE.toString());
     List<Wallet> wallets = walletRepository.findAll(Example.of(sampleWallet));
     if (wallets.isEmpty()) {
-      throw new ValidationException("Card has no active wallet");
+      return null;
     } else {
       return wallets.get(0);
     }
