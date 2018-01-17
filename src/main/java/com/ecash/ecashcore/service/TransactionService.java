@@ -324,8 +324,7 @@ public class TransactionService {
 
   private void validateTransactionRequest(ITransactionRequestVO transactionRequest) {
     if (transactionRequest.getCard() == null || transactionRequest.getAmount() == null
-        || transactionRequest.getExtendedInformation() == null
-        || transactionRequest.getTarget() == null) {
+        || transactionRequest.getExtendedInformation() == null) {
       throw new InvalidInputException("Required information is missing");
     }
 
