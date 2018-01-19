@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.ecash.ecashcore.model.BaseModel;
@@ -63,6 +64,10 @@ public class User extends BaseModel {
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private List<Role> roles;
+  
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "customers_users", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "id"))
+  private List<Customer> customers;
 
   public User() {
     super();
@@ -177,5 +182,13 @@ public class User extends BaseModel {
 
   public void setSetting(String setting) {
     this.setting = setting;
+  }
+
+  public List<Customer> getCustomers() {
+    return customers;
+  }
+
+  public void setCustomers(List<Customer> customers) {
+    this.customers = customers;
   }
 }
