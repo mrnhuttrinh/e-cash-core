@@ -11,10 +11,12 @@ import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.BalanceHistory;
 import com.ecash.ecashcore.model.cms.Card;
+import com.ecash.ecashcore.model.cms.Customer;
 import com.ecash.ecashcore.model.cms.MerchantTerminal;
 import com.ecash.ecashcore.model.cms.Transaction;
 import com.ecash.ecashcore.model.cms.TransactionDetail;
 import com.ecash.ecashcore.model.cms.TransactionType;
+import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.Wallet;
 import com.ecash.ecashcore.model.wallet.EWalletTransaction;
 import com.ecash.ecashcore.repository.AccountRepository;
@@ -27,9 +29,11 @@ import com.ecash.ecashcore.repository.TransactionRepository;
 import com.ecash.ecashcore.repository.TransactionTypeRepository;
 import com.ecash.ecashcore.repository.WalletRepository;
 import com.ecash.ecashcore.util.StringUtils;
+import com.ecash.ecashcore.vo.CustomerTransactionVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.TargetVO;
 import com.ecash.ecashcore.vo.TransactionVO;
+import com.ecash.ecashcore.vo.UserTransactionVO;
 import com.ecash.ecashcore.vo.request.ChargeRequestVO;
 import com.ecash.ecashcore.vo.request.DepositRequestVO;
 import com.ecash.ecashcore.vo.request.ITransactionRequestVO;
@@ -93,6 +97,9 @@ public class TransactionService {
 
   @Autowired
   EWalletService eWalletService;
+  
+  @Autowired
+  UserService userService;
 
   public TransactionResponseVO chargeRequest(ChargeRequestVO chargeRequest) {
     Account account = null;
@@ -405,5 +412,29 @@ public class TransactionService {
       listTransactionVO.add(modelMapper.map(transaction, TransactionVO.class));
     });
     return listTransactionVO;
+  }
+  
+  public UserTransactionVO findTransactionByUser(String currentUser, Date fromDate, Date toDate) {
+    UserTransactionVO userTransactionVO = new UserTransactionVO();
+    List<CustomerTransactionVO> customerTransactions = new ArrayList<CustomerTransactionVO>();
+    User user = userService.getByUsername(currentUser);
+    List<Customer> customers = user.getCustomers();
+
+    for (Customer customer : customers) {
+
+      CustomerTransactionVO customerTransaction = modelMapper.map(customer, CustomerTransactionVO.class);
+      for (Account account : customer.getAccounts()) {
+
+        List<TransactionVO> listTransactionVO = new ArrayList<>();
+        List<Transaction> temp = transactionRepository.findByDateBetweenAndAccount(fromDate, toDate, account);
+        temp.stream().filter(tran -> tran.getTransactionDetail() != null).forEach(transaction -> {
+          listTransactionVO.add(modelMapper.map(transaction, TransactionVO.class));
+        });
+        customerTransaction.setTransactions(listTransactionVO);
+      }
+      customerTransactions.add(customerTransaction);
+    }
+    userTransactionVO.setCustomerTransactions(customerTransactions);
+    return userTransactionVO;
   }
 }

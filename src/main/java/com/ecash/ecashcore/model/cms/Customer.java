@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -84,6 +86,9 @@ public class Customer extends BaseModel {
   @JsonProperty(access = Access.WRITE_ONLY)
   @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
   private List<CustomerHistory> customerHistory;
+  
+  @ManyToMany(mappedBy = "customers")
+  private List<User> users = new ArrayList<>();
 
   public String getId() {
     return id;
@@ -251,5 +256,13 @@ public class Customer extends BaseModel {
 
   public void setCustomerHistory(List<CustomerHistory> customerHistory) {
     this.customerHistory = customerHistory;
+  }
+
+  public List<User> getUsers() {
+    return users;
+  }
+
+  public void setUsers(List<User> users) {
+    this.users = users;
   }
 }

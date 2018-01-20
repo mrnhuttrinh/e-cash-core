@@ -54,11 +54,19 @@ public class UserService {
   }
 
   public User getByEmail(String email) {
-    return userRepository.findByEmail(email);
+    User user = userRepository.findByEmail(email);
+    if (user == null) {
+      user = userRepository.findByUsername(email);
+    }
+    return user;
   }
 
   public User getByUsername(String username) {
-    return userRepository.findByUsername(username);
+    User user = userRepository.findByUsername(username);
+    if (user == null) {
+      user = userRepository.findByEmail(username);
+    }
+    return user;
   }
 
   public User save(User user) {
