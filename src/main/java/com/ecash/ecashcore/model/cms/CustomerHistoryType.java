@@ -7,5 +7,5 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "customer_history_type")
-public class CustomerHistoryType extends AbstractHistoryType{
+public class CustomerHistoryType extends AbstractHistoryType {
 }
