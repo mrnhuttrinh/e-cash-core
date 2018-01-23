@@ -32,6 +32,10 @@ public class SCMSSyncDetail extends BaseModel {
   @Column(name = "target_id", nullable = false)
   private String targetId;
 
+  public SCMSSyncDetail() {
+    super();
+  }
+
   public SCMSSyncDetail(String personalizationCode, String syncSource, String targetObject, String targetId) {
     super();
     this.personalizationCode = personalizationCode;

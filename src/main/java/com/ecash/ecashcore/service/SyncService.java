@@ -100,7 +100,7 @@ public class SyncService {
 
   @Autowired
   CardHistoryRepository cardHistoryRepository;
-  
+
   @Autowired
   CardHistoryTypeRepository cardHistoryTypeRepository;
 
@@ -155,7 +155,6 @@ public class SyncService {
       Optional<SCMSSync> oldSync = Optional.ofNullable(scmsSyncRepository.findBySyncCode(scmsSync.getSyncCode()));
 
       if (!oldSync.isPresent()) {
-        scmsSyncRepository.save(scmsSync);
 
         Organization organization = syncOrg(syncData.getOrganization());
 
@@ -171,6 +170,8 @@ public class SyncService {
         syncCard(syncData.getCard(), account, syncData);
 
         syncUser(customer);
+        
+        scmsSyncRepository.save(scmsSync);
       }
     }
   }
@@ -199,30 +200,34 @@ public class SyncService {
         syncData.getPersonalizationCode(), SCMSSyncTargetEnum.CARD.toString());
 
     Card card = null;
+    CardHistory cardHistory = null;
+
     if (scmsSyncDetail != null) {
       card = cardRepository.findOne(scmsSyncDetail.getTargetId());
     }
-    
-    CardHistory cardHistory = null;
+
     if (card != null) {
       card.setEffectiveDate(syncCard.getEffectiveDate());
       card.setExpiryDate(syncCard.getExpiryDate());
       card.setStatus(syncCard.getStatus());
-      
+
       cardHistory = new CardHistory();
       cardHistory.setCard(card);
       cardHistory.setType(cardHistoryTypeRepository.findOne(CardHistoryType.UPDATED));
+      cardHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
     } else {
       card = syncCard;
       card.setAccount(account);
       card.setCardType(cardTypeRepository.findByTypeCode(CardTypeEnum.DEFAULT.toString()));
+
       Wallet wallet = new Wallet();
       wallet.setCard(card);
       walletService.createWallet(wallet);
-      
+
       cardHistory = new CardHistory();
       cardHistory.setCard(card);
       cardHistory.setType(cardHistoryTypeRepository.findOne(CardHistoryType.CREATED));
+      cardHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
     }
 
     cardRepository.save(card);
@@ -231,8 +236,8 @@ public class SyncService {
       scmsSyncDetail = new SCMSSyncDetail(syncData.getPersonalizationCode(), SCMSSyncDetail.SCMS_SYNC,
           SCMSSyncTargetEnum.CARD.toString(), card.getCardNumber());
     }
-    
-    if(cardHistory != null) {
+
+    if (cardHistory != null) {
       cardHistoryRepository.save(cardHistory);
     }
 
@@ -242,37 +247,48 @@ public class SyncService {
   }
 
   private Address syncAddress(Address syncAddress, Customer customer, SyncVO syncData) {
-
-    List<Address> addresses = addressRepository.findByLine1AndLine2AndCountry(syncAddress.getLine1(),
-        syncAddress.getLine2(), syncAddress.getCountry());
+    SCMSSyncDetail scmsSyncDetail = scmsSyncDetailRepository.findByPersonalizationCodeAndTargetObject(
+        syncData.getPersonalizationCode(), SCMSSyncTargetEnum.ADDRESS.toString());
 
     Address address = null;
-    boolean isContain = true;
-    if (addresses.isEmpty()) {
+    CustomerAddress customerAddress = null;
+    if (scmsSyncDetail != null) {
+      address = addressRepository.findOne(scmsSyncDetail.getTargetId());
+    }
+
+    if (address == null) {
       address = syncAddress;
 
       address.setAddressType(addressTypeRepository.findByTypeCode(AddressTypeEnum.DEFAULT.toString()));
       addressRepository.save(address);
 
-      isContain = false;
-    } else {
-      address = addresses.get(0);
-
-      isContain = address.getCustomers().stream().anyMatch(t -> t.getId() == customer.getId());
-    }
-
-    if (!isContain) {
-      CustomerAddress customerAddress = new CustomerAddress();
+      customerAddress = new CustomerAddress();
       customerAddress.setAddress(address);
       customerAddress.setCustomer(customer);
+    } else {
+      address.setCountry(syncAddress.getCountry());
+      address.setLine1(syncAddress.getLine1());
+      address.setLine2(syncAddress.getLine2());
+    }
+
+    addressRepository.save(address);
+
+    if (customerAddress != null) {
       customerAddressRepository.save(customerAddress);
     }
+
+    if (scmsSyncDetail == null) {
+      scmsSyncDetail = new SCMSSyncDetail(syncData.getPersonalizationCode(), SCMSSyncDetail.SCMS_SYNC,
+          SCMSSyncTargetEnum.ADDRESS.toString(), address.getId());
+    }
+
+    scmsSyncDetailRepository.save(scmsSyncDetail);
 
     return address;
   }
 
   private Account syncAccount(Account syncAccount, Customer customer, SyncVO syncData) {
-    List<Account> accounts = customer.getAccounts();
+    List<Account> accounts = accountRepository.findByCustomer(customer);
     Account account = null;
     if (accounts == null || accounts.isEmpty()) {
       account = syncAccount;
@@ -302,11 +318,12 @@ public class SyncService {
         .findByPersonalizationCodeAndTargetObject(syncData.getPersonalizationCode(), syncTarget.toString());
 
     IdentifyDocument identifyDocument = null;
+    CustomerIdentifyDocument customerIdentifyCard = null;
+
     if (scmsSyncDetail != null) {
       identifyDocument = identifyDocumentRepository.findOne(scmsSyncDetail.getTargetId());
     }
 
-    CustomerIdentifyDocument customerIdentifyCard = null;
     if (identifyDocument != null) {
       identifyDocument.setDateOfIssue(syncIdentifyCard.getDateOfIssue());
       identifyDocument.setDateOfExpiry(syncIdentifyCard.getDateOfExpiry());
@@ -323,6 +340,7 @@ public class SyncService {
     }
 
     identifyDocumentRepository.save(identifyDocument);
+
     if (customerIdentifyCard != null) {
       customerIdentifyDocumentsRepository.save(customerIdentifyCard);
     }
@@ -352,11 +370,12 @@ public class SyncService {
         syncData.getPersonalizationCode(), SCMSSyncTargetEnum.CUSTOMER.toString());
 
     Customer customer = null;
+    CustomerHistory customerHistory = null;
+
     if (scmsSyncDetail != null) {
       customer = customerRepository.findOne(scmsSyncDetail.getTargetId());
     }
 
-    CustomerHistory customerHistory = null;
     if (customer != null) {
       customer.setScmsMemberCode(syncCustomer.getScmsMemberCode());
       customer.setFirstName(syncCustomer.getFirstName());
@@ -376,6 +395,7 @@ public class SyncService {
       customerHistory = new CustomerHistory();
       customerHistory.setCustomer(customer);
       customerHistory.setType(customerHistoryTypeRepository.findOne(CustomerHistoryType.UPDATED));
+      customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
     } else {
       customer = syncCustomer;
 
@@ -386,7 +406,9 @@ public class SyncService {
       customerHistory = new CustomerHistory();
       customerHistory.setCustomer(customer);
       customerHistory.setType(customerHistoryTypeRepository.findOne(CustomerHistoryType.CREATED));
+      customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
     }
+
     customer.setOrganization(organization);
     customerRepository.save(customer);
 
@@ -407,11 +429,15 @@ public class SyncService {
   private Organization syncOrg(Organization syncOrg) {
     Organization org = organizationRepository.findOne(syncOrg.getId());
     if (org != null) {
-      org.setShortName(syncOrg.getShortName());
+      if (!org.getShortName().equals(syncOrg.getShortName())) {
+        org.setShortName(syncOrg.getShortName());
+        organizationRepository.save(org);
+      }
     } else {
       org = syncOrg;
+      organizationRepository.save(org);
     }
 
-    return organizationRepository.save(org);
+    return org;
   }
 }

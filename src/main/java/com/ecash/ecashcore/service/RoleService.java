@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ecash.ecashcore.model.cms.Permission;
 import com.ecash.ecashcore.model.cms.Role;
@@ -13,6 +14,7 @@ import com.ecash.ecashcore.repository.RoleRepository;
 import com.querydsl.core.types.Predicate;
 
 @Service
+@Transactional
 public class RoleService {
 
   @Autowired

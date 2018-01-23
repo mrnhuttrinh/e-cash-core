@@ -56,7 +56,9 @@ public class WalletService {
     eWalletRepository.save(eWallet);
     
     wallet.setRefId(eWallet.getId());
-    return walletRepository.save(wallet);
+    walletRepository.save(wallet);
+    
+    return wallet;
   }
 
   public Wallet disconnectWallet(String id) {
