@@ -3,6 +3,8 @@ package com.ecash.ecashcore.service;
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.exception.ValidationException;
+import com.ecash.ecashcore.model.cms.Account;
+import com.ecash.ecashcore.model.cms.Customer;
 import com.ecash.ecashcore.model.cms.Role;
 import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.UserHistory;
@@ -13,6 +15,8 @@ import com.ecash.ecashcore.repository.UserHistoryRepository;
 import com.ecash.ecashcore.repository.UserHistoryTypeRepository;
 import com.ecash.ecashcore.repository.UserRepository;
 import com.ecash.ecashcore.util.JsonUtils;
+import com.ecash.ecashcore.vo.CustomerVO;
+import com.ecash.ecashcore.vo.GeneralInformationVO;
 import com.ecash.ecashcore.vo.HistoryVO;
 import com.querydsl.core.types.Predicate;
 
@@ -200,5 +204,25 @@ public class UserService {
       UserHistory userHistory = new UserHistory(newUser, currentUser, historyType, JsonUtils.objectToJsonString(history));
       userHistoryRepository.save(userHistory);
       return newUser;
+  }
+  
+  public GeneralInformationVO generalInformation(String currentUsername) throws Exception {
+    User user = userRepository.findByUsername(currentUsername);
+    if (user == null) {
+        throw new Exception("User isn't exists");
+    }
+    List<CustomerVO> customers = new ArrayList<CustomerVO>();
+    for (Customer customer : user.getCustomers()) {
+      // find account
+      List<Account> accounts = new ArrayList<Account>();
+      for (Account account : customer.getAccounts()) {
+        accounts.add(account);
+      }
+      CustomerVO customerVO = new CustomerVO(customer, accounts);
+      customers.add(customerVO);
+    }
+    GeneralInformationVO generalInformation = new GeneralInformationVO(user, customers);
+    return generalInformation;
+    
   }
 }
