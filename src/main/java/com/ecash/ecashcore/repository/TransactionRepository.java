@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.ecash.ecashcore.model.cms.Account;
+import com.ecash.ecashcore.model.cms.Card;
 import com.ecash.ecashcore.model.cms.QTransaction;
 import com.ecash.ecashcore.model.cms.Transaction;
 
@@ -22,5 +23,7 @@ public interface TransactionRepository
   public List<Transaction> findByDateBetween(Date fromDate, Date toDate);
   
   public List<Transaction> findByDateBetweenAndAccount(Date fromDate, Date toDate, Account account);
+  
+  public List<Transaction> findByDateBetweenAndCard(Date fromDate, Date toDate, Card card);
   
 }

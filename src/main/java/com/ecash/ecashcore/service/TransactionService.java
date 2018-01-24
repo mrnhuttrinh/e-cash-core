@@ -519,8 +519,13 @@ public class TransactionService {
 
       CustomerTransactionVO customerTransaction = modelMapper.map(customer, CustomerTransactionVO.class);
       for (Account account : customer.getAccounts()) {
-
         List<TransactionVO> listTransactionVO = new ArrayList<>();
+        for (Card card : account.getCards()) {
+          List<Transaction> tempTransactionCard = transactionRepository.findByDateBetweenAndCard(fromDate, toDate, card);
+          tempTransactionCard.stream().filter(tran -> tran.getTransactionDetail() != null).forEach(transaction -> {
+            listTransactionVO.add(modelMapper.map(transaction, TransactionVO.class));
+          });
+        }
         List<Transaction> temp = transactionRepository.findByDateBetweenAndAccount(fromDate, toDate, account);
         temp.stream().filter(tran -> tran.getTransactionDetail() != null).forEach(transaction -> {
           listTransactionVO.add(modelMapper.map(transaction, TransactionVO.class));
