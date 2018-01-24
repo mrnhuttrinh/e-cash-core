@@ -49,6 +49,14 @@ public class Transaction extends BaseModel
   {
     super();
   }
+  public Transaction(Account account, TransactionType transactionType, Date date, Double amount)
+  {
+    super();
+    this.account = account;
+    this.transactionType = transactionType;
+    this.date = date;
+    this.amount = amount;
+  }
 
   public Transaction(Account account, TransactionType transactionType, Date date, Double amount,
       Card card)

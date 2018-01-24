@@ -32,6 +32,12 @@ public class TransactionDetail extends BaseModel {
     super();
   }
 
+  public TransactionDetail(Transaction transaction, String detail) {
+    super();
+    this.transactionDetailId = new TransactionDetailId(transaction);
+    this.detail = detail;
+  }
+
   public TransactionDetail(Transaction transaction, String detail, Merchant merchant) {
     super();
     this.transactionDetailId = new TransactionDetailId(transaction);

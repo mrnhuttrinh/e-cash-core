@@ -8,16 +8,7 @@ import com.ecash.ecashcore.exception.DataNotFoundException;
 import com.ecash.ecashcore.exception.EcashException;
 import com.ecash.ecashcore.exception.InvalidInputException;
 import com.ecash.ecashcore.exception.ValidationException;
-import com.ecash.ecashcore.model.cms.Account;
-import com.ecash.ecashcore.model.cms.BalanceHistory;
-import com.ecash.ecashcore.model.cms.Card;
-import com.ecash.ecashcore.model.cms.Customer;
-import com.ecash.ecashcore.model.cms.MerchantTerminal;
-import com.ecash.ecashcore.model.cms.Transaction;
-import com.ecash.ecashcore.model.cms.TransactionDetail;
-import com.ecash.ecashcore.model.cms.TransactionType;
-import com.ecash.ecashcore.model.cms.User;
-import com.ecash.ecashcore.model.cms.Wallet;
+import com.ecash.ecashcore.model.cms.*;
 import com.ecash.ecashcore.model.wallet.EWalletTransaction;
 import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.BalanceHistoryRepository;
@@ -33,11 +24,13 @@ import com.ecash.ecashcore.vo.CustomerTransactionVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.TargetVO;
 import com.ecash.ecashcore.vo.TransactionVO;
+import com.ecash.ecashcore.vo.TransferExtendedInformationVO;
 import com.ecash.ecashcore.vo.UserTransactionVO;
 import com.ecash.ecashcore.vo.request.ChargeRequestVO;
 import com.ecash.ecashcore.vo.request.DepositRequestVO;
 import com.ecash.ecashcore.vo.request.ITransactionRequestVO;
 import com.ecash.ecashcore.vo.request.RefundRequestVO;
+import com.ecash.ecashcore.vo.request.TransferRequestVO;
 import com.ecash.ecashcore.vo.response.TransactionResponseVO;
 import com.querydsl.core.types.Predicate;
 import org.json.JSONException;
@@ -101,6 +94,96 @@ public class TransactionService {
   @Autowired
   UserService userService;
 
+  public TransactionResponseVO transfer(TransferRequestVO transferVO) {
+    // Validate require information
+    if (validateTransferTransactionRequest(transferVO)) {
+      if (transferVO.getSourceVO().getType() == TargetVO.ACCOUNT) {
+        if (transferVO.getDestinationVO().getType() == TargetVO.ACCOUNT) {
+          // Transfer from account to account
+          // Get source account
+          String sourceAccountID = transferVO.getSourceVO().getId();
+          Account sourceAccount = accountRepository.findOne(sourceAccountID);
+          // Get destination account
+          String destinationAccountID = transferVO.getDestinationVO().getId();
+          Account destinationAccount = accountRepository.findOne(destinationAccountID);
+          return this.transferFromAccountToAccount(sourceAccount, destinationAccount, transferVO);
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  };
+
+  private TransactionResponseVO transferFromAccountToAccount(Account source, Account destination, TransferRequestVO transferVO) {
+    Date transactionTime = Calendar.getInstance().getTime();
+    // save history
+    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, source, source.getCurrentBalance());
+    balanceHistoryRepository.save(balanceHistory);
+
+    // calculate
+    double remainAmount = source.getCurrentBalance() - transferVO.getAmount();
+    if (remainAmount < 0)
+    {
+      throw new ValidationException("Source account don't have enough money.");
+    }
+
+    // Update balance value
+    source.setCurrentBalance(remainAmount);
+    source = accountRepository.save(source);
+
+    // save transaction in cms
+    TransactionType transactionType = transactionTypeRepository
+        .findOne(TransactionTypeEnum.TRANSFER.getName());
+    Transaction transaction = new Transaction(source, transactionType, transactionTime, transferVO.getAmount());
+
+    transactionRepository.save(transaction);
+
+    TransferExtendedInformationVO extendedInformation = transferVO.getExtendedInformation();
+
+    // save transaction detail
+    TransactionDetail transactionDetail = new TransactionDetail(transaction,
+        extendedInformation.getTransactionDetails());
+    transactionDetailRepository.save(transactionDetail);
+
+    // save history
+    BalanceHistory destinationBalanceHistory = new BalanceHistory(transactionTime, destination, destination.getCurrentBalance());
+    balanceHistoryRepository.save(balanceHistory);
+
+    // calculate
+    double newAmount = destination.getCurrentBalance() + transferVO.getAmount();
+
+    // Update balance value
+    destination.setCurrentBalance(newAmount);
+    destination = accountRepository.save(destination);
+
+    // save transaction in cms
+    TransactionType destinationTransactionType = transactionTypeRepository
+        .findOne(TransactionTypeEnum.DEPOSIT.getName());
+    Transaction destinationTransaction = new Transaction(destination, destinationTransactionType, transactionTime, transferVO.getAmount());
+    destinationTransaction.setRelatedTransaction(transaction);
+    transactionRepository.save(destinationTransaction);
+
+    TransferExtendedInformationVO destinationExtendedInformation = transferVO.getExtendedInformation();
+
+    // save transaction detail
+    TransactionDetail destinationTransactionDetail = new TransactionDetail(transaction,
+        destinationExtendedInformation.getTransactionDetails());
+    transactionDetailRepository.save(destinationTransactionDetail);
+
+    return new TransactionResponseVO(transaction.getId(),
+        transaction.getAccount().getAccountName(),
+        transactionTime, transaction.getId());
+  }
+
+  private TransactionResponseVO transferFromAccountToWallet(Account source, Wallet destination, TransferRequestVO transferVO) {
+    // TODO: Need to implement
+    return null;
+  }
+
   public TransactionResponseVO chargeRequest(ChargeRequestVO chargeRequest) {
     Account account = null;
     Wallet wallet = null;
@@ -115,7 +198,14 @@ public class TransactionService {
 
 
     account = identifyValidAccount(card, chargeRequest.getTarget());
-    wallet = identifyValidWallet(card, chargeRequest.getTarget());
+    if (chargeRequest.getTarget() != null) {
+      try {
+        wallet = identifyValidWallet(card, chargeRequest.getTarget());
+      } catch (ValidationException ve) {
+        // Process with Account
+      }
+
+    }
 
     if (wallet != null) {
       // Make transaction in wallet
@@ -329,6 +419,11 @@ public class TransactionService {
     return true;
   }
 
+  private boolean validateTransferTransactionRequest(TransferRequestVO transferRequestVO) {
+    // TODO: Implement later
+    return true;
+  }
+
   private void validateTransactionRequest(ITransactionRequestVO transactionRequest) {
     if (transactionRequest.getCard() == null || transactionRequest.getAmount() == null
         || transactionRequest.getExtendedInformation() == null) {
@@ -384,7 +479,7 @@ public class TransactionService {
     Wallet sampleWallet = new Wallet(walletType, card, CMSWalletStatusEnum.ACTIVE.toString());
     List<Wallet> wallets = walletRepository.findAll(Example.of(sampleWallet));
     if (wallets.isEmpty()) {
-      return null;
+      throw new ValidationException(String.format("There is not active wallet with %s type", target.getType()));
     } else {
       return wallets.get(0);
     }
