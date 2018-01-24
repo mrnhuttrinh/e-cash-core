@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.AddressTypeEnum;
 import com.ecash.ecashcore.enums.CardTypeEnum;
@@ -62,6 +63,9 @@ import com.ecash.ecashcore.repository.SCMSSyncRepository;
 import com.ecash.ecashcore.repository.UserRepository;
 import com.ecash.ecashcore.repository.WalletRepository;
 import com.ecash.ecashcore.util.DateTimeUtils;
+import com.ecash.ecashcore.util.JsonUtils;
+import com.ecash.ecashcore.util.ObjectUtils;
+import com.ecash.ecashcore.vo.HistoryVO;
 import com.ecash.ecashcore.vo.SyncVO;
 
 @Service
@@ -72,28 +76,22 @@ public class SyncService {
   SCMSSyncRepository scmsSyncRepository;
 
   @Autowired
+  SCMSSyncDetailRepository scmsSyncDetailRepository;
+
+  @Autowired
   AccountRepository accountRepository;
 
   @Autowired
+  AccountTypeRepository accountTypeRepository;
+
+  @Autowired
+  AccountHistoryRepository accountHistoryRepository;
+
+  @Autowired
+  AccountHistoryTypeRepository accountHistoryTypeRepository;
+
+  @Autowired
   CardRepository cardRepository;
-
-  @Autowired
-  AddressRepository addressRepository;
-
-  @Autowired
-  CustomerRepository customerRepository;
-
-  @Autowired
-  CustomerAddressRepository customerAddressRepository;
-
-  @Autowired
-  OrganizationRepository organizationRepository;
-
-  @Autowired
-  IdentifyDocumentRepository identifyDocumentRepository;
-
-  @Autowired
-  CustomerIdentifyDocumentsRepository customerIdentifyDocumentsRepository;
 
   @Autowired
   CardTypeRepository cardTypeRepository;
@@ -105,37 +103,19 @@ public class SyncService {
   CardHistoryTypeRepository cardHistoryTypeRepository;
 
   @Autowired
-  WalletRepository walletRepository;
-
-  @Autowired
-  CustomerTypeRepository customerTypeRepository;
+  AddressRepository addressRepository;
 
   @Autowired
   AddressTypeRepository addressTypeRepository;
 
   @Autowired
-  IdentifyDocumentTypeRepository identifyDocumentTypeRepository;
+  CustomerRepository customerRepository;
 
   @Autowired
-  AccountTypeRepository accountTypeRepository;
+  CustomerTypeRepository customerTypeRepository;
 
   @Autowired
-  PlanRepository planRepository;
-
-  @Autowired
-  CurrencyCodeRepository currencyCodeRepository;
-
-  @Autowired
-  WalletService walletService;
-
-  @Autowired
-  RoleService roleService;
-
-  @Autowired
-  UserRepository userRepository;
-
-  @Autowired
-  SCMSSyncDetailRepository scmsSyncDetailRepository;
+  CustomerAddressRepository customerAddressRepository;
 
   @Autowired
   CustomerHistoryTypeRepository customerHistoryTypeRepository;
@@ -144,10 +124,34 @@ public class SyncService {
   CustomerHistoryRepository customerHistoryRepository;
 
   @Autowired
-  AccountHistoryRepository accountHistoryRepository;
+  CustomerIdentifyDocumentsRepository customerIdentifyDocumentsRepository;
 
   @Autowired
-  AccountHistoryTypeRepository accountHistoryTypeRepository;
+  OrganizationRepository organizationRepository;
+
+  @Autowired
+  IdentifyDocumentRepository identifyDocumentRepository;
+
+  @Autowired
+  IdentifyDocumentTypeRepository identifyDocumentTypeRepository;
+
+  @Autowired
+  WalletRepository walletRepository;
+
+  @Autowired
+  WalletService walletService;
+
+  @Autowired
+  PlanRepository planRepository;
+
+  @Autowired
+  CurrencyCodeRepository currencyCodeRepository;
+
+  @Autowired
+  RoleService roleService;
+
+  @Autowired
+  UserRepository userRepository;
 
   public void sync(List<SyncVO> syncDatas) {
     for (SyncVO syncData : syncDatas) {
@@ -170,7 +174,7 @@ public class SyncService {
         syncCard(syncData.getCard(), account, syncData);
 
         syncUser(customer);
-        
+
         scmsSyncRepository.save(scmsSync);
       }
     }
@@ -207,14 +211,28 @@ public class SyncService {
     }
 
     if (card != null) {
-      card.setEffectiveDate(syncCard.getEffectiveDate());
-      card.setExpiryDate(syncCard.getExpiryDate());
-      card.setStatus(syncCard.getStatus());
+      if (!ObjectUtils.isCardEqual(card, syncCard)) {
 
-      cardHistory = new CardHistory();
-      cardHistory.setCard(card);
-      cardHistory.setType(cardHistoryTypeRepository.findOne(CardHistoryType.UPDATED));
-      cardHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
+        // create history
+//        HistoryVO historyVO = new HistoryVO();
+//        historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(card));
+
+        // update
+        card.setEffectiveDate(syncCard.getEffectiveDate());
+        card.setExpiryDate(syncCard.getExpiryDate());
+        card.setStatus(syncCard.getStatus());
+
+//        historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(card));
+
+        // update history
+        cardHistory = new CardHistory();
+        cardHistory.setCard(card);
+        cardHistory.setType(cardHistoryTypeRepository.findOne(CardHistoryType.UPDATED));
+        cardHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
+//        cardHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
+
+        cardRepository.save(card);
+      }
     } else {
       card = syncCard;
       card.setAccount(account);
@@ -224,21 +242,27 @@ public class SyncService {
       wallet.setCard(card);
       walletService.createWallet(wallet);
 
+      // create history
+//      HistoryVO historyVO = new HistoryVO();
+//      historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
+//      historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(card));
+
       cardHistory = new CardHistory();
       cardHistory.setCard(card);
       cardHistory.setType(cardHistoryTypeRepository.findOne(CardHistoryType.CREATED));
       cardHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
-    }
+//      cardHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
 
-    cardRepository.save(card);
-
-    if (scmsSyncDetail == null) {
-      scmsSyncDetail = new SCMSSyncDetail(syncData.getPersonalizationCode(), SCMSSyncDetail.SCMS_SYNC,
-          SCMSSyncTargetEnum.CARD.toString(), card.getCardNumber());
+      cardRepository.save(card);
     }
 
     if (cardHistory != null) {
       cardHistoryRepository.save(cardHistory);
+    }
+
+    if (scmsSyncDetail == null) {
+      scmsSyncDetail = new SCMSSyncDetail(syncData.getPersonalizationCode(), SCMSSyncDetail.SCMS_SYNC,
+          SCMSSyncTargetEnum.CARD.toString(), card.getCardNumber());
     }
 
     scmsSyncDetailRepository.save(scmsSyncDetail);
@@ -252,6 +276,7 @@ public class SyncService {
 
     Address address = null;
     CustomerAddress customerAddress = null;
+
     if (scmsSyncDetail != null) {
       address = addressRepository.findOne(scmsSyncDetail.getTargetId());
     }
@@ -266,12 +291,13 @@ public class SyncService {
       customerAddress.setAddress(address);
       customerAddress.setCustomer(customer);
     } else {
-      address.setCountry(syncAddress.getCountry());
-      address.setLine1(syncAddress.getLine1());
-      address.setLine2(syncAddress.getLine2());
+      if (!ObjectUtils.isAddressEqual(address, syncAddress)) {
+        address.setCountry(syncAddress.getCountry());
+        address.setLine1(syncAddress.getLine1());
+        address.setLine2(syncAddress.getLine2());
+        addressRepository.save(address);
+      }
     }
-
-    addressRepository.save(address);
 
     if (customerAddress != null) {
       customerAddressRepository.save(customerAddress);
@@ -300,9 +326,15 @@ public class SyncService {
 
       accountRepository.save(account);
 
+      // create history
+//      HistoryVO historyVO = new HistoryVO();
+//      historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
+//      historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(account));
+
       AccountHistory accountHistory = new AccountHistory();
       accountHistory.setAccount(account);
       accountHistory.setType(accountHistoryTypeRepository.findOne(AccountHistoryType.CREATED));
+//      accountHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
 
       accountHistoryRepository.save(accountHistory);
     } else {
@@ -325,9 +357,12 @@ public class SyncService {
     }
 
     if (identifyDocument != null) {
-      identifyDocument.setDateOfIssue(syncIdentifyCard.getDateOfIssue());
-      identifyDocument.setDateOfExpiry(syncIdentifyCard.getDateOfExpiry());
-      identifyDocument.setPlaceOfIssue(syncIdentifyCard.getPlaceOfIssue());
+      if (!ObjectUtils.isIdentifyDocumentEqual(identifyDocument, syncIdentifyCard)) {
+        identifyDocument.setDateOfIssue(syncIdentifyCard.getDateOfIssue());
+        identifyDocument.setDateOfExpiry(syncIdentifyCard.getDateOfExpiry());
+        identifyDocument.setPlaceOfIssue(syncIdentifyCard.getPlaceOfIssue());
+        identifyDocumentRepository.save(identifyDocument);
+      }
     } else {
       identifyDocument = syncIdentifyCard;
 
@@ -337,9 +372,8 @@ public class SyncService {
       customerIdentifyCard.setIdentifyDocument(identifyDocument);
 
       identifyDocument.setIdentifyDocumentType(identifyDocumentTypeRepository.findByTypeCode(typeEnum.toString()));
+      identifyDocumentRepository.save(identifyDocument);
     }
-
-    identifyDocumentRepository.save(identifyDocument);
 
     if (customerIdentifyCard != null) {
       customerIdentifyDocumentsRepository.save(customerIdentifyCard);
@@ -377,48 +411,65 @@ public class SyncService {
     }
 
     if (customer != null) {
-      customer.setScmsMemberCode(syncCustomer.getScmsMemberCode());
-      customer.setFirstName(syncCustomer.getFirstName());
-      customer.setLastName(syncCustomer.getLastName());
-      customer.setGender(syncCustomer.getGender());
-      customer.setDateOfBirth(syncCustomer.getDateOfBirth());
-      customer.setPhone1(syncCustomer.getPhone1());
-      customer.setPhone1(syncCustomer.getPhone2());
-      customer.setEmail(syncCustomer.getEmail());
-      customer.setDateBecameCustomer(syncCustomer.getDateBecameCustomer());
-      customer.setCountryCode(syncCustomer.getCountryCode());
-      customer.setOccupation(syncCustomer.getOccupation());
-      customer.setTitle(syncCustomer.getTitle());
-      customer.setPosition(syncCustomer.getPosition());
+      if (!ObjectUtils.isCustomerEqual(customer, syncCustomer)) {
 
-      // update history
-      customerHistory = new CustomerHistory();
-      customerHistory.setCustomer(customer);
-      customerHistory.setType(customerHistoryTypeRepository.findOne(CustomerHistoryType.UPDATED));
-      customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
+        // create history
+//        HistoryVO historyVO = new HistoryVO();
+//        historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(customer));
+
+        // update
+        customer.setScmsMemberCode(syncCustomer.getScmsMemberCode());
+        customer.setFirstName(syncCustomer.getFirstName());
+        customer.setLastName(syncCustomer.getLastName());
+        customer.setGender(syncCustomer.getGender());
+        customer.setDateOfBirth(syncCustomer.getDateOfBirth());
+        customer.setPhone1(syncCustomer.getPhone1());
+        customer.setPhone1(syncCustomer.getPhone2());
+        customer.setEmail(syncCustomer.getEmail());
+        customer.setDateBecameCustomer(syncCustomer.getDateBecameCustomer());
+        customer.setCountryCode(syncCustomer.getCountryCode());
+        customer.setOccupation(syncCustomer.getOccupation());
+        customer.setTitle(syncCustomer.getTitle());
+        customer.setPosition(syncCustomer.getPosition());
+
+//        historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(customer));
+
+        // update history
+        customerHistory = new CustomerHistory();
+        customerHistory.setCustomer(customer);
+        customerHistory.setType(customerHistoryTypeRepository.findOne(CustomerHistoryType.UPDATED));
+        customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
+//        customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
+      }
     } else {
       customer = syncCustomer;
 
       // Set default customer type
       customer.setCustomerType(customerTypeRepository.findByTypeCode(CustomerTypeEnum.DEFAULT.toString()));
 
+      // create history
+//      HistoryVO historyVO = new HistoryVO();
+//      historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
+//      historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(customer));
+
       // update history
       customerHistory = new CustomerHistory();
       customerHistory.setCustomer(customer);
       customerHistory.setType(customerHistoryTypeRepository.findOne(CustomerHistoryType.CREATED));
       customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
+//      customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
     }
-
+    
     customer.setOrganization(organization);
     customerRepository.save(customer);
+
+    if (customerHistory != null) {
+      customerHistoryRepository.save(customerHistory);
+    }
 
     if (scmsSyncDetail == null) {
       scmsSyncDetail = new SCMSSyncDetail(syncData.getPersonalizationCode(), SCMSSyncDetail.SCMS_SYNC,
           SCMSSyncTargetEnum.CUSTOMER.toString(), customer.getId());
-    }
-
-    if (customerHistory != null) {
-      customerHistoryRepository.save(customerHistory);
     }
 
     scmsSyncDetailRepository.save(scmsSyncDetail);
@@ -429,14 +480,15 @@ public class SyncService {
   private Organization syncOrg(Organization syncOrg) {
     Organization org = organizationRepository.findOne(syncOrg.getId());
     if (org != null) {
-      if (!org.getShortName().equals(syncOrg.getShortName())) {
-        org.setShortName(syncOrg.getShortName());
-        organizationRepository.save(org);
+      if (org.getShortName().equals(syncOrg.getShortName())) {
+        return org;
       }
+      org.setShortName(syncOrg.getShortName());
     } else {
       org = syncOrg;
-      organizationRepository.save(org);
     }
+
+    organizationRepository.save(org);
 
     return org;
   }

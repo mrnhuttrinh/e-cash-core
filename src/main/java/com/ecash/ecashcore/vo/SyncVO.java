@@ -334,7 +334,7 @@ public class SyncVO {
     Customer customer = new Customer();
     customer.setScmsMemberCode(memberCode);
     customer.setFirstName(memberFirstName);
-    customer.setLastName(memberFirstName);
+    customer.setLastName(memberLastName);
     customer.setGender(gender);
     customer.setDateOfBirth(birthdate);
     customer.setPhone1(phoneNumber1);
