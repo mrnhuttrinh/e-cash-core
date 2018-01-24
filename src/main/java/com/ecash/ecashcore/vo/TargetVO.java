@@ -5,6 +5,7 @@ public class TargetVO {
   public static String WALLET = "WALLET";
   private String category;
   private String type;
+  private String id;
 
   public String getType() {
     return type;
@@ -20,6 +21,14 @@ public class TargetVO {
 
   public void setCategory(String category) {
     this.category = category;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 
   public boolean isAccount() {
