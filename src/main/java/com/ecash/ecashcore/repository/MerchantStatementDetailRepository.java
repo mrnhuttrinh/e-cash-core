@@ -1,11 +1,10 @@
 package com.ecash.ecashcore.repository;
 
-import org.springframework.data.repository.CrudRepository;
-
 import com.ecash.ecashcore.model.cms.MerchantStatementDetail;
+import com.ecash.ecashcore.model.cms.QMerchantStatementDetail;
 
 public interface MerchantStatementDetailRepository
-    extends CrudRepository<MerchantStatementDetail, String>
+    extends BaseQuerydslRepository<MerchantStatementDetail, String, QMerchantStatementDetail>
 {
 
 }

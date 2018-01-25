@@ -1,6 +1,7 @@
 package com.ecash.ecashcore.model.cms;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -17,7 +19,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.ecash.ecashcore.model.BaseModel;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "merchant_statement")
@@ -30,6 +34,10 @@ public class MerchantStatement extends BaseModel
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   @Column(name = "id")
   private String id;
+  
+  @OneToMany(mappedBy = "merchantStatement", fetch = FetchType.LAZY)
+  @JsonProperty(access = Access.WRITE_ONLY)
+  private List<MerchantStatementDetail> merchantStatementDetails;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merchant_id")
@@ -65,6 +73,15 @@ public class MerchantStatement extends BaseModel
   public void setId(String id)
   {
     this.id = id;
+  }
+
+  public List<MerchantStatementDetail> getMerchantStatementDetails() {
+    return merchantStatementDetails;
+  }
+
+  public void setMerchantStatementDetails(
+      List<MerchantStatementDetail> merchantStatementDetails) {
+    this.merchantStatementDetails = merchantStatementDetails;
   }
 
   public Merchant getMerchant()
