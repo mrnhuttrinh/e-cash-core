@@ -196,7 +196,7 @@ public class UserService {
       UserHistoryType historyType = userHistoryTypeRepository.findOne(UserHistoryType.CREATED);
       HistoryVO history = new HistoryVO();
       history.getPrevious().put(StringConstant.PREVIOUS, "");
-      history.getNext().put(StringConstant.PREVIOUS, userJson);
+      history.getNext().put(StringConstant.NEXT, userJson);
       UserHistory userHistory = new UserHistory(newUser, currentUser, historyType, JsonUtils.objectToJsonString(history));
       userHistoryRepository.save(userHistory);
       return newUser;

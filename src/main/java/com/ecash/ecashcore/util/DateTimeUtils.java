@@ -10,8 +10,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DateTimeUtils
-{
+public final class DateTimeUtils {
   private static final Logger LOG = LoggerFactory.getLogger(DateTimeUtils.class);
   public static final String DEFAULT_FORMAT = "yyyy-MM-dd";
 
@@ -19,51 +18,41 @@ public final class DateTimeUtils
 
   public static final String DEFAULT_FORMAT_SHORT_DATE = "yyyyMMdd";
 
-  public static DateTime parseDate(String dateString, String datePatternParam,
-      DateTimeZone timeZone)
-  {
+  public static DateTime parseDate(String dateString, String datePatternParam, DateTimeZone timeZone) {
     DateTime dt = null;
     String datePattern = datePatternParam;
-    try
-    {
-      if (StringUtils.isNullOrEmpty(datePattern))
-      {
+    try {
+      if (StringUtils.isNullOrEmpty(datePattern)) {
         datePattern = DEFAULT_FORMAT;
       }
 
-      if (!StringUtils.isNullOrEmpty(dateString))
-      {
+      if (!StringUtils.isNullOrEmpty(dateString)) {
         DateTimeFormatter dtf = DateTimeFormat.forPattern(datePattern);
 
-        if (timeZone != null)
-        {
+        if (timeZone != null) {
           dt = dtf.withZone(timeZone).parseDateTime(dateString);
-        }
-        else
-        {
+        } else {
           dt = dtf.parseDateTime(dateString);
         }
       }
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       LOG.error(e.getMessage(), e);
     }
 
     return dt;
   }
 
-  public static String toDefaultFormatString(Date date)
-  {
+  public static String toDefaultFormatString(Date date) {
+    if (date == null) {
+      return null;
+    }
     SimpleDateFormat formatter = new SimpleDateFormat(DEFAULT_FORMAT);
     return formatter.format(date);
   }
 
-  public static String datetoString(Date date, final String inputFormat)
-  {
+  public static String datetoString(Date date, final String inputFormat) {
     String dateFormat = inputFormat;
-    if (StringUtils.isNullOrEmpty(dateFormat))
-    {
+    if (StringUtils.isNullOrEmpty(dateFormat)) {
       dateFormat = DEFAULT_FORMAT;
     }
     SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
@@ -71,8 +60,7 @@ public final class DateTimeUtils
   }
 
   @SuppressWarnings("deprecation")
-  public static Date convertToStartOfDay(Date date)
-  {
+  public static Date convertToStartOfDay(Date date) {
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
@@ -80,8 +68,7 @@ public final class DateTimeUtils
   }
 
   @SuppressWarnings("deprecation")
-  public static Date convertToEndOfDay(Date date)
-  {
+  public static Date convertToEndOfDay(Date date) {
     date.setHours(23);
     date.setMinutes(59);
     date.setSeconds(59);
