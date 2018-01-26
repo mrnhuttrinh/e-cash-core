@@ -34,7 +34,7 @@ public class MerchantStatement extends BaseModel
   @GenericGenerator(name = "system-uuid", strategy = "uuid")
   @Column(name = "id")
   private String id;
-  
+
   @OneToMany(mappedBy = "merchantStatement", fetch = FetchType.LAZY)
   @JsonProperty(access = Access.WRITE_ONLY)
   private List<MerchantStatementDetail> merchantStatementDetails;
@@ -57,6 +57,12 @@ public class MerchantStatement extends BaseModel
   @Column(name = "closing_amount")
   private Double closingAmount;
 
+  @Column(name = "total_transaction", columnDefinition = "bigint")
+  private Long totalTransaction;
+
+  @Column(name = "status")
+  private String status;
+
   @Column(name = "created_by")
   private String createdBy;
 
@@ -75,12 +81,14 @@ public class MerchantStatement extends BaseModel
     this.id = id;
   }
 
-  public List<MerchantStatementDetail> getMerchantStatementDetails() {
+  public List<MerchantStatementDetail> getMerchantStatementDetails()
+  {
     return merchantStatementDetails;
   }
 
   public void setMerchantStatementDetails(
-      List<MerchantStatementDetail> merchantStatementDetails) {
+      List<MerchantStatementDetail> merchantStatementDetails)
+  {
     this.merchantStatementDetails = merchantStatementDetails;
   }
 
@@ -142,6 +150,26 @@ public class MerchantStatement extends BaseModel
   public void setCreatedBy(String createdBy)
   {
     this.createdBy = createdBy;
+  }
+
+  public Long getTotalTransaction()
+  {
+    return totalTransaction;
+  }
+
+  public void setTotalTransaction(Long totalTransaction)
+  {
+    this.totalTransaction = totalTransaction;
+  }
+
+  public String getStatus()
+  {
+    return status;
+  }
+
+  public void setStatus(String status)
+  {
+    this.status = status;
   }
 
 }

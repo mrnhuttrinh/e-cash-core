@@ -16,5 +16,7 @@ public interface MerchantStatementExcerpt extends BaseExcerpt {
   public Date getDueDate();
   public Double getOpeningAmount();
   public Double getClosingAmount();
+  public Long getTotalTransaction();
+  public String getStatus();
   public String getCreatedBy();
 }
