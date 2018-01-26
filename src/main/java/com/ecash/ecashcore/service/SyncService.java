@@ -218,6 +218,7 @@ public class SyncService {
 //        historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(card));
 
         // update
+        card.setCardCode(syncCard.getCardCode());
         card.setEffectiveDate(syncCard.getEffectiveDate());
         card.setExpiryDate(syncCard.getExpiryDate());
         card.setStatus(syncCard.getStatus());
@@ -243,15 +244,15 @@ public class SyncService {
       walletService.createWallet(wallet);
 
       // create history
-//      HistoryVO historyVO = new HistoryVO();
-//      historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
-//      historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(card));
+      HistoryVO historyVO = new HistoryVO();
+      historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
+      historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(card));
 
       cardHistory = new CardHistory();
       cardHistory.setCard(card);
       cardHistory.setType(cardHistoryTypeRepository.findOne(CardHistoryType.CREATED));
       cardHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
-//      cardHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
+      cardHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
 
       cardRepository.save(card);
     }
@@ -327,14 +328,14 @@ public class SyncService {
       accountRepository.save(account);
 
       // create history
-//      HistoryVO historyVO = new HistoryVO();
-//      historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
-//      historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(account));
+      HistoryVO historyVO = new HistoryVO();
+      historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
+      historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(account));
 
       AccountHistory accountHistory = new AccountHistory();
       accountHistory.setAccount(account);
       accountHistory.setType(accountHistoryTypeRepository.findOne(AccountHistoryType.CREATED));
-//      accountHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
+      accountHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
 
       accountHistoryRepository.save(accountHistory);
     } else {
@@ -448,16 +449,16 @@ public class SyncService {
       customer.setCustomerType(customerTypeRepository.findByTypeCode(CustomerTypeEnum.DEFAULT.toString()));
 
       // create history
-//      HistoryVO historyVO = new HistoryVO();
-//      historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
-//      historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(customer));
+      HistoryVO historyVO = new HistoryVO();
+      historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
+      historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(customer));
 
       // update history
       customerHistory = new CustomerHistory();
       customerHistory.setCustomer(customer);
       customerHistory.setType(customerHistoryTypeRepository.findOne(CustomerHistoryType.CREATED));
       customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
-//      customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
+      customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
     }
     
     customer.setOrganization(organization);

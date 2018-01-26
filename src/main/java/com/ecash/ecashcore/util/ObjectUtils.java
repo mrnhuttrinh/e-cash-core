@@ -27,13 +27,14 @@ public class ObjectUtils {
   }
 
   public static boolean isIdentifyDocumentEqual(IdentifyDocument source, IdentifyDocument target) {
-    return isEqual(source.getDateOfIssue(), target.getDateOfIssue())
+    return isEqual(source.getNumber(), target.getNumber()) && isEqual(source.getDateOfIssue(), target.getDateOfIssue())
         && isEqual(source.getDateOfExpiry(), target.getDateOfExpiry())
         && isEqual(source.getPlaceOfIssue(), target.getPlaceOfIssue());
   }
 
   public static boolean isCardEqual(Card source, Card target) {
-    return isEqual(source.getEffectiveDate(), target.getEffectiveDate())
+    return isEqual(source.getCardCode(), target.getCardCode())
+        && isEqual(source.getEffectiveDate(), target.getEffectiveDate())
         && isEqual(source.getExpiryDate(), target.getExpiryDate()) && isEqual(source.getStatus(), target.getStatus());
   }
 

@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -94,7 +95,8 @@ public class TransactionService {
   @Autowired
   UserService userService;
 
-  public TransactionResponseVO transfer(TransferRequestVO transferVO) {
+  @Transactional(isolation = Isolation.SERIALIZABLE)
+  public synchronized TransactionResponseVO transfer(TransferRequestVO transferVO) {
     // Validate require information
     if (validateTransferTransactionRequest(transferVO)) {
       if (transferVO.getSourceVO().getType() == TargetVO.ACCOUNT) {
@@ -184,7 +186,8 @@ public class TransactionService {
     return null;
   }
 
-  public TransactionResponseVO chargeRequest(ChargeRequestVO chargeRequest) {
+  @Transactional(isolation = Isolation.SERIALIZABLE)
+  public synchronized TransactionResponseVO chargeRequest(ChargeRequestVO chargeRequest) {
     Account account = null;
     Wallet wallet = null;
 
@@ -251,7 +254,8 @@ public class TransactionService {
         transactionTime);
   }
 
-  public TransactionResponseVO depositRequest(DepositRequestVO depositRequest) {
+  @Transactional(isolation = Isolation.SERIALIZABLE)
+  public synchronized TransactionResponseVO depositRequest(DepositRequestVO depositRequest) {
 
     // Validate require information
     validateTransactionRequest(depositRequest);
@@ -308,7 +312,8 @@ public class TransactionService {
         transactionTime);
   }
 
-  public TransactionResponseVO refundRequest(RefundRequestVO refundRequest) {
+  @Transactional(isolation = Isolation.SERIALIZABLE)
+  public synchronized TransactionResponseVO refundRequest(RefundRequestVO refundRequest) {
 
     // Validate transactionId
     String transactionId = refundRequest.getTransactionId();
