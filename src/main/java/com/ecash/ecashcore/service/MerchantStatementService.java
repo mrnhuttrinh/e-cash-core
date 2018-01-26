@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ecash.ecashcore.enums.MerchantStatusEnum;
 import com.ecash.ecashcore.enums.TransactionTypeEnum;
 import com.ecash.ecashcore.model.cms.MerchantStatement;
 import com.ecash.ecashcore.model.cms.MerchantStatementDetail;
@@ -79,6 +80,8 @@ public class MerchantStatementService
       {
         merchantStatement.setOpeningAmount(0d);
       }
+      merchantStatement.setTotalTransaction(1l);
+      merchantStatement.setStatus(MerchantStatusEnum.STORAGE.getName());
     }
     else
     {
@@ -89,6 +92,7 @@ public class MerchantStatementService
               merchantStatementVO.getMerchantStatementDetailVO().getTransactionAmount(),
               merchantStatementVO.getMerchantStatementDetailVO().getTransactionTypeCode(),
               merchantStatementVO.getCardId()));
+      merchantStatement.setTotalTransaction(merchantStatement.getTotalTransaction() + 1);
     }
     merchantStatementRepository.save(merchantStatement);
     // Save merchantstatement detail
