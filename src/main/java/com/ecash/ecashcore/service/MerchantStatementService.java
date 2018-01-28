@@ -1,5 +1,6 @@
 package com.ecash.ecashcore.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,20 @@ public class MerchantStatementService
   private TransactionTypeRepository transactionTypeRepository;
 
   @Autowired
-  ModelMapper modelMapper;
+  private ModelMapper modelMapper;
+
+  public List<MerchantStatementVO> findMerchantStatementByDueDateBetween(Date dueDateFrom,
+      Date dueDateTo)
+  {
+    List<MerchantStatementVO> listMerchantStatementVO = new ArrayList<>();
+    List<MerchantStatement> temp = merchantStatementRepository.findByDueDateBetweenAndIsSettlement(
+        dueDateFrom,
+        dueDateTo, false);
+    temp.stream().forEach(merchantStatement -> {
+      listMerchantStatementVO.add(modelMapper.map(merchantStatement, MerchantStatementVO.class));
+    });
+    return listMerchantStatementVO;
+  }
 
   public MerchantStatementVO upsertMerchantStatement(MerchantStatementVO merchantStatementVO)
   {

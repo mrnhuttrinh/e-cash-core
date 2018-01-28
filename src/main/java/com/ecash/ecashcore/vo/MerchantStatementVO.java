@@ -22,6 +22,12 @@ public class MerchantStatementVO
 
   private String cardId;
 
+  private Long totalTransaction;
+
+  private String status;
+
+  private boolean isSettlement;
+
   private MerchantStatementDetailVO merchantStatementDetailVO;
 
   public MerchantStatementVO()
@@ -127,6 +133,36 @@ public class MerchantStatementVO
   public void setCardId(String cardId)
   {
     this.cardId = cardId;
+  }
+
+  public Long getTotalTransaction()
+  {
+    return totalTransaction;
+  }
+
+  public void setTotalTransaction(Long totalTransaction)
+  {
+    this.totalTransaction = totalTransaction;
+  }
+
+  public String getStatus()
+  {
+    return status;
+  }
+
+  public void setStatus(String status)
+  {
+    this.status = status;
+  }
+
+  public boolean isSettlement()
+  {
+    return isSettlement;
+  }
+
+  public void setSettlement(boolean isSettlement)
+  {
+    this.isSettlement = isSettlement;
   }
 
 }

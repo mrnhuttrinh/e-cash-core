@@ -63,6 +63,9 @@ public class MerchantStatement extends BaseModel
   @Column(name = "status")
   private String status;
 
+  @Column(name = "is_settlement")
+  private boolean isSettlement;
+
   @Column(name = "created_by")
   private String createdBy;
 
@@ -170,6 +173,16 @@ public class MerchantStatement extends BaseModel
   public void setStatus(String status)
   {
     this.status = status;
+  }
+
+  public boolean isSettlement()
+  {
+    return isSettlement;
+  }
+
+  public void setSettlement(boolean isSettlement)
+  {
+    this.isSettlement = isSettlement;
   }
 
 }
