@@ -54,6 +54,7 @@ import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.CustomerTransactionVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.TargetVO;
+import com.ecash.ecashcore.vo.TransactionAccountDetailVO;
 import com.ecash.ecashcore.vo.TransactionVO;
 import com.ecash.ecashcore.vo.TransferExtendedInformationVO;
 import com.ecash.ecashcore.vo.UserTransactionVO;
@@ -64,6 +65,8 @@ import com.ecash.ecashcore.vo.request.RefundRequestVO;
 import com.ecash.ecashcore.vo.request.TransferRequestVO;
 import com.ecash.ecashcore.vo.response.TransactionResponseVO;
 import com.querydsl.core.types.Predicate;
+
+import javassist.NotFoundException;
 
 @Service
 @Transactional
@@ -603,43 +606,6 @@ public class TransactionService
     return listTransactionVO;
   }
 
-  public UserTransactionVO findTransactionByUser(String currentUser, Date fromDate, Date toDate)
-  {
-    UserTransactionVO userTransactionVO = new UserTransactionVO();
-    List<CustomerTransactionVO> customerTransactions = new ArrayList<CustomerTransactionVO>();
-    User user = userService.getByUsername(currentUser);
-    List<Customer> customers = user.getCustomers();
-
-    for (Customer customer : customers)
-    {
-
-      CustomerTransactionVO customerTransaction = modelMapper.map(customer,
-          CustomerTransactionVO.class);
-      for (Account account : customer.getAccounts())
-      {
-        List<TransactionVO> listTransactionVO = new ArrayList<>();
-        for (Card card : account.getCards())
-        {
-          List<Transaction> tempTransactionCard = transactionRepository
-              .findByDateBetweenAndCard(fromDate, toDate, card);
-          tempTransactionCard.stream().filter(tran -> tran.getTransactionDetail() != null)
-              .forEach(transaction -> {
-                listTransactionVO.add(modelMapper.map(transaction, TransactionVO.class));
-              });
-        }
-        List<Transaction> temp = transactionRepository.findByDateBetweenAndAccount(fromDate, toDate,
-            account);
-        temp.stream().filter(tran -> tran.getTransactionDetail() != null).forEach(transaction -> {
-          listTransactionVO.add(modelMapper.map(transaction, TransactionVO.class));
-        });
-        customerTransaction.setTransactions(listTransactionVO);
-      }
-      customerTransactions.add(customerTransaction);
-    }
-    userTransactionVO.setCustomerTransactions(customerTransactions);
-    return userTransactionVO;
-  }
-
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public synchronized TransactionResponseVO merchantSettlement(TransactionVO transactionVO)
   {
@@ -666,5 +632,53 @@ public class TransactionService
           trans.getDate(), trans.getId());
     }
     return null;
+  }
+  
+  public UserTransactionVO findTransactionByUser(String currentUser, Date fromDate, Date toDate)
+  {
+    UserTransactionVO userTransactionVO = new UserTransactionVO();
+    List<CustomerTransactionVO> customerTransactions = new ArrayList<CustomerTransactionVO>();
+    User user = userService.getByUsername(currentUser);
+    List<Customer> customers = user.getCustomers();
+
+    for (Customer customer : customers)
+    {
+
+      CustomerTransactionVO customerTransaction = modelMapper.map(customer,
+          CustomerTransactionVO.class);
+      for (Account account : customer.getAccounts())
+      {
+        List<TransactionVO> listTransactionVO = new ArrayList<>();
+        List<Transaction> temp = transactionRepository.findByDateBetweenAndAccount(fromDate, toDate, account);
+        temp.stream().filter(tran -> tran.getTransactionDetail() != null).forEach(transaction -> {
+          listTransactionVO.add(modelMapper.map(transaction, TransactionVO.class));
+        });
+        customerTransaction.setTransactions(listTransactionVO);
+      }
+      customerTransactions.add(customerTransaction);
+    }
+    userTransactionVO.setCustomerTransactions(customerTransactions);
+    return userTransactionVO;
+  }
+  public TransactionAccountDetailVO getTransactionAccountDetail(String id) throws Exception {
+    TransactionAccountDetailVO detailResult = new TransactionAccountDetailVO();
+    
+    // get transaction
+    Transaction transaction = transactionRepository.findOne(id);
+    if (transaction == null) {
+      throw new NotFoundException("Transaction not found");
+    }
+    detailResult.setTransaction(transaction);
+    // get account
+    detailResult.setAccount(transaction.getAccount());
+    // get customer
+    detailResult.setCustomer(transaction.getAccount().getCustomer());
+    // get card
+    detailResult.setCard(transaction.getCard());
+    // get transaction detail
+    detailResult.setTransactionDetail(transaction.getTransactionDetail());
+    // get merchant
+    detailResult.setMerchant(transaction.getTransactionDetail().getMerchant());
+    return detailResult;
   }
 }
