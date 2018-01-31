@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
@@ -25,7 +24,7 @@ import com.querydsl.core.types.dsl.StringPath;
 
 @NoRepositoryBean
 public interface BaseQuerydslRepository<T extends BaseModel, ID extends Serializable, E extends EntityPath<T>>
-    extends JpaRepository<T, ID>, QueryDslPredicateExecutor<T>, QuerydslBinderCustomizer<E> {
+    extends BaseRepository<T, ID>, QueryDslPredicateExecutor<T>, QuerydslBinderCustomizer<E> {
 
   @Override
   default public void customize(QuerydslBindings bindings, E e) {

@@ -1,11 +1,10 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.ecash.ecashcore.model.BaseModel;
 
 @Entity
 @Table(name = "history_type")

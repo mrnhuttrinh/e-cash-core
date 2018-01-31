@@ -2,6 +2,7 @@ package com.ecash.ecashcore.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.ecash.ecashcore.model.cms.Card;
@@ -17,4 +18,7 @@ public interface CardRepository extends BaseQuerydslRepository<Card, String, QCa
   @Override
   @PreAuthorize(value = "hasPermission(null, 'CARD_LIST/VIEW')")
   public Page<Card> findAll(Predicate predicate, Pageable pageable);
+  
+  @RestResource(exported = true)
+  Page<Card> findAll(Pageable pageable);
 }
