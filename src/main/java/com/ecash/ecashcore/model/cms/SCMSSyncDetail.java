@@ -2,23 +2,14 @@ package com.ecash.ecashcore.model.cms;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import com.ecash.ecashcore.model.BaseModel;
+import com.ecash.ecashcore.model.BaseUUID;
 
 @Entity
 @Table(name = "scms_sync_detail")
-public class SCMSSyncDetail extends BaseModel {
+public class SCMSSyncDetail extends BaseUUID {
   public static final String SCMS_SYNC = "SCMS_SYNC";
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
 
   @Column(name = "personalization_code", nullable = false)
   private String personalizationCode;
@@ -42,14 +33,6 @@ public class SCMSSyncDetail extends BaseModel {
     this.syncSource = syncSource;
     this.targetObject = targetObject;
     this.targetId = targetId;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getPersonalizationCode() {

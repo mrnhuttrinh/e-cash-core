@@ -6,7 +6,6 @@ import org.springframework.data.rest.core.config.Projection;
 
 import com.ecash.ecashcore.model.cms.Permission;
 import com.ecash.ecashcore.model.cms.Role;
-import com.ecash.ecashcore.model.cms.User;
 
 @Projection(name = "custom", types = Role.class)
 public interface RoleExcerpt extends BaseExcerpt {

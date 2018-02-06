@@ -6,25 +6,17 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import com.ecash.ecashcore.model.BaseModel;
+import com.ecash.ecashcore.model.BaseUUID;
 
 @Entity
 @Table(name = "identify_document")
-public class IdentifyDocument extends BaseModel {
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+public class IdentifyDocument extends BaseUUID {
 
   private String description;
 
@@ -49,14 +41,6 @@ public class IdentifyDocument extends BaseModel {
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "customer_identify_document", joinColumns = @JoinColumn(name = "identify_document_id"), inverseJoinColumns = @JoinColumn(name = "customer_id"))
   private List<Customer> customers;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public IdentifyDocumentType getIdentifyDocumentType() {
     return identifyDocumentType;

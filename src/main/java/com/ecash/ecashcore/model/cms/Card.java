@@ -18,7 +18,7 @@ public class Card extends BaseModel {
 
   @Id
   @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
+  @GenericGenerator(name = "system-uuid", strategy = "uuid2")
   @Column(name = "card_number")
   private String cardNumber;
 

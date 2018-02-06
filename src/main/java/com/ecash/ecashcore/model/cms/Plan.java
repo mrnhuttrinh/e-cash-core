@@ -1,24 +1,16 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.ecash.ecashcore.model.BaseUUID;
+
 @Entity
 @Table(name = "plan")
-public class Plan extends BaseModel {
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+public class Plan extends BaseUUID {
 
   private Integer limit;
 
@@ -27,14 +19,6 @@ public class Plan extends BaseModel {
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "type_code", nullable = false)
   private PlanType planType;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public PlanType getPlanType() {
     return planType;

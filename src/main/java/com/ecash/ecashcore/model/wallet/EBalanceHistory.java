@@ -1,19 +1,21 @@
 package com.ecash.ecashcore.model.wallet;
 
-import com.ecash.ecashcore.model.BaseModel;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.ecash.ecashcore.model.BaseUUID;
 
 @Entity
 @Table(name = "e_balance_history")
-public class EBalanceHistory extends BaseModel {
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+public class EBalanceHistory extends BaseUUID {
 
   @Column(name = "date")
   @Temporal(TemporalType.TIMESTAMP)
@@ -31,14 +33,6 @@ public class EBalanceHistory extends BaseModel {
     this.date = date;
     this.wallet = wallet;
     this.balance = balance;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public Date getDate() {

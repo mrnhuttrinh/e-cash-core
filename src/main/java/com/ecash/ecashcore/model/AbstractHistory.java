@@ -1,22 +1,13 @@
 package com.ecash.ecashcore.model;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Column;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class AbstractHistory<T extends AbstractHistoryType> extends BaseModel{
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+public abstract class AbstractHistory<T extends AbstractHistoryType> extends BaseUUID {
 
   @Column(name = "history_details", nullable = true)
   private String details;
@@ -37,14 +28,6 @@ public abstract class AbstractHistory<T extends AbstractHistoryType> extends Bas
   public AbstractHistory(T type) {
     super();
     this.type = type;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getDetails() {

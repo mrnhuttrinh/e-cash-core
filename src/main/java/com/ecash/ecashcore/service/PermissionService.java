@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ecash.ecashcore.model.cms.Permission;
-import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.repository.PermissionRepository;
 import com.querydsl.core.types.Predicate;
 

@@ -1,20 +1,23 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.ecash.ecashcore.model.BaseUUID;
 
 @Entity(name = "Transaction")
 @Table(name = "transaction")
-public class Transaction extends BaseModel
+public class Transaction extends BaseUUID
 {
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
 
   @Column(name = "date")
   @Temporal(TemporalType.TIMESTAMP)
@@ -74,16 +77,6 @@ public class Transaction extends BaseModel
     Transaction transaction = new Transaction(account, transactionType, date, amount, card);
     transaction.setStatus("ACTIVE");
     return transaction;
-  }
-
-  public String getId()
-  {
-    return id;
-  }
-
-  public void setId(String id)
-  {
-    this.id = id;
   }
 
   public void setAccount(Account account)
