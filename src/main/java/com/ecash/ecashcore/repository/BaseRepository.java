@@ -32,6 +32,6 @@ public interface BaseRepository<T, ID extends Serializable> extends JpaRepositor
   @RestResource(exported = false)
   <S extends T> S saveAndFlush(S entity);
   
-  @RestResource(exported = false)
-  Page<T> findAll(Pageable pageable);
+//  @RestResource(exported = false)
+//  Page<T> findAll(Pageable pageable);
 }
