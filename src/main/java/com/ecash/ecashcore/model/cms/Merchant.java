@@ -1,24 +1,16 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.ecash.ecashcore.model.BaseUUID;
+
 @Entity
 @Table(name = "merchant")
-public class Merchant extends BaseModel {
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+public class Merchant extends BaseUUID {
 
   private String name;
 
@@ -31,14 +23,6 @@ public class Merchant extends BaseModel {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "address_id", nullable = true)
   private Address address;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public String getName() {
     return name;

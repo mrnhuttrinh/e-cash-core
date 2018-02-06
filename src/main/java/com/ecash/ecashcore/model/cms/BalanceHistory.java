@@ -1,22 +1,24 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.ecash.ecashcore.model.BaseUUID;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Table(name = "balance_history")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class BalanceHistory extends BaseModel {
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+public class BalanceHistory extends BaseUUID {
 
   @Column(name = "date")
   @Temporal(TemporalType.TIMESTAMP)
@@ -59,13 +61,4 @@ public class BalanceHistory extends BaseModel {
   public void setBalance(Double balance) {
     this.balance = balance;
   }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
 }

@@ -1,33 +1,25 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+import com.ecash.ecashcore.model.BaseUUID;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "permission")
-@JsonIdentityInfo(
-    generator = ObjectIdGenerators.PropertyGenerator.class, 
-    property = "id")
-public class Permission extends BaseModel {
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class Permission extends BaseUUID {
 
   private String name;
-  
+
   @Column(name = "display_name")
   private String displayName;
 
@@ -38,23 +30,13 @@ public class Permission extends BaseModel {
     super();
   }
 
-  public String getId() {
-    return id;
-  }
-
   public String getName() {
     return name;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public void setName(String name) {
     this.name = name;
   }
-  
-  
 
   public String getDisplayName() {
     return displayName;

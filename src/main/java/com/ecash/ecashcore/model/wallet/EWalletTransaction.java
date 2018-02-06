@@ -1,27 +1,20 @@
 package com.ecash.ecashcore.model.wallet;
 
-import com.ecash.ecashcore.model.BaseModel;
-import org.hibernate.annotations.GenericGenerator;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Date;
+
+import com.ecash.ecashcore.model.BaseUUID;
 
 @Entity
 @Table(name = "e_wallet_transaction")
-public class EWalletTransaction extends BaseModel {
+public class EWalletTransaction extends BaseUUID {
 
   public static String SUCCESS = "SUCCESS";
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "wallet_id", nullable = false)
@@ -53,14 +46,6 @@ public class EWalletTransaction extends BaseModel {
     this.date = date;
     this.amount = amount;
     this.status = status;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public EWallet getWalletId() {

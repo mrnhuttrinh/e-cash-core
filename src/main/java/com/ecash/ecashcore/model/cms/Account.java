@@ -1,26 +1,29 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.ecash.ecashcore.model.BaseUUID;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "account")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Account extends BaseModel {
+public class Account extends BaseUUID {
 
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
-  
   @Column(name = "account_name")
   private String accountName;
 
@@ -57,7 +60,7 @@ public class Account extends BaseModel {
   @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
   @JsonProperty(access = Access.WRITE_ONLY)
   private List<AccountHistory> accountHistories;
-  
+
   @JsonProperty(access = Access.WRITE_ONLY)
   @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
   private List<Card> cards;
@@ -71,14 +74,6 @@ public class Account extends BaseModel {
     this.accountType = accountType;
     this.customer = customer;
     this.currencyCode = currencyCode;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public AccountType getAccountType() {
@@ -160,7 +155,6 @@ public class Account extends BaseModel {
   public void setPlan(Plan plan) {
     this.plan = plan;
   }
-  
 
   public List<Card> getCards() {
     return cards;

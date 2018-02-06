@@ -1,25 +1,17 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.ecash.ecashcore.model.BaseUUID;
+
 @Entity
 @Table(name = "wallet")
-public class Wallet extends BaseModel {
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+public class Wallet extends BaseUUID {
   
   @Column(name = "type", nullable = false)
   private String type;
@@ -45,14 +37,6 @@ public class Wallet extends BaseModel {
     this.type = type;
     this.card = card;
     this.status = status;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public Card getCard() {

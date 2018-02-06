@@ -4,22 +4,13 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import com.ecash.ecashcore.model.BaseModel;
+import com.ecash.ecashcore.model.BaseUUID;
 
 @Entity
 @Table(name = "scms_sync")
-public class SCMSSync extends BaseModel {
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+public class SCMSSync extends BaseUUID {
 
   @Column(name = "sync_code", nullable = false, unique = true)
   private String syncCode;

@@ -5,31 +5,21 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import com.ecash.ecashcore.model.BaseModel;
+import com.ecash.ecashcore.model.BaseUUID;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "card_statement_detail")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class CardStatementDetail extends BaseModel
+public class CardStatementDetail extends BaseUUID
 {
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  @Column(name = "id")
-  private String id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "card_statement_id")
@@ -78,16 +68,6 @@ public class CardStatementDetail extends BaseModel
   public void setTransactionDate(Date transactionDate)
   {
     this.transactionDate = transactionDate;
-  }
-
-  public String getId()
-  {
-    return id;
-  }
-
-  public void setId(String id)
-  {
-    this.id = id;
   }
 
   public CardStatement getCardStatement()

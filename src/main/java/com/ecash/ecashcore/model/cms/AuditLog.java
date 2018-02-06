@@ -1,21 +1,13 @@
 package com.ecash.ecashcore.model.cms;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.ecash.ecashcore.model.BaseModel;
-import org.hibernate.annotations.GenericGenerator;
+import com.ecash.ecashcore.model.BaseUUID;
 
 @Entity
 @Table(name = "audit_log")
-public class AuditLog extends BaseModel {
-
-  @Id
-  @GeneratedValue(generator = "system-uuid")
-  @GenericGenerator(name = "system-uuid", strategy = "uuid")
-  private String id;
+public class AuditLog extends BaseUUID {
 
   private String type;
 
@@ -38,14 +30,6 @@ public class AuditLog extends BaseModel {
     this.status = status;
     this.parameter = parameter;
     this.result = result;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getCategory() {
