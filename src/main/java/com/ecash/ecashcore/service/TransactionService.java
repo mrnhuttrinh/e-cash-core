@@ -347,7 +347,8 @@ public class TransactionService
     // Record the transaction
     TransactionType transactionType = transactionTypeRepository
         .findOne(TransactionTypeEnum.DEPOSIT.getName());
-    Transaction transaction = new Transaction(account, transactionType, transactionTime,
+
+    Transaction transaction = Transaction.activeOf(account, transactionType, transactionTime,
         depositRequest.getAmount(),
         card);
     transactionRepository.save(transaction);
@@ -359,7 +360,7 @@ public class TransactionService
             extendedInformation.getAdditionalTerminalInfo().getTerminalId());
 
     // Record the transaction detail
-    TransactionDetail transactionDetail = new TransactionDetail(transaction,
+    TransactionDetail transactionDetail = TransactionDetail.activeOf(transaction,
         extendedInformation.getTransactionDetails(), merchantTerminal.getMerchant());
     transactionDetailRepository.save(transactionDetail);
 

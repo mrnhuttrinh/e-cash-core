@@ -45,6 +45,12 @@ public class TransactionDetail extends BaseModel {
     this.merchant = merchant;
   }
 
+  public static TransactionDetail activeOf(Transaction transaction, String detail, Merchant merchant) {
+    TransactionDetail transactionDetail = new TransactionDetail(transaction, detail, merchant);
+    transactionDetail.setStatus("ACTIVE");
+    return transactionDetail;
+  }
+
   public TransactionDetailId getTransactionDetailId() {
     return transactionDetailId;
   }
