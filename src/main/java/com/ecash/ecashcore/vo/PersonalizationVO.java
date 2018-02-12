@@ -8,14 +8,10 @@ import com.ecash.ecashcore.model.cms.Card;
 import com.ecash.ecashcore.model.cms.Customer;
 import com.ecash.ecashcore.model.cms.IdentifyDocument;
 import com.ecash.ecashcore.model.cms.Organization;
-import com.ecash.ecashcore.model.cms.SCMSSync;
-import com.ecash.ecashcore.util.JsonUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class SyncVO implements ISyncableVO {
-  private String syncCode;
-  private Date syncTime;
-  private Boolean finishFlag;
+public class PersonalizationVO implements ISyncableVO {
+
   private String personalizationCode;
   private Date personalizationDate;
   private String cardCode;
@@ -45,30 +41,6 @@ public class SyncVO implements ISyncableVO {
   private String occupation;
   private String title;
   private String position;
-
-  public String getSyncCode() {
-    return syncCode;
-  }
-
-  public void setSyncCode(String syncCode) {
-    this.syncCode = syncCode;
-  }
-
-  public Date getSyncTime() {
-    return syncTime;
-  }
-
-  public void setSyncTime(Date syncTime) {
-    this.syncTime = syncTime;
-  }
-
-  public Boolean getFinishFlag() {
-    return finishFlag;
-  }
-
-  public void setFinishFlag(Boolean finishFlag) {
-    this.finishFlag = finishFlag;
-  }
 
   public String getPersonalizationCode() {
     return personalizationCode;
@@ -300,16 +272,6 @@ public class SyncVO implements ISyncableVO {
 
   public void setPosition(String position) {
     this.position = position;
-  }
-
-  @JsonIgnore
-  public SCMSSync getSCMSSync() {
-    SCMSSync scmsSync = new SCMSSync();
-    scmsSync.setSyncCode(syncCode);
-    scmsSync.setSyncTime(syncTime);
-    scmsSync.setFinishFlag(finishFlag);
-    scmsSync.setSyncDetails(JsonUtils.objectToJsonString(this));
-    return scmsSync;
   }
 
   @JsonIgnore

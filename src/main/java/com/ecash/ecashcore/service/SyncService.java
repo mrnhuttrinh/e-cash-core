@@ -66,7 +66,10 @@ import com.ecash.ecashcore.util.DateTimeUtils;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.util.ObjectUtils;
 import com.ecash.ecashcore.vo.HistoryVO;
+import com.ecash.ecashcore.vo.ISyncableVO;
+import com.ecash.ecashcore.vo.PersonalizationVO;
 import com.ecash.ecashcore.vo.SyncVO;
+import com.ecash.ecashcore.vo.SyncV1VO;
 
 @Service
 @Transactional
@@ -179,6 +182,38 @@ public class SyncService {
       }
     }
   }
+  
+  public void syncV1(SyncV1VO syncData) {
+    SCMSSync scmsSync = syncData.getSCMSSync();
+    
+    Optional<SCMSSync> oldSync = Optional.ofNullable(scmsSyncRepository.findBySyncCode(scmsSync.getSyncCode()));
+
+    if (!oldSync.isPresent()) {
+      
+      for(PersonalizationVO personalization : syncData.getPersonalizations()) {
+        syncV1Detail(personalization);
+      }
+
+      scmsSyncRepository.save(scmsSync);
+    }
+  }
+  
+  private void syncV1Detail(PersonalizationVO personalization) {
+    Organization organization = syncOrg(personalization.getOrganization());
+
+    Customer customer = syncCustomer(personalization.getCustomer(), organization, personalization);
+
+    syncAddress(personalization.getCustomerAddress(), customer, personalization);
+
+    syncIdentifyCard(personalization.getIdentifyCard(), customer, personalization);
+    syncPassportCard(personalization.getPassportCard(), customer, personalization);
+
+    Account account = syncAccount(personalization.getAccount(), customer, personalization);
+
+    syncCard(personalization.getCard(), account, personalization);
+
+    syncUser(customer);
+  }
 
   private void syncUser(Customer customer) {
     User user = userRepository.findByUsername(customer.getScmsMemberCode());
@@ -199,7 +234,7 @@ public class SyncService {
     }
   }
 
-  private Card syncCard(Card syncCard, Account account, SyncVO syncData) {
+  private Card syncCard(Card syncCard, Account account, ISyncableVO syncData) {
     SCMSSyncDetail scmsSyncDetail = scmsSyncDetailRepository.findByPersonalizationCodeAndTargetObject(
         syncData.getPersonalizationCode(), SCMSSyncTargetEnum.CARD.toString());
 
@@ -271,7 +306,7 @@ public class SyncService {
     return card;
   }
 
-  private Address syncAddress(Address syncAddress, Customer customer, SyncVO syncData) {
+  private Address syncAddress(Address syncAddress, Customer customer, ISyncableVO syncData) {
     SCMSSyncDetail scmsSyncDetail = scmsSyncDetailRepository.findByPersonalizationCodeAndTargetObject(
         syncData.getPersonalizationCode(), SCMSSyncTargetEnum.ADDRESS.toString());
 
@@ -314,7 +349,7 @@ public class SyncService {
     return address;
   }
 
-  private Account syncAccount(Account syncAccount, Customer customer, SyncVO syncData) {
+  private Account syncAccount(Account syncAccount, Customer customer, ISyncableVO syncData) {
     List<Account> accounts = accountRepository.findByCustomer(customer);
     Account account = null;
     if (accounts == null || accounts.isEmpty()) {
@@ -346,7 +381,7 @@ public class SyncService {
   }
 
   private IdentifyDocument syncIdentifyDocument(IdentifyDocument syncIdentifyCard, Customer customer,
-      IdentifyDocumentTypeEnum typeEnum, SCMSSyncTargetEnum syncTarget, SyncVO syncData) {
+      IdentifyDocumentTypeEnum typeEnum, SCMSSyncTargetEnum syncTarget, ISyncableVO syncData) {
     SCMSSyncDetail scmsSyncDetail = scmsSyncDetailRepository
         .findByPersonalizationCodeAndTargetObject(syncData.getPersonalizationCode(), syncTarget.toString());
 
@@ -390,17 +425,17 @@ public class SyncService {
     return identifyDocument;
   }
 
-  private IdentifyDocument syncIdentifyCard(IdentifyDocument syncIdentifyCard, Customer customer, SyncVO syncData) {
+  private IdentifyDocument syncIdentifyCard(IdentifyDocument syncIdentifyCard, Customer customer, ISyncableVO syncData) {
     return syncIdentifyDocument(syncIdentifyCard, customer, IdentifyDocumentTypeEnum.IDENTIFY_CARD,
         SCMSSyncTargetEnum.IDENTIFY_CARD, syncData);
   }
 
-  private IdentifyDocument syncPassportCard(IdentifyDocument syncPassportCard, Customer customer, SyncVO syncData) {
+  private IdentifyDocument syncPassportCard(IdentifyDocument syncPassportCard, Customer customer, ISyncableVO syncData) {
     return syncIdentifyDocument(syncPassportCard, customer, IdentifyDocumentTypeEnum.PASSPORT_CARD,
         SCMSSyncTargetEnum.PASSPORT_CARD, syncData);
   }
 
-  private Customer syncCustomer(Customer syncCustomer, Organization organization, SyncVO syncData) {
+  private Customer syncCustomer(Customer syncCustomer, Organization organization, ISyncableVO syncData) {
     SCMSSyncDetail scmsSyncDetail = scmsSyncDetailRepository.findByPersonalizationCodeAndTargetObject(
         syncData.getPersonalizationCode(), SCMSSyncTargetEnum.CUSTOMER.toString());
 
