@@ -13,12 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.AddressTypeEnum;
+import com.ecash.ecashcore.enums.CardStatusEnum;
 import com.ecash.ecashcore.enums.CardTypeEnum;
 import com.ecash.ecashcore.enums.CurrencyCodeEnum;
 import com.ecash.ecashcore.enums.CustomerTypeEnum;
 import com.ecash.ecashcore.enums.IdentifyDocumentTypeEnum;
 import com.ecash.ecashcore.enums.PlanTypeEnum;
 import com.ecash.ecashcore.enums.SCMSSyncTargetEnum;
+import com.ecash.ecashcore.exception.EcashException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.AccountHistory;
 import com.ecash.ecashcore.model.cms.AccountHistoryType;
@@ -62,14 +64,16 @@ import com.ecash.ecashcore.repository.SCMSSyncDetailRepository;
 import com.ecash.ecashcore.repository.SCMSSyncRepository;
 import com.ecash.ecashcore.repository.UserRepository;
 import com.ecash.ecashcore.repository.WalletRepository;
-import com.ecash.ecashcore.util.DateTimeUtils;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.util.ObjectUtils;
+import com.ecash.ecashcore.util.StringUtils;
+import com.ecash.ecashcore.vo.CardVO;
+import com.ecash.ecashcore.vo.CustomerVO;
 import com.ecash.ecashcore.vo.HistoryVO;
 import com.ecash.ecashcore.vo.ISyncableVO;
 import com.ecash.ecashcore.vo.PersonalizationVO;
-import com.ecash.ecashcore.vo.SyncVO;
 import com.ecash.ecashcore.vo.SyncV1VO;
+import com.ecash.ecashcore.vo.SyncVO;
 
 @Service
 @Transactional
@@ -156,12 +160,28 @@ public class SyncService {
   @Autowired
   UserRepository userRepository;
 
+  private static final List<Integer> validGender = Arrays.asList(new Integer[] { 1, 2, 3 });
+
+  private void validateSyncData(SCMSSync scmsSync) {
+    if (StringUtils.isNullOrEmpty(scmsSync.getSyncCode()) || scmsSync.getSyncTime() == null
+        || scmsSync.getFinishFlag() == null) {
+      throw new EcashException("syncCode, syncTime, finishFlag must not be null");
+    }
+  }
+
   public void sync(List<SyncVO> syncDatas) {
     for (SyncVO syncData : syncDatas) {
       SCMSSync scmsSync = syncData.getSCMSSync();
+
+      validateSyncData(scmsSync);
+
       Optional<SCMSSync> oldSync = Optional.ofNullable(scmsSyncRepository.findBySyncCode(scmsSync.getSyncCode()));
 
       if (!oldSync.isPresent()) {
+
+        if (StringUtils.isNullOrEmpty(syncData.getPersonalizationCode())) {
+          throw new EcashException("personalizationCode must not be null");
+        }
 
         Organization organization = syncOrg(syncData.getOrganization());
 
@@ -182,22 +202,28 @@ public class SyncService {
       }
     }
   }
-  
+
   public void syncV1(SyncV1VO syncData) {
     SCMSSync scmsSync = syncData.getSCMSSync();
-    
+
+    validateSyncData(scmsSync);
+
     Optional<SCMSSync> oldSync = Optional.ofNullable(scmsSyncRepository.findBySyncCode(scmsSync.getSyncCode()));
 
     if (!oldSync.isPresent()) {
-      
-      for(PersonalizationVO personalization : syncData.getPersonalizations()) {
+
+      for (PersonalizationVO personalization : syncData.getPersonalizations()) {
+        if (StringUtils.isNullOrEmpty(personalization.getPersonalizationCode())) {
+          throw new EcashException("personalizationCode must not be null");
+        }
+
         syncV1Detail(personalization);
       }
 
       scmsSyncRepository.save(scmsSync);
     }
   }
-  
+
   private void syncV1Detail(PersonalizationVO personalization) {
     Organization organization = syncOrg(personalization.getOrganization());
 
@@ -226,11 +252,31 @@ public class SyncService {
       user.setUsername(customer.getScmsMemberCode());
       // default password is date of birth with format: yyyyMMdd
       PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-      user.setPassword(DateTimeUtils.datetoString(customer.getDateOfBirth(), DateTimeUtils.DEFAULT_FORMAT_SHORT_DATE));
+      user.setPassword(customer.getScmsMemberCode());
       user.encodePassword(passwordEncoder);
       user.setRoles(Arrays.asList(roleService.getRoleUSER()));
 
       userRepository.save(user);
+    }
+  }
+
+  private void validateCard(Card card) {
+    if (card.getCardCode() == null) {
+      throw new EcashException("Card code date must not be null.");
+    }
+
+    if (card.getEffectiveDate() == null) {
+      throw new EcashException("Card's effective date must not be null.");
+    }
+
+    if (card.getExpiryDate() == null) {
+      throw new EcashException("Card's expiry date must not be null.");
+    }
+
+    try {
+      CardStatusEnum.valueOf(card.getStatus().toUpperCase());
+    } catch (Exception e) {
+      throw new EcashException("Card's status is not valid.");
     }
   }
 
@@ -249,27 +295,31 @@ public class SyncService {
       if (!ObjectUtils.isCardEqual(card, syncCard)) {
 
         // create history
-//        HistoryVO historyVO = new HistoryVO();
-//        historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(card));
+        HistoryVO historyVO = new HistoryVO();
+        historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(new CardVO(card)));
+
+        validateCard(syncCard);
 
         // update
-        card.setCardCode(syncCard.getCardCode());
+        // card.setCardCode(syncCard.getCardCode());
         card.setEffectiveDate(syncCard.getEffectiveDate());
         card.setExpiryDate(syncCard.getExpiryDate());
         card.setStatus(syncCard.getStatus());
 
-//        historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(card));
+        historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(new CardVO(card)));
 
         // update history
         cardHistory = new CardHistory();
         cardHistory.setCard(card);
         cardHistory.setType(cardHistoryTypeRepository.findOne(CardHistoryType.UPDATED));
         cardHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
-//        cardHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
+        cardHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
 
         cardRepository.save(card);
       }
     } else {
+      validateCard(syncCard);
+
       card = syncCard;
       card.setAccount(account);
       card.setCardType(cardTypeRepository.findByTypeCode(CardTypeEnum.DEFAULT.toString()));
@@ -425,12 +475,14 @@ public class SyncService {
     return identifyDocument;
   }
 
-  private IdentifyDocument syncIdentifyCard(IdentifyDocument syncIdentifyCard, Customer customer, ISyncableVO syncData) {
+  private IdentifyDocument syncIdentifyCard(IdentifyDocument syncIdentifyCard, Customer customer,
+      ISyncableVO syncData) {
     return syncIdentifyDocument(syncIdentifyCard, customer, IdentifyDocumentTypeEnum.IDENTIFY_CARD,
         SCMSSyncTargetEnum.IDENTIFY_CARD, syncData);
   }
 
-  private IdentifyDocument syncPassportCard(IdentifyDocument syncPassportCard, Customer customer, ISyncableVO syncData) {
+  private IdentifyDocument syncPassportCard(IdentifyDocument syncPassportCard, Customer customer,
+      ISyncableVO syncData) {
     return syncIdentifyDocument(syncPassportCard, customer, IdentifyDocumentTypeEnum.PASSPORT_CARD,
         SCMSSyncTargetEnum.PASSPORT_CARD, syncData);
   }
@@ -450,11 +502,13 @@ public class SyncService {
       if (!ObjectUtils.isCustomerEqual(customer, syncCustomer)) {
 
         // create history
-//        HistoryVO historyVO = new HistoryVO();
-//        historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(customer));
+        HistoryVO historyVO = new HistoryVO();
+        historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(new CustomerVO(customer)));
+
+        validateCustomer(syncCustomer);
 
         // update
-        customer.setScmsMemberCode(syncCustomer.getScmsMemberCode());
+        // customer.setScmsMemberCode(syncCustomer.getScmsMemberCode());
         customer.setFirstName(syncCustomer.getFirstName());
         customer.setLastName(syncCustomer.getLastName());
         customer.setGender(syncCustomer.getGender());
@@ -462,22 +516,24 @@ public class SyncService {
         customer.setPhone1(syncCustomer.getPhone1());
         customer.setPhone1(syncCustomer.getPhone2());
         customer.setEmail(syncCustomer.getEmail());
-        customer.setDateBecameCustomer(syncCustomer.getDateBecameCustomer());
+        // customer.setDateBecameCustomer(syncCustomer.getDateBecameCustomer());
         customer.setCountryCode(syncCustomer.getCountryCode());
         customer.setOccupation(syncCustomer.getOccupation());
         customer.setTitle(syncCustomer.getTitle());
         customer.setPosition(syncCustomer.getPosition());
 
-//        historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(customer));
+        historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(new CustomerVO(customer)));
 
         // update history
         customerHistory = new CustomerHistory();
         customerHistory.setCustomer(customer);
         customerHistory.setType(customerHistoryTypeRepository.findOne(CustomerHistoryType.UPDATED));
         customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
-//        customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
+        customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
       }
     } else {
+      validateCustomer(syncCustomer);
+
       customer = syncCustomer;
 
       // Set default customer type
@@ -495,7 +551,7 @@ public class SyncService {
       customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
       customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
     }
-    
+
     customer.setOrganization(organization);
     customerRepository.save(customer);
 
@@ -513,7 +569,30 @@ public class SyncService {
     return customer;
   }
 
+  private void validateCustomer(Customer syncCustomer) {
+    if (syncCustomer.getScmsMemberCode() == null) {
+      throw new EcashException("Member code must not be null.");
+    }
+
+    if (syncCustomer.getDateBecameCustomer() == null) {
+      throw new EcashException("Personalization date must not be null.");
+    }
+
+    if (syncCustomer.getFirstName() == null || syncCustomer.getLastName() == null) {
+      throw new EcashException("First name and last name date must not be null.");
+    }
+
+    if (syncCustomer.getGender() != null) {
+      if (!validGender.contains(syncCustomer.getGender())) {
+        throw new EcashException("gender is not valid.");
+      }
+    }
+  }
+
   private Organization syncOrg(Organization syncOrg) {
+
+    validateOrg(syncOrg);
+
     Organization org = organizationRepository.findOne(syncOrg.getId());
     if (org != null) {
       if (org.getShortName().equals(syncOrg.getShortName())) {
@@ -527,5 +606,15 @@ public class SyncService {
     organizationRepository.save(org);
 
     return org;
+  }
+
+  private void validateOrg(Organization syncOrg) {
+    if (syncOrg.getId() == null) {
+      throw new EcashException("Org code date must not be null.");
+    }
+
+    if (syncOrg.getShortName() == null) {
+      throw new EcashException("Org short name date must not be null.");
+    }
   }
 }

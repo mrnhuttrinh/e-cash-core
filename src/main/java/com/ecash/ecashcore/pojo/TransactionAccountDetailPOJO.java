@@ -1,4 +1,4 @@
-package com.ecash.ecashcore.vo;
+package com.ecash.ecashcore.pojo;
 
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.Card;
@@ -7,14 +7,14 @@ import com.ecash.ecashcore.model.cms.Merchant;
 import com.ecash.ecashcore.model.cms.Transaction;
 import com.ecash.ecashcore.model.cms.TransactionDetail;
 
-public class TransactionAccountDetailVO {
+public class TransactionAccountDetailPOJO {
   private Card card;
   private Account account;
   private Customer customer;
   private Merchant merchant;
   private TransactionDetail transactionDetail;
   private Transaction transaction;
-  public TransactionAccountDetailVO()
+  public TransactionAccountDetailPOJO()
   {
     super();
   }

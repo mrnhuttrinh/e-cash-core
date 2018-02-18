@@ -18,14 +18,14 @@ import com.ecash.ecashcore.model.cms.Customer;
 import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.UserHistory;
 import com.ecash.ecashcore.model.cms.UserHistoryType;
+import com.ecash.ecashcore.pojo.CustomerPOJO;
+import com.ecash.ecashcore.pojo.GeneralInformationPOJO;
 import com.ecash.ecashcore.repository.PermissionRepository;
 import com.ecash.ecashcore.repository.RoleRepository;
 import com.ecash.ecashcore.repository.UserHistoryRepository;
 import com.ecash.ecashcore.repository.UserHistoryTypeRepository;
 import com.ecash.ecashcore.repository.UserRepository;
 import com.ecash.ecashcore.util.JsonUtils;
-import com.ecash.ecashcore.vo.CustomerVO;
-import com.ecash.ecashcore.vo.GeneralInformationVO;
 import com.ecash.ecashcore.vo.HistoryVO;
 import com.querydsl.core.types.Predicate;
 
@@ -200,22 +200,22 @@ public class UserService {
       return newUser;
   }
   
-  public GeneralInformationVO generalInformation(String currentUsername) throws Exception {
+  public GeneralInformationPOJO generalInformation(String currentUsername) throws Exception {
     User user = userRepository.findByUsername(currentUsername);
     if (user == null) {
         throw new Exception("User isn't exists");
     }
-    List<CustomerVO> customers = new ArrayList<CustomerVO>();
+    List<CustomerPOJO> customers = new ArrayList<CustomerPOJO>();
     for (Customer customer : user.getCustomers()) {
       // find account
       List<Account> accounts = new ArrayList<Account>();
       for (Account account : customer.getAccounts()) {
         accounts.add(account);
       }
-      CustomerVO customerVO = new CustomerVO(customer, accounts);
+      CustomerPOJO customerVO = new CustomerPOJO(customer, accounts);
       customers.add(customerVO);
     }
-    GeneralInformationVO generalInformation = new GeneralInformationVO(user, customers);
+    GeneralInformationPOJO generalInformation = new GeneralInformationPOJO(user, customers);
     return generalInformation;
     
   }

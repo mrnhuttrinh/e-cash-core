@@ -1,6 +1,14 @@
 package com.ecash.ecashcore.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ecash.ecashcore.model.cms.Address;
 import com.ecash.ecashcore.model.cms.Card;
@@ -9,14 +17,13 @@ import com.ecash.ecashcore.model.cms.IdentifyDocument;
 
 public class ObjectUtils {
 
+  protected static final Logger LOGGER = LoggerFactory.getLogger(ObjectUtils.class);
+
   public static boolean isCustomerEqual(Customer source, Customer target) {
-    return isEqual(source.getScmsMemberCode(), target.getScmsMemberCode())
-        && isEqual(source.getFirstName(), target.getFirstName()) && isEqual(source.getLastName(), target.getLastName())
+    return isEqual(source.getFirstName(), target.getFirstName()) && isEqual(source.getLastName(), target.getLastName())
         && isEqual(source.getGender(), target.getGender()) && isEqual(source.getDateOfBirth(), target.getDateOfBirth())
         && isEqual(source.getPhone1(), target.getPhone1()) && isEqual(source.getPhone2(), target.getPhone2())
-        && isEqual(source.getEmail(), target.getEmail())
-        && isEqual(source.getDateBecameCustomer(), target.getDateBecameCustomer())
-        && isEqual(source.getCountryCode(), target.getCountryCode())
+        && isEqual(source.getEmail(), target.getEmail()) && isEqual(source.getCountryCode(), target.getCountryCode())
         && isEqual(source.getOccupation(), target.getOccupation()) && isEqual(source.getTitle(), target.getTitle())
         && isEqual(source.getPosition(), target.getPosition());
   }
@@ -33,8 +40,7 @@ public class ObjectUtils {
   }
 
   public static boolean isCardEqual(Card source, Card target) {
-    return isEqual(source.getCardCode(), target.getCardCode())
-        && isEqual(source.getEffectiveDate(), target.getEffectiveDate())
+    return isEqual(source.getEffectiveDate(), target.getEffectiveDate())
         && isEqual(source.getExpiryDate(), target.getExpiryDate()) && isEqual(source.getStatus(), target.getStatus());
   }
 

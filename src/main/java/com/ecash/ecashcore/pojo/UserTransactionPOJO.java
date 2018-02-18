@@ -1,12 +1,14 @@
-package com.ecash.ecashcore.vo;
+package com.ecash.ecashcore.pojo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserTransactionVO {
+import com.ecash.ecashcore.vo.CustomerTransactionVO;
+
+public class UserTransactionPOJO {
   private List<CustomerTransactionVO> customerTransactions;
   
-  public UserTransactionVO() {
+  public UserTransactionPOJO() {
     super();
     this.customerTransactions = new ArrayList<CustomerTransactionVO>();
   }
