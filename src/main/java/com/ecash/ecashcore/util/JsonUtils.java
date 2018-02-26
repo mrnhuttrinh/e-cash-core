@@ -13,10 +13,10 @@ import com.google.gson.Gson;
 public class JsonUtils {
 
   public static String objectToJsonString(Object obj) {
-    ObjectMapper mapper = new ObjectMapper();
-
-    ObjectWriter ow = mapper.writer();
+    ObjectWriter ow = new ObjectMapper().writer();
     ow = ow.without(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    ow = ow.without(SerializationFeature.FAIL_ON_SELF_REFERENCES);
+    ow = ow.without(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS);
     String json = null;
     try {
       json = ow.writeValueAsString(obj);

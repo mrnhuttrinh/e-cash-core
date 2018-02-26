@@ -39,6 +39,8 @@ import com.ecash.ecashcore.model.cms.TransactionType;
 import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.Wallet;
 import com.ecash.ecashcore.model.wallet.EWalletTransaction;
+import com.ecash.ecashcore.pojo.TransactionAccountDetailPOJO;
+import com.ecash.ecashcore.pojo.UserTransactionPOJO;
 import com.ecash.ecashcore.repository.AccountHolderRepository;
 import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.BalanceHistoryRepository;
@@ -54,10 +56,8 @@ import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.CustomerTransactionVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.TargetVO;
-import com.ecash.ecashcore.vo.TransactionAccountDetailVO;
 import com.ecash.ecashcore.vo.TransactionVO;
 import com.ecash.ecashcore.vo.TransferExtendedInformationVO;
-import com.ecash.ecashcore.vo.UserTransactionVO;
 import com.ecash.ecashcore.vo.request.ChargeRequestVO;
 import com.ecash.ecashcore.vo.request.DepositRequestVO;
 import com.ecash.ecashcore.vo.request.ITransactionRequestVO;
@@ -635,9 +635,9 @@ public class TransactionService
     return null;
   }
   
-  public UserTransactionVO findTransactionByUser(String currentUser, Date fromDate, Date toDate)
+  public UserTransactionPOJO findTransactionByUser(String currentUser, Date fromDate, Date toDate)
   {
-    UserTransactionVO userTransactionVO = new UserTransactionVO();
+    UserTransactionPOJO userTransactionVO = new UserTransactionPOJO();
     List<CustomerTransactionVO> customerTransactions = new ArrayList<CustomerTransactionVO>();
     User user = userService.getByUsername(currentUser);
     List<Customer> customers = user.getCustomers();
@@ -661,8 +661,8 @@ public class TransactionService
     userTransactionVO.setCustomerTransactions(customerTransactions);
     return userTransactionVO;
   }
-  public TransactionAccountDetailVO getTransactionAccountDetail(String id) throws Exception {
-    TransactionAccountDetailVO detailResult = new TransactionAccountDetailVO();
+  public TransactionAccountDetailPOJO getTransactionAccountDetail(String id) throws Exception {
+    TransactionAccountDetailPOJO detailResult = new TransactionAccountDetailPOJO();
     
     // get transaction
     Transaction transaction = transactionRepository.findOne(id);

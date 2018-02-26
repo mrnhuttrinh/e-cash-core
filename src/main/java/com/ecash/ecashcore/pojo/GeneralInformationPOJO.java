@@ -1,20 +1,20 @@
-package com.ecash.ecashcore.vo;
+package com.ecash.ecashcore.pojo;
 
 import java.util.List;
 
 import com.ecash.ecashcore.model.cms.User;
 
-public class GeneralInformationVO {
+public class GeneralInformationPOJO {
   private User user;
-  private List<CustomerVO> customers;
+  private List<CustomerPOJO> customers;
   
-  public GeneralInformationVO(User user, List<CustomerVO> customers) {
+  public GeneralInformationPOJO(User user, List<CustomerPOJO> customers) {
     super();
     this.user = user;
     this.customers = customers;
   }
 
-  public GeneralInformationVO() {
+  public GeneralInformationPOJO() {
     super();
   }
 
@@ -26,11 +26,11 @@ public class GeneralInformationVO {
     this.user = user;
   }
 
-  public List<CustomerVO> getCustomers() {
+  public List<CustomerPOJO> getCustomers() {
     return customers;
   }
 
-  public void setCustomers(List<CustomerVO> customers) {
+  public void setCustomers(List<CustomerPOJO> customers) {
     this.customers = customers;
   }
 }
