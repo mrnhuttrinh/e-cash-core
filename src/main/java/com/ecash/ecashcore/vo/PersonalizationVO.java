@@ -17,7 +17,7 @@ public class PersonalizationVO implements ISyncableVO {
   private String cardCode;
   private Date effectiveDate;
   private Date expiryDate;
-  private String status;
+  private int status;
   private String organizationCode;
   private String organizationShortName;
   private String memberCode;
@@ -82,11 +82,11 @@ public class PersonalizationVO implements ISyncableVO {
     this.expiryDate = expiryDate;
   }
 
-  public String getStatus() {
+  public int getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(int status) {
     this.status = status;
   }
 
