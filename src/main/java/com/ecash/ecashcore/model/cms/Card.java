@@ -76,26 +76,6 @@ public class Card extends BaseModel {
     this.status = status;
   }
 
-  public void setStatus(int status) {
-    switch (status) {
-      case 1:
-        this.status = "ACTIVE";
-        break;
-      case 2:
-        this.status = "CANCELED";
-        break;
-      case 3:
-        this.status = "LOCKED";
-        break;
-      case 4:
-        this.status = "VIOLATED";
-        break;
-      default:
-        this.status = "LOCKED";
-        break;
-    }
-  }
-
   public String getCardCode() {
     return cardCode;
   }

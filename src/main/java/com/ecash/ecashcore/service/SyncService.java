@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.AddressTypeEnum;
-import com.ecash.ecashcore.enums.CardStatusEnum;
 import com.ecash.ecashcore.enums.CardTypeEnum;
 import com.ecash.ecashcore.enums.CurrencyCodeEnum;
 import com.ecash.ecashcore.enums.CustomerTypeEnum;
@@ -271,12 +270,6 @@ public class SyncService {
 
     if (card.getExpiryDate() == null) {
       throw new EcashException("Card's expiry date must not be null.");
-    }
-
-    try {
-      CardStatusEnum.valueOf(card.getStatus().toUpperCase());
-    } catch (Exception e) {
-      throw new EcashException("Card's status is not valid.");
     }
   }
 
