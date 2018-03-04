@@ -2,6 +2,7 @@ package com.ecash.ecashcore.vo;
 
 import java.util.Date;
 
+import com.ecash.ecashcore.enums.CardStatusEnum;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.Address;
 import com.ecash.ecashcore.model.cms.Card;
@@ -21,7 +22,7 @@ public class SyncVO implements ISyncableVO {
   private String cardCode;
   private Date effectiveDate;
   private Date expiryDate;
-  private String status;
+  private int status;
   private String organizationCode;
   private String organizationShortName;
   private String memberCode;
@@ -110,11 +111,11 @@ public class SyncVO implements ISyncableVO {
     this.expiryDate = expiryDate;
   }
 
-  public String getStatus() {
+  public int getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(int status) {
     this.status = status;
   }
 
@@ -318,7 +319,13 @@ public class SyncVO implements ISyncableVO {
     card.setCardCode(cardCode);
     card.setEffectiveDate(effectiveDate);
     card.setExpiryDate(expiryDate);
-    card.setStatus(status);
+
+    CardStatusEnum statusEnum = CardStatusEnum.findByStatusId(status);
+    if (statusEnum == null) {
+      statusEnum = CardStatusEnum.LOCKED;
+    }
+
+    card.setStatus(statusEnum.getStatus().toString());
     return card;
   }
 
