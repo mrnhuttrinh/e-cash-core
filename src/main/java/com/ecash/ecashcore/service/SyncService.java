@@ -102,6 +102,9 @@ public class SyncService {
   CardRepository cardRepository;
 
   @Autowired
+  CardService cardService;
+
+  @Autowired
   CardTypeRepository cardTypeRepository;
 
   @Autowired
@@ -265,15 +268,8 @@ public class SyncService {
     if (card.getCardCode() == null) {
       throw new EcashException("Card code must not be null.");
     }
-
-    if (CardStatusEnum.ACTIVE.toString().equals(card.getStatus())) {
-      List<Card> cards = cardRepository.findByCardCodeAndStatus(card.getCardCode(), CardStatusEnum.ACTIVE.toString());
-      for (Card e : cards) {
-        if (e.getCardNumber() != card.getCardNumber()) {
-          throw new ValidationException("There are more than 1 active card code.");
-        }
-      }
-    }
+    
+    cardService.validateActiveCardCode(card);
 
     if (card.getEffectiveDate() == null) {
       throw new EcashException("Card's effective date must not be null.");

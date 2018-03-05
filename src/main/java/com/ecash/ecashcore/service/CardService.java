@@ -53,6 +53,8 @@ public class CardService {
     if (card.getStatus().equalsIgnoreCase(status.toString())) {
       throw new EcashException("Error: card status is " + status.toString() + " already.");
     }
+    
+    validateActiveCardCode(card);
 
     // save card history
     CardHistoryType historyType = cardHistoryTypeRepository.findOne(CardHistoryType.UPDATED);
@@ -97,6 +99,17 @@ public class CardService {
     }
 
     return cardOptional.get();
+  }
+
+  public void validateActiveCardCode(Card card) {
+    if (CardStatusEnum.ACTIVE.toString().equals(card.getStatus())) {
+      List<Card> cards = cardRepository.findByCardCodeAndStatus(card.getCardCode(), CardStatusEnum.ACTIVE.toString());
+      for (Card e : cards) {
+        if (e.getCardNumber() != card.getCardNumber()) {
+          throw new ValidationException("There are more than 1 active card code.");
+        }
+      }
+    }
   }
 
   private CardStatusEnum validateCardStatus(String status) {
