@@ -25,7 +25,7 @@ public class Card extends BaseModel {
   @Column(name = "status")
   private String status;
 
-  @Column(name = "card_code", unique = true, nullable = false)
+  @Column(name = "card_code")
   private String cardCode;
 
   @Column(name = "effective_date")

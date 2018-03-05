@@ -241,7 +241,7 @@ public class TransactionService
     validateTransactionRequest(chargeRequest);
 
     // check validate card
-    Card card = cardService.identifyValidCard(chargeRequest.getCard().getNumber());
+    Card card = cardService.identifyValidCardByCardCode(chargeRequest.getCard().getNumber());
 
     Date transactionTime = Calendar.getInstance().getTime();
 
@@ -314,7 +314,7 @@ public class TransactionService
     validateTransactionRequest(depositRequest);
 
     // check validate card
-    Card card = cardService.identifyValidCard(depositRequest.getCard().getNumber());
+    Card card = cardService.identifyValidCardByCardCode(depositRequest.getCard().getNumber());
 
     // Check valid account information
     Account account = identifyValidAccount(card, depositRequest.getTarget());

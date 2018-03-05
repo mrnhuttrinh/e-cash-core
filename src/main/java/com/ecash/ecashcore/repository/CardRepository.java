@@ -1,5 +1,7 @@
 package com.ecash.ecashcore.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -11,7 +13,9 @@ import com.querydsl.core.types.Predicate;
 
 public interface CardRepository extends BaseQuerydslRepository<Card, String, QCard> {
 
-  Card findByCardCode(String cardCode);
+  List<Card> findByCardCode(String cardCode);
+  
+  List<Card> findByCardCodeAndStatus(String cardCode, String status);
 
   Card findByCardNumber(String cardNumber);
   
