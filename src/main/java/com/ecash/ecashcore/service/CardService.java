@@ -1,5 +1,13 @@
 package com.ecash.ecashcore.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.CardStatusEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
@@ -17,12 +25,6 @@ import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.HistoryVO;
 import com.ecash.ecashcore.vo.request.UpdateCardStatusRequestVO;
 import com.querydsl.core.types.Predicate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -51,6 +53,8 @@ public class CardService {
     if (card.getStatus().equalsIgnoreCase(status.toString())) {
       throw new EcashException("Error: card status is " + status.toString() + " already.");
     }
+    
+    validateActiveCardCode(card);
 
     // save card history
     CardHistoryType historyType = cardHistoryTypeRepository.findOne(CardHistoryType.UPDATED);
@@ -69,23 +73,43 @@ public class CardService {
     return card;
   }
 
-  public Card identifyValidCard(String cardNumber) {
+  public Card identifyValidCardByCardCode(String cardCode) {
     // check validate card
-    Card card = this.identifyCard(cardNumber);
-    if (!card.getStatus().equals(StatusEnum.ACTIVE.toString())) {
+    List<Card> cards = cardRepository.findByCardCodeAndStatus(cardCode, StatusEnum.ACTIVE.toString());
+
+    Card result = null;
+    if (!cards.isEmpty()) {
+      if (cards.size() > 1) {
+        throw new ValidationException("There are more than 1 active card code.");
+      }
+      result = cards.get(0);
+    }
+
+    if (result == null) {
       throw new ValidationException("Card is inactive.");
     }
 
-    return card;
+    return result;
   }
 
   public Card identifyCard(String cardNumber) {
-    Optional<Card> cardOptional = Optional.ofNullable(cardRepository.findByCardCode(cardNumber));
+    Optional<Card> cardOptional = Optional.ofNullable(cardRepository.findOne(cardNumber));
     if (!cardOptional.isPresent()) {
       throw new ValidationException("Card number is not valid or not exist.");
     }
 
     return cardOptional.get();
+  }
+
+  public void validateActiveCardCode(Card card) {
+    if (CardStatusEnum.ACTIVE.toString().equals(card.getStatus())) {
+      List<Card> cards = cardRepository.findByCardCodeAndStatus(card.getCardCode(), CardStatusEnum.ACTIVE.toString());
+      for (Card e : cards) {
+        if (e.getCardNumber() != card.getCardNumber()) {
+          throw new ValidationException("There are more than 1 active card code.");
+        }
+      }
+    }
   }
 
   private CardStatusEnum validateCardStatus(String status) {

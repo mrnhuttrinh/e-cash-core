@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.AddressTypeEnum;
+import com.ecash.ecashcore.enums.CardStatusEnum;
 import com.ecash.ecashcore.enums.CardTypeEnum;
 import com.ecash.ecashcore.enums.CurrencyCodeEnum;
 import com.ecash.ecashcore.enums.CustomerTypeEnum;
@@ -20,6 +21,7 @@ import com.ecash.ecashcore.enums.IdentifyDocumentTypeEnum;
 import com.ecash.ecashcore.enums.PlanTypeEnum;
 import com.ecash.ecashcore.enums.SCMSSyncTargetEnum;
 import com.ecash.ecashcore.exception.EcashException;
+import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.AccountHistory;
 import com.ecash.ecashcore.model.cms.AccountHistoryType;
@@ -98,6 +100,9 @@ public class SyncService {
 
   @Autowired
   CardRepository cardRepository;
+
+  @Autowired
+  CardService cardService;
 
   @Autowired
   CardTypeRepository cardTypeRepository;
@@ -261,8 +266,10 @@ public class SyncService {
 
   private void validateCard(Card card) {
     if (card.getCardCode() == null) {
-      throw new EcashException("Card code date must not be null.");
+      throw new EcashException("Card code must not be null.");
     }
+    
+    cardService.validateActiveCardCode(card);
 
     if (card.getEffectiveDate() == null) {
       throw new EcashException("Card's effective date must not be null.");
