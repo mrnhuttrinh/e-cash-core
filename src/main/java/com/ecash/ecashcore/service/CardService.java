@@ -78,7 +78,7 @@ public class CardService {
     Card result = null;
     if (!cards.isEmpty()) {
       if (cards.size() > 1) {
-        throw new ValidationException("There are more than 1 active card.");
+        throw new ValidationException("There are more than 1 active card code.");
       }
       result = cards.get(0);
     }
