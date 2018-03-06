@@ -1,6 +1,8 @@
 package com.ecash.ecashcore.service;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,15 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.AddressTypeEnum;
-import com.ecash.ecashcore.enums.CardStatusEnum;
 import com.ecash.ecashcore.enums.CardTypeEnum;
 import com.ecash.ecashcore.enums.CurrencyCodeEnum;
 import com.ecash.ecashcore.enums.CustomerTypeEnum;
 import com.ecash.ecashcore.enums.IdentifyDocumentTypeEnum;
 import com.ecash.ecashcore.enums.PlanTypeEnum;
 import com.ecash.ecashcore.enums.SCMSSyncTargetEnum;
+import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.exception.EcashException;
-import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.AccountHistory;
 import com.ecash.ecashcore.model.cms.AccountHistoryType;
@@ -407,8 +408,11 @@ public class SyncService {
       account.setCustomer(customer);
 
       account.setAccountType(accountTypeRepository.findByTypeCode(AccountTypeEnum.DEFAULT.toString()));
-      account.setPlan(planRepository.findbyPlanType(PlanTypeEnum.DEFAULT.toString()));
+      account.setDateOpened(Calendar.getInstance().getTime());
       account.setCurrencyCode(currencyCodeRepository.findOne(CurrencyCodeEnum.VND.toString()));
+      account.setCurrentBalance(Double.valueOf(0));
+      account.setStatus(StatusEnum.ACTIVE.toString());
+      account.setPlan(planRepository.findbyPlanType(PlanTypeEnum.DEFAULT.toString()));
 
       accountRepository.save(account);
 
