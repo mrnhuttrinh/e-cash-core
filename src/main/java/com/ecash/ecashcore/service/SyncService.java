@@ -2,7 +2,6 @@ package com.ecash.ecashcore.service;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.AccountTypeEnum;
 import com.ecash.ecashcore.enums.AddressTypeEnum;
+import com.ecash.ecashcore.enums.CardStatusEnum;
 import com.ecash.ecashcore.enums.CardTypeEnum;
 import com.ecash.ecashcore.enums.CurrencyCodeEnum;
 import com.ecash.ecashcore.enums.CustomerTypeEnum;
@@ -23,6 +23,7 @@ import com.ecash.ecashcore.enums.PlanTypeEnum;
 import com.ecash.ecashcore.enums.SCMSSyncTargetEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.exception.EcashException;
+import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.AccountHistory;
 import com.ecash.ecashcore.model.cms.AccountHistoryType;
@@ -270,7 +271,7 @@ public class SyncService {
       throw new EcashException("Card code must not be null.");
     }
     
-    cardService.validateActiveCardCode(card);
+    validateSyncCardCode(card);
 
     if (card.getEffectiveDate() == null) {
       throw new EcashException("Card's effective date must not be null.");
@@ -278,6 +279,15 @@ public class SyncService {
 
     if (card.getExpiryDate() == null) {
       throw new EcashException("Card's expiry date must not be null.");
+    }
+  }
+  
+  private void validateSyncCardCode(Card card) {
+    List<Card> cards = cardRepository.findByCardCode(card.getCardCode());
+    for (Card e : cards) {
+      if (e.getCardNumber() != card.getCardNumber() && !CardStatusEnum.CANCELED.toString().equals(e.getStatus())) {
+        throw new ValidationException("Card code being used.");
+      }
     }
   }
 
@@ -583,7 +593,7 @@ public class SyncService {
     }
 
     if (syncCustomer.getFirstName() == null || syncCustomer.getLastName() == null) {
-      throw new EcashException("First name and last name date must not be null.");
+      throw new EcashException("First name and last name must not be null.");
     }
 
     if (syncCustomer.getGender() != null) {
@@ -614,11 +624,11 @@ public class SyncService {
 
   private void validateOrg(Organization syncOrg) {
     if (syncOrg.getId() == null) {
-      throw new EcashException("Org code date must not be null.");
+      throw new EcashException("Org code must not be null.");
     }
 
     if (syncOrg.getShortName() == null) {
-      throw new EcashException("Org short name date must not be null.");
+      throw new EcashException("Org short name must not be null.");
     }
   }
 }
