@@ -1,6 +1,7 @@
 package com.ecash.ecashcore.service;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ import com.ecash.ecashcore.enums.CustomerTypeEnum;
 import com.ecash.ecashcore.enums.IdentifyDocumentTypeEnum;
 import com.ecash.ecashcore.enums.PlanTypeEnum;
 import com.ecash.ecashcore.enums.SCMSSyncTargetEnum;
+import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.exception.EcashException;
 import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Account;
@@ -269,7 +271,7 @@ public class SyncService {
       throw new EcashException("Card code must not be null.");
     }
     
-    cardService.validateActiveCardCode(card);
+    validateSyncCardCode(card);
 
     if (card.getEffectiveDate() == null) {
       throw new EcashException("Card's effective date must not be null.");
@@ -277,6 +279,15 @@ public class SyncService {
 
     if (card.getExpiryDate() == null) {
       throw new EcashException("Card's expiry date must not be null.");
+    }
+  }
+  
+  private void validateSyncCardCode(Card card) {
+    List<Card> cards = cardRepository.findByCardCode(card.getCardCode());
+    for (Card e : cards) {
+      if (e.getCardNumber() != card.getCardNumber() && !CardStatusEnum.CANCELED.toString().equals(e.getStatus())) {
+        throw new ValidationException("Card code being used.");
+      }
     }
   }
 
@@ -407,8 +418,11 @@ public class SyncService {
       account.setCustomer(customer);
 
       account.setAccountType(accountTypeRepository.findByTypeCode(AccountTypeEnum.DEFAULT.toString()));
-      account.setPlan(planRepository.findbyPlanType(PlanTypeEnum.DEFAULT.toString()));
+      account.setDateOpened(Calendar.getInstance().getTime());
       account.setCurrencyCode(currencyCodeRepository.findOne(CurrencyCodeEnum.VND.toString()));
+      account.setCurrentBalance(Double.valueOf(0));
+      account.setStatus(StatusEnum.ACTIVE.toString());
+      account.setPlan(planRepository.findbyPlanType(PlanTypeEnum.DEFAULT.toString()));
 
       accountRepository.save(account);
 
@@ -579,7 +593,7 @@ public class SyncService {
     }
 
     if (syncCustomer.getFirstName() == null || syncCustomer.getLastName() == null) {
-      throw new EcashException("First name and last name date must not be null.");
+      throw new EcashException("First name and last name must not be null.");
     }
 
     if (syncCustomer.getGender() != null) {
@@ -610,11 +624,11 @@ public class SyncService {
 
   private void validateOrg(Organization syncOrg) {
     if (syncOrg.getId() == null) {
-      throw new EcashException("Org code date must not be null.");
+      throw new EcashException("Org code must not be null.");
     }
 
     if (syncOrg.getShortName() == null) {
-      throw new EcashException("Org short name date must not be null.");
+      throw new EcashException("Org short name must not be null.");
     }
   }
 }
