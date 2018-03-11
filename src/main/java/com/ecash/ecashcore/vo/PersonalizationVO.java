@@ -1,8 +1,7 @@
 package com.ecash.ecashcore.vo;
 
-import java.util.Date;
-
 import com.ecash.ecashcore.enums.CardStatusEnum;
+import com.ecash.ecashcore.exception.EcashException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.Address;
 import com.ecash.ecashcore.model.cms.Card;
@@ -11,6 +10,8 @@ import com.ecash.ecashcore.model.cms.IdentifyDocument;
 import com.ecash.ecashcore.model.cms.Organization;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.Date;
+
 public class PersonalizationVO implements ISyncableVO {
 
   private String personalizationCode;
@@ -18,7 +19,7 @@ public class PersonalizationVO implements ISyncableVO {
   private String cardCode;
   private Date effectiveDate;
   private Date expiryDate;
-  private int status;
+  private Integer status;
   private String organizationCode;
   private String organizationShortName;
   private String memberCode;
@@ -83,11 +84,11 @@ public class PersonalizationVO implements ISyncableVO {
     this.expiryDate = expiryDate;
   }
 
-  public int getStatus() {
+  public Integer getStatus() {
     return status;
   }
 
-  public void setStatus(int status) {
+  public void setStatus(Integer status) {
     this.status = status;
   }
 
@@ -351,5 +352,12 @@ public class PersonalizationVO implements ISyncableVO {
     identifyDocument.setDateOfExpiry(passportExpiryDate);
     identifyDocument.setPlaceOfIssue(passportIssuingAuthority);
     return identifyDocument;
+  }
+
+  @JsonIgnore
+  public void validate() {
+    if (status == null) {
+      throw new EcashException("Status must not be null");
+    }
   }
 }

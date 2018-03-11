@@ -1,72 +1,11 @@
 package com.ecash.ecashcore.service;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ecash.ecashcore.constants.StringConstant;
-import com.ecash.ecashcore.enums.AccountTypeEnum;
-import com.ecash.ecashcore.enums.AddressTypeEnum;
-import com.ecash.ecashcore.enums.CardStatusEnum;
-import com.ecash.ecashcore.enums.CardTypeEnum;
-import com.ecash.ecashcore.enums.CurrencyCodeEnum;
-import com.ecash.ecashcore.enums.CustomerTypeEnum;
-import com.ecash.ecashcore.enums.IdentifyDocumentTypeEnum;
-import com.ecash.ecashcore.enums.PlanTypeEnum;
-import com.ecash.ecashcore.enums.SCMSSyncTargetEnum;
-import com.ecash.ecashcore.enums.StatusEnum;
+import com.ecash.ecashcore.enums.*;
 import com.ecash.ecashcore.exception.EcashException;
 import com.ecash.ecashcore.exception.ValidationException;
-import com.ecash.ecashcore.model.cms.Account;
-import com.ecash.ecashcore.model.cms.AccountHistory;
-import com.ecash.ecashcore.model.cms.AccountHistoryType;
-import com.ecash.ecashcore.model.cms.Address;
-import com.ecash.ecashcore.model.cms.Card;
-import com.ecash.ecashcore.model.cms.CardHistory;
-import com.ecash.ecashcore.model.cms.CardHistoryType;
-import com.ecash.ecashcore.model.cms.Customer;
-import com.ecash.ecashcore.model.cms.CustomerAddress;
-import com.ecash.ecashcore.model.cms.CustomerHistory;
-import com.ecash.ecashcore.model.cms.CustomerHistoryType;
-import com.ecash.ecashcore.model.cms.CustomerIdentifyDocument;
-import com.ecash.ecashcore.model.cms.IdentifyDocument;
-import com.ecash.ecashcore.model.cms.Organization;
-import com.ecash.ecashcore.model.cms.SCMSSync;
-import com.ecash.ecashcore.model.cms.SCMSSyncDetail;
-import com.ecash.ecashcore.model.cms.User;
-import com.ecash.ecashcore.model.cms.Wallet;
-import com.ecash.ecashcore.repository.AccountHistoryRepository;
-import com.ecash.ecashcore.repository.AccountHistoryTypeRepository;
-import com.ecash.ecashcore.repository.AccountRepository;
-import com.ecash.ecashcore.repository.AccountTypeRepository;
-import com.ecash.ecashcore.repository.AddressRepository;
-import com.ecash.ecashcore.repository.AddressTypeRepository;
-import com.ecash.ecashcore.repository.CardHistoryRepository;
-import com.ecash.ecashcore.repository.CardHistoryTypeRepository;
-import com.ecash.ecashcore.repository.CardRepository;
-import com.ecash.ecashcore.repository.CardTypeRepository;
-import com.ecash.ecashcore.repository.CurrencyCodeRepository;
-import com.ecash.ecashcore.repository.CustomerAddressRepository;
-import com.ecash.ecashcore.repository.CustomerHistoryRepository;
-import com.ecash.ecashcore.repository.CustomerHistoryTypeRepository;
-import com.ecash.ecashcore.repository.CustomerIdentifyDocumentsRepository;
-import com.ecash.ecashcore.repository.CustomerRepository;
-import com.ecash.ecashcore.repository.CustomerTypeRepository;
-import com.ecash.ecashcore.repository.IdentifyDocumentRepository;
-import com.ecash.ecashcore.repository.IdentifyDocumentTypeRepository;
-import com.ecash.ecashcore.repository.OrganizationRepository;
-import com.ecash.ecashcore.repository.PlanRepository;
-import com.ecash.ecashcore.repository.SCMSSyncDetailRepository;
-import com.ecash.ecashcore.repository.SCMSSyncRepository;
-import com.ecash.ecashcore.repository.UserRepository;
-import com.ecash.ecashcore.repository.WalletRepository;
+import com.ecash.ecashcore.model.cms.*;
+import com.ecash.ecashcore.repository.*;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.util.ObjectUtils;
 import com.ecash.ecashcore.util.StringUtils;
@@ -77,6 +16,16 @@ import com.ecash.ecashcore.vo.ISyncableVO;
 import com.ecash.ecashcore.vo.PersonalizationVO;
 import com.ecash.ecashcore.vo.SyncV1VO;
 import com.ecash.ecashcore.vo.SyncVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -223,6 +172,7 @@ public class SyncService {
           throw new EcashException("personalizationCode must not be null");
         }
 
+        personalization.validate();
         syncV1Detail(personalization);
       }
 
@@ -269,6 +219,10 @@ public class SyncService {
   private void validateCard(Card card) {
     if (card.getCardCode() == null) {
       throw new EcashException("Card code must not be null.");
+    }
+
+    if (card.getStatus() == null) {
+      throw new EcashException("Status must not be null.");
     }
     
     validateSyncCardCode(card);
@@ -414,6 +368,7 @@ public class SyncService {
     List<Account> accounts = accountRepository.findByCustomer(customer);
     Account account = null;
     if (accounts == null || accounts.isEmpty()) {
+      // Create new account
       account = syncAccount;
       account.setCustomer(customer);
 
@@ -510,6 +465,13 @@ public class SyncService {
 
     if (scmsSyncDetail != null) {
       customer = customerRepository.findOne(scmsSyncDetail.getTargetId());
+    }
+
+    if (customer == null) {
+      Customer existCustomerWithSameCode = customerRepository.findByScmsMemberCode(syncCustomer.getScmsMemberCode());
+      if (existCustomerWithSameCode != null) {
+        throw new EcashException("Member code is conflicted.");
+      }
     }
 
     if (customer != null) {
