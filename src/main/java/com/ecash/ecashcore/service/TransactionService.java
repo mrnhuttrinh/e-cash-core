@@ -485,7 +485,7 @@ public class TransactionService
 
   private boolean isOverflowBalance(double balance, double amount)
   {
-    if (balance > 0)
+    if (balance >= 0)
     {
       return amount > (Double.MAX_VALUE - balance);
     }
