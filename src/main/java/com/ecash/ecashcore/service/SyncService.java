@@ -239,8 +239,10 @@ public class SyncService {
   private void validateSyncCardCode(Card card) {
     List<Card> cards = cardRepository.findByCardCode(card.getCardCode());
     for (Card e : cards) {
-      if (e.getCardNumber() != card.getCardNumber() && !CardStatusEnum.CANCELED.toString().equals(e.getStatus())) {
-        throw new ValidationException("Card code being used.");
+      if (!e.getCardNumber().equals(card.getCardNumber())) {
+        if(!CardStatusEnum.CANCELED.toString().equals(e.getStatus())) {
+          throw new ValidationException("Card code being used.");
+        }
       }
     }
   }
@@ -262,7 +264,8 @@ public class SyncService {
         // create history
         HistoryVO historyVO = new HistoryVO();
         historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(new CardVO(card)));
-
+        
+        syncCard.setCardNumber(card.getCardNumber());
         validateCard(syncCard);
 
         // update
