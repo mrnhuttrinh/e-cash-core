@@ -1,11 +1,71 @@
 package com.ecash.ecashcore.service;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ecash.ecashcore.constants.StringConstant;
-import com.ecash.ecashcore.enums.*;
-import com.ecash.ecashcore.exception.EcashException;
+import com.ecash.ecashcore.enums.AccountTypeEnum;
+import com.ecash.ecashcore.enums.AddressTypeEnum;
+import com.ecash.ecashcore.enums.CardStatusEnum;
+import com.ecash.ecashcore.enums.CardTypeEnum;
+import com.ecash.ecashcore.enums.CurrencyCodeEnum;
+import com.ecash.ecashcore.enums.CustomerTypeEnum;
+import com.ecash.ecashcore.enums.IdentifyDocumentTypeEnum;
+import com.ecash.ecashcore.enums.PlanTypeEnum;
+import com.ecash.ecashcore.enums.SCMSSyncTargetEnum;
+import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.exception.ValidationException;
-import com.ecash.ecashcore.model.cms.*;
-import com.ecash.ecashcore.repository.*;
+import com.ecash.ecashcore.model.cms.Account;
+import com.ecash.ecashcore.model.cms.AccountHistory;
+import com.ecash.ecashcore.model.cms.AccountHistoryType;
+import com.ecash.ecashcore.model.cms.Address;
+import com.ecash.ecashcore.model.cms.Card;
+import com.ecash.ecashcore.model.cms.CardHistory;
+import com.ecash.ecashcore.model.cms.CardHistoryType;
+import com.ecash.ecashcore.model.cms.Customer;
+import com.ecash.ecashcore.model.cms.CustomerAddress;
+import com.ecash.ecashcore.model.cms.CustomerHistory;
+import com.ecash.ecashcore.model.cms.CustomerHistoryType;
+import com.ecash.ecashcore.model.cms.CustomerIdentifyDocument;
+import com.ecash.ecashcore.model.cms.IdentifyDocument;
+import com.ecash.ecashcore.model.cms.Organization;
+import com.ecash.ecashcore.model.cms.SCMSSync;
+import com.ecash.ecashcore.model.cms.SCMSSyncDetail;
+import com.ecash.ecashcore.model.cms.User;
+import com.ecash.ecashcore.model.cms.Wallet;
+import com.ecash.ecashcore.repository.AccountHistoryRepository;
+import com.ecash.ecashcore.repository.AccountHistoryTypeRepository;
+import com.ecash.ecashcore.repository.AccountRepository;
+import com.ecash.ecashcore.repository.AccountTypeRepository;
+import com.ecash.ecashcore.repository.AddressRepository;
+import com.ecash.ecashcore.repository.AddressTypeRepository;
+import com.ecash.ecashcore.repository.CardHistoryRepository;
+import com.ecash.ecashcore.repository.CardHistoryTypeRepository;
+import com.ecash.ecashcore.repository.CardRepository;
+import com.ecash.ecashcore.repository.CardTypeRepository;
+import com.ecash.ecashcore.repository.CurrencyCodeRepository;
+import com.ecash.ecashcore.repository.CustomerAddressRepository;
+import com.ecash.ecashcore.repository.CustomerHistoryRepository;
+import com.ecash.ecashcore.repository.CustomerHistoryTypeRepository;
+import com.ecash.ecashcore.repository.CustomerIdentifyDocumentsRepository;
+import com.ecash.ecashcore.repository.CustomerRepository;
+import com.ecash.ecashcore.repository.CustomerTypeRepository;
+import com.ecash.ecashcore.repository.IdentifyDocumentRepository;
+import com.ecash.ecashcore.repository.IdentifyDocumentTypeRepository;
+import com.ecash.ecashcore.repository.OrganizationRepository;
+import com.ecash.ecashcore.repository.PlanRepository;
+import com.ecash.ecashcore.repository.SCMSSyncDetailRepository;
+import com.ecash.ecashcore.repository.SCMSSyncRepository;
+import com.ecash.ecashcore.repository.UserRepository;
+import com.ecash.ecashcore.repository.WalletRepository;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.util.ObjectUtils;
 import com.ecash.ecashcore.util.StringUtils;
@@ -16,16 +76,6 @@ import com.ecash.ecashcore.vo.ISyncableVO;
 import com.ecash.ecashcore.vo.PersonalizationVO;
 import com.ecash.ecashcore.vo.SyncV1VO;
 import com.ecash.ecashcore.vo.SyncVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -120,7 +170,7 @@ public class SyncService {
   private void validateSyncData(SCMSSync scmsSync) {
     if (StringUtils.isNullOrEmpty(scmsSync.getSyncCode()) || scmsSync.getSyncTime() == null
         || scmsSync.getFinishFlag() == null) {
-      throw new EcashException("syncCode, syncTime, finishFlag must not be null");
+      throw new ValidationException("syncCode, syncTime, finishFlag must not be null");
     }
   }
 
@@ -135,7 +185,7 @@ public class SyncService {
       if (!oldSync.isPresent()) {
 
         if (StringUtils.isNullOrEmpty(syncData.getPersonalizationCode())) {
-          throw new EcashException("personalizationCode must not be null");
+          throw new ValidationException("personalizationCode must not be null");
         }
 
         Organization organization = syncOrg(syncData.getOrganization());
@@ -169,7 +219,7 @@ public class SyncService {
 
       for (PersonalizationVO personalization : syncData.getPersonalizations()) {
         if (StringUtils.isNullOrEmpty(personalization.getPersonalizationCode())) {
-          throw new EcashException("personalizationCode must not be null");
+          throw new ValidationException("personalizationCode must not be null");
         }
 
         personalization.validate();
@@ -218,21 +268,21 @@ public class SyncService {
 
   private void validateCard(Card card) {
     if (card.getCardCode() == null) {
-      throw new EcashException("Card code must not be null.");
+      throw new ValidationException("Card code must not be null.");
     }
 
     if (card.getStatus() == null) {
-      throw new EcashException("Status must not be null.");
+      throw new ValidationException("Status must not be null.");
     }
     
     validateSyncCardCode(card);
 
     if (card.getEffectiveDate() == null) {
-      throw new EcashException("Card's effective date must not be null.");
+      throw new ValidationException("Card's effective date must not be null.");
     }
 
     if (card.getExpiryDate() == null) {
-      throw new EcashException("Card's expiry date must not be null.");
+      throw new ValidationException("Card's expiry date must not be null.");
     }
   }
   
@@ -473,7 +523,7 @@ public class SyncService {
     if (customer == null) {
       Customer existCustomerWithSameCode = customerRepository.findByScmsMemberCode(syncCustomer.getScmsMemberCode());
       if (existCustomerWithSameCode != null) {
-        throw new EcashException("Member code is conflicted.");
+        throw new ValidationException("Member code is conflicted.");
       }
     }
 
@@ -550,20 +600,20 @@ public class SyncService {
 
   private void validateCustomer(Customer syncCustomer) {
     if (syncCustomer.getScmsMemberCode() == null) {
-      throw new EcashException("Member code must not be null.");
+      throw new ValidationException("Member code must not be null.");
     }
 
     if (syncCustomer.getDateBecameCustomer() == null) {
-      throw new EcashException("Personalization date must not be null.");
+      throw new ValidationException("Personalization date must not be null.");
     }
 
     if (syncCustomer.getFirstName() == null || syncCustomer.getLastName() == null) {
-      throw new EcashException("First name and last name must not be null.");
+      throw new ValidationException("First name and last name must not be null.");
     }
 
     if (syncCustomer.getGender() != null) {
       if (!validGender.contains(syncCustomer.getGender())) {
-        throw new EcashException("gender is not valid.");
+        throw new ValidationException("gender is not valid.");
       }
     }
   }
@@ -589,11 +639,11 @@ public class SyncService {
 
   private void validateOrg(Organization syncOrg) {
     if (syncOrg.getId() == null) {
-      throw new EcashException("Org code must not be null.");
+      throw new ValidationException("Org code must not be null.");
     }
 
     if (syncOrg.getShortName() == null) {
-      throw new EcashException("Org short name must not be null.");
+      throw new ValidationException("Org short name must not be null.");
     }
   }
 }
