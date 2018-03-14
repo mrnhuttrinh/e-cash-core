@@ -1,7 +1,9 @@
 package com.ecash.ecashcore.vo;
 
+import java.util.Date;
+
 import com.ecash.ecashcore.enums.CardStatusEnum;
-import com.ecash.ecashcore.exception.EcashException;
+import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.Address;
 import com.ecash.ecashcore.model.cms.Card;
@@ -9,8 +11,6 @@ import com.ecash.ecashcore.model.cms.Customer;
 import com.ecash.ecashcore.model.cms.IdentifyDocument;
 import com.ecash.ecashcore.model.cms.Organization;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.Date;
 
 public class PersonalizationVO implements ISyncableVO {
 
@@ -357,7 +357,7 @@ public class PersonalizationVO implements ISyncableVO {
   @JsonIgnore
   public void validate() {
     if (status == null) {
-      throw new EcashException("Status must not be null");
+      throw new ValidationException("Status must not be null");
     }
   }
 }
