@@ -3,6 +3,7 @@ package com.ecash.ecashcore.vo;
 import java.util.Date;
 import java.util.List;
 
+import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.model.cms.SCMSSync;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,7 +13,7 @@ public class SyncV1VO {
   private String syncCode;
   private Date syncTime;
   private Boolean finishFlag;
-  
+
   private List<PersonalizationVO> personalizations;
 
   public String getSyncCode() {
@@ -45,7 +46,12 @@ public class SyncV1VO {
     scmsSync.setSyncCode(syncCode);
     scmsSync.setSyncTime(syncTime);
     scmsSync.setFinishFlag(finishFlag);
+
+    String syncId = scmsSync.getSyncCode() + StringConstant.SYNC_ID_SEPARATOR + scmsSync.getSyncTime().getTime();
+    scmsSync.setSyncCode(syncId);
+
     scmsSync.setSyncDetails(JsonUtils.objectToJsonString(this));
+
     return scmsSync;
   }
 
