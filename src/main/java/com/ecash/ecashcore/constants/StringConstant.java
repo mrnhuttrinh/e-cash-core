@@ -12,4 +12,7 @@ public class StringConstant {
   public static final String STATUS = "status";
   public static final String PREVIOUS = "previous";
   public static final String NEXT = "next";
+  
+  
+  public static final String SYNC_ID_SEPARATOR = "_";
 }

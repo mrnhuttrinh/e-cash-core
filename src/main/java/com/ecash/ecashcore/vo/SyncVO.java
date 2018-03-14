@@ -2,6 +2,7 @@ package com.ecash.ecashcore.vo;
 
 import java.util.Date;
 
+import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.CardStatusEnum;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.Address;
@@ -309,7 +310,12 @@ public class SyncVO implements ISyncableVO {
     scmsSync.setSyncCode(syncCode);
     scmsSync.setSyncTime(syncTime);
     scmsSync.setFinishFlag(finishFlag);
+
+    String syncId = scmsSync.getSyncCode() + StringConstant.SYNC_ID_SEPARATOR + scmsSync.getSyncTime().getTime();
+    scmsSync.setSyncCode(syncId);
+
     scmsSync.setSyncDetails(JsonUtils.objectToJsonString(this));
+
     return scmsSync;
   }
 
