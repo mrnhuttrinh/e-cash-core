@@ -280,8 +280,6 @@ public class SyncService {
         HistoryVO historyVO = new HistoryVO();
         historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(new CardVO(card)));
 
-        syncCard.setCardNumber(card.getCardNumber());
-
         // update
         // card.setCardCode(syncCard.getCardCode());
         card.setEffectiveDate(syncCard.getEffectiveDate());
@@ -622,6 +620,18 @@ public class SyncService {
           "Card code must not be null or empty. Personalization code: " + personalization.getPersonalizationCode());
     }
 
+    SCMSSyncDetail scmsSyncDetail = scmsSyncDetailRepository.findByPersonalizationCodeAndTargetObject(
+        personalization.getPersonalizationCode(), SCMSSyncTargetEnum.CARD.toString());
+
+    Card cardDB = null;
+    if (scmsSyncDetail != null) {
+      cardDB = cardRepository.findOne(scmsSyncDetail.getTargetId());
+    }
+    
+    if(cardDB != null) {
+      card.setCardNumber(cardDB.getCardNumber());
+    }
+    
     validateSyncCardCode(card);
 
     if (StringUtils.isNullOrEmpty(card.getStatus())) {
