@@ -167,13 +167,6 @@ public class SyncService {
 
   private static final List<Integer> validGender = Arrays.asList(new Integer[] { 1, 2, 3 });
 
-  private void validateSyncData(SCMSSync scmsSync) {
-    if (StringUtils.isNullOrEmpty(scmsSync.getSyncCode()) || scmsSync.getSyncTime() == null
-        || scmsSync.getFinishFlag() == null) {
-      throw new ValidationException("syncCode, syncTime, finishFlag must not be null");
-    }
-  }
-
   public void sync(List<SyncVO> syncDatas) {
     for (SyncVO syncData : syncDatas) {
       SCMSSync scmsSync = syncData.getSCMSSync();
@@ -185,7 +178,7 @@ public class SyncService {
       if (!oldSync.isPresent()) {
 
         if (StringUtils.isNullOrEmpty(syncData.getPersonalizationCode())) {
-          throw new ValidationException("personalizationCode must not be null");
+          throw new ValidationException("Personalization code must not be null or empty.");
         }
 
         Organization organization = syncOrg(syncData.getOrganization());
@@ -219,10 +212,13 @@ public class SyncService {
 
       for (PersonalizationVO personalization : syncData.getPersonalizations()) {
         if (StringUtils.isNullOrEmpty(personalization.getPersonalizationCode())) {
-          throw new ValidationException("personalizationCode must not be null");
+          throw new ValidationException("Personalization code must not be null or empty.");
         }
 
         personalization.validate();
+
+        validatePersonalization(personalization);
+
         syncV1Detail(personalization);
       }
 
@@ -266,37 +262,6 @@ public class SyncService {
     }
   }
 
-  private void validateCard(Card card) {
-    if (card.getCardCode() == null) {
-      throw new ValidationException("Card code must not be null.");
-    }
-
-    if (card.getStatus() == null) {
-      throw new ValidationException("Status must not be null.");
-    }
-    
-    validateSyncCardCode(card);
-
-    if (card.getEffectiveDate() == null) {
-      throw new ValidationException("Card's effective date must not be null.");
-    }
-
-    if (card.getExpiryDate() == null) {
-      throw new ValidationException("Card's expiry date must not be null.");
-    }
-  }
-  
-  private void validateSyncCardCode(Card card) {
-    List<Card> cards = cardRepository.findByCardCode(card.getCardCode());
-    for (Card e : cards) {
-      if (!e.getCardNumber().equals(card.getCardNumber())) {
-        if(!CardStatusEnum.CANCELED.toString().equals(e.getStatus())) {
-          throw new ValidationException("Card code being used.");
-        }
-      }
-    }
-  }
-
   private Card syncCard(Card syncCard, Account account, ISyncableVO syncData) {
     SCMSSyncDetail scmsSyncDetail = scmsSyncDetailRepository.findByPersonalizationCodeAndTargetObject(
         syncData.getPersonalizationCode(), SCMSSyncTargetEnum.CARD.toString());
@@ -314,9 +279,8 @@ public class SyncService {
         // create history
         HistoryVO historyVO = new HistoryVO();
         historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(new CardVO(card)));
-        
+
         syncCard.setCardNumber(card.getCardNumber());
-        validateCard(syncCard);
 
         // update
         // card.setCardCode(syncCard.getCardCode());
@@ -336,8 +300,6 @@ public class SyncService {
         cardRepository.save(card);
       }
     } else {
-      validateCard(syncCard);
-
       card = syncCard;
       card.setAccount(account);
       card.setCardType(cardTypeRepository.findByTypeCode(CardTypeEnum.DEFAULT.toString()));
@@ -523,7 +485,7 @@ public class SyncService {
     if (customer == null) {
       Customer existCustomerWithSameCode = customerRepository.findByScmsMemberCode(syncCustomer.getScmsMemberCode());
       if (existCustomerWithSameCode != null) {
-        throw new ValidationException("Member code is conflicted.");
+        throw new ValidationException("Member code: " + syncCustomer.getScmsMemberCode() + " is conflicted.");
       }
     }
 
@@ -533,8 +495,6 @@ public class SyncService {
         // create history
         HistoryVO historyVO = new HistoryVO();
         historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(new CustomerVO(customer)));
-
-        validateCustomer(syncCustomer);
 
         // update
         // customer.setScmsMemberCode(syncCustomer.getScmsMemberCode());
@@ -561,8 +521,6 @@ public class SyncService {
         customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
       }
     } else {
-      validateCustomer(syncCustomer);
-
       customer = syncCustomer;
 
       // Set default customer type
@@ -598,30 +556,7 @@ public class SyncService {
     return customer;
   }
 
-  private void validateCustomer(Customer syncCustomer) {
-    if (syncCustomer.getScmsMemberCode() == null) {
-      throw new ValidationException("Member code must not be null.");
-    }
-
-    if (syncCustomer.getDateBecameCustomer() == null) {
-      throw new ValidationException("Personalization date must not be null.");
-    }
-
-    if (syncCustomer.getFirstName() == null || syncCustomer.getLastName() == null) {
-      throw new ValidationException("First name and last name must not be null.");
-    }
-
-    if (syncCustomer.getGender() != null) {
-      if (!validGender.contains(syncCustomer.getGender())) {
-        throw new ValidationException("gender is not valid.");
-      }
-    }
-  }
-
   private Organization syncOrg(Organization syncOrg) {
-
-    validateOrg(syncOrg);
-
     Organization org = organizationRepository.findOne(syncOrg.getId());
     if (org != null) {
       if (org.getShortName().equals(syncOrg.getShortName())) {
@@ -637,13 +572,88 @@ public class SyncService {
     return org;
   }
 
-  private void validateOrg(Organization syncOrg) {
-    if (syncOrg.getId() == null) {
-      throw new ValidationException("Org code must not be null.");
+  private void validateSyncData(SCMSSync scmsSync) {
+    if (StringUtils.isNullOrEmpty(scmsSync.getSyncCode()) || scmsSync.getSyncTime() == null
+        || scmsSync.getFinishFlag() == null) {
+      throw new ValidationException("syncCode, syncTime, finishFlag must not be null.");
+    }
+  }
+
+  private void validateCustomer(Customer syncCustomer, PersonalizationVO personalization) {
+    if (StringUtils.isNullOrEmpty(syncCustomer.getScmsMemberCode())) {
+      throw new ValidationException(
+          "Member code must not be null or empty. Personalization code: " + personalization.getPersonalizationCode());
     }
 
-    if (syncOrg.getShortName() == null) {
-      throw new ValidationException("Org short name must not be null.");
+    if (syncCustomer.getDateBecameCustomer() == null) {
+      throw new ValidationException(
+          "Personalization date must not be null. Personalization code: " + personalization.getPersonalizationCode());
     }
+
+    if (StringUtils.isNullOrEmpty(syncCustomer.getFirstName())
+        || StringUtils.isNullOrEmpty(syncCustomer.getLastName())) {
+      throw new ValidationException("First name and last name must not be null or empty. Personalization code: "
+          + personalization.getPersonalizationCode());
+    }
+
+    if (syncCustomer.getGender() != null) {
+      if (!validGender.contains(syncCustomer.getGender())) {
+        throw new ValidationException(
+            "Gender is not valid(1, 2, 3). Personalization code: " + personalization.getPersonalizationCode());
+      }
+    }
+  }
+
+  private void validateOrg(Organization syncOrg, PersonalizationVO personalization) {
+    if (StringUtils.isNullOrEmpty(syncOrg.getId())) {
+      throw new ValidationException(
+          "Org code must not be null or empty. Personalization code: " + personalization.getPersonalizationCode());
+    }
+
+    if (StringUtils.isNullOrEmpty(syncOrg.getShortName())) {
+      throw new ValidationException("Org short name must not be null or empty. Personalization code: "
+          + personalization.getPersonalizationCode());
+    }
+  }
+
+  private void validateCard(Card card, PersonalizationVO personalization) {
+    if (StringUtils.isNullOrEmpty(card.getCardCode())) {
+      throw new ValidationException(
+          "Card code must not be null or empty. Personalization code: " + personalization.getPersonalizationCode());
+    }
+
+    validateSyncCardCode(card);
+
+    if (StringUtils.isNullOrEmpty(card.getStatus())) {
+      throw new ValidationException(
+          "Status must not be null or empty. Personalization code: " + personalization.getPersonalizationCode());
+    }
+
+    if (card.getEffectiveDate() == null) {
+      throw new ValidationException(
+          "Card's effective date must not be null. Personalization code: " + personalization.getPersonalizationCode());
+    }
+
+    if (card.getExpiryDate() == null) {
+      throw new ValidationException(
+          "Card's expiry date must not be null. Personalization code: " + personalization.getPersonalizationCode());
+    }
+  }
+
+  private void validateSyncCardCode(Card card) {
+    List<Card> cards = cardRepository.findByCardCode(card.getCardCode());
+    for (Card e : cards) {
+      if (!e.getCardNumber().equals(card.getCardNumber())) {
+        if (!CardStatusEnum.CANCELED.toString().equals(e.getStatus())) {
+          throw new ValidationException("Card code " + card.getCardCode() + " is used.");
+        }
+      }
+    }
+  }
+
+  private void validatePersonalization(PersonalizationVO personalization) {
+    validateOrg(personalization.getOrganization(), personalization);
+    validateCustomer(personalization.getCustomer(), personalization);
+    validateCard(personalization.getCard(), personalization);
   }
 }
