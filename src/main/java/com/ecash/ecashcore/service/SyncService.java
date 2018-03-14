@@ -645,7 +645,7 @@ public class SyncService {
     for (Card e : cards) {
       if (!e.getCardNumber().equals(card.getCardNumber())) {
         if (!CardStatusEnum.CANCELED.toString().equals(e.getStatus())) {
-          throw new ValidationException("Card code " + card.getCardCode() + " being used.");
+          throw new ValidationException("Card code " + card.getCardCode() + " is used.");
         }
       }
     }
