@@ -22,6 +22,7 @@ import com.ecash.ecashcore.enums.IdentifyDocumentTypeEnum;
 import com.ecash.ecashcore.enums.PlanTypeEnum;
 import com.ecash.ecashcore.enums.SCMSSyncTargetEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
+import com.ecash.ecashcore.exception.InvalidInputException;
 import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.AccountHistory;
@@ -197,6 +198,8 @@ public class SyncService {
         syncUser(customer);
 
         scmsSyncRepository.save(scmsSync);
+      } else {
+        throw new InvalidInputException("We don’t allow 2 sync requests at the same time.");
       }
     }
   }
@@ -223,6 +226,8 @@ public class SyncService {
       }
 
       scmsSyncRepository.save(scmsSync);
+    } else {
+      throw new InvalidInputException("We don’t allow 2 sync requests at the same time.");
     }
   }
 
@@ -473,19 +478,8 @@ public class SyncService {
     SCMSSyncDetail scmsSyncDetail = scmsSyncDetailRepository.findByPersonalizationCodeAndTargetObject(
         syncData.getPersonalizationCode(), SCMSSyncTargetEnum.CUSTOMER.toString());
 
-    Customer customer = null;
+    Customer customer = customerRepository.findByScmsMemberCode(syncCustomer.getScmsMemberCode());
     CustomerHistory customerHistory = null;
-
-    if (scmsSyncDetail != null) {
-      customer = customerRepository.findOne(scmsSyncDetail.getTargetId());
-    }
-
-    if (customer == null) {
-      Customer existCustomerWithSameCode = customerRepository.findByScmsMemberCode(syncCustomer.getScmsMemberCode());
-      if (existCustomerWithSameCode != null) {
-        throw new ValidationException("Member code: " + syncCustomer.getScmsMemberCode() + " is conflicted.");
-      }
-    }
 
     if (customer != null) {
       if (!ObjectUtils.isCustomerEqual(customer, syncCustomer)) {
