@@ -15,6 +15,7 @@ import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.Customer;
+import com.ecash.ecashcore.model.cms.Role;
 import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.UserHistory;
 import com.ecash.ecashcore.model.cms.UserHistoryType;
@@ -27,6 +28,7 @@ import com.ecash.ecashcore.repository.UserHistoryTypeRepository;
 import com.ecash.ecashcore.repository.UserRepository;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.vo.HistoryVO;
+import com.ecash.ecashcore.vo.UserVO;
 import com.querydsl.core.types.Predicate;
 
 @Service
@@ -75,20 +77,50 @@ public class UserService {
     return userRepository.findAll(predicate, pageable);
   }
   
-  public User updateInformation(User user, User createdBy) {
-    User oldInformation = userRepository.findOne(user.getId());
-    if (oldInformation == null) {
+  public User updateInformation(UserVO data, User createdBy) {
+    User user = userRepository.findOne(data.getId());
+    if (user == null) {
       throw new ValidationException("User is not exist.");
     }
     // create user history
     UserHistoryType historyType = userHistoryTypeRepository.findOne(UserHistoryType.UPDATED);
     HistoryVO history = new HistoryVO();
-    history.getPrevious().put("roles", oldInformation.getRoles());
-    history.getNext().put("roles", user.getRoles());
-    UserHistory userHistory = new UserHistory(user, createdBy, historyType, JsonUtils.objectToJsonString(history));
-    userHistoryRepository.save(userHistory);
+
+    history.getPrevious().put("username", user.getUsername());
+    history.getNext().put("username", data.getUsername());
+    user.setUsername(data.getUsername());
+    
+    history.getPrevious().put("lastName", user.getLastName());
+    history.getNext().put("lastName", data.getLastName());
+    user.setFirstName(data.getFirstName());
+    
+    history.getPrevious().put("lastName", user.getLastName());
+    history.getNext().put("lastName", data.getLastName());
+    user.setLastName(data.getLastName());
+    
+    history.getPrevious().put("email", user.getEmail());
+    history.getNext().put("email", data.getEmail());
+    user.setEmail(data.getEmail());
+    
+    List<String>  previousRole = new ArrayList<>();
+    for (Role r : user.getRoles()) {
+	previousRole.add(r.getName());
+    }
+    List<String>  nextRole = new ArrayList<>();
+    for (Role r : data.getRoles()) {
+	nextRole.add(r.getName());
+    }
+    
+    history.getPrevious().put("roles", previousRole);
+    history.getNext().put("roles", nextRole);
+
+    user.setRoles(data.getRoles());
     
     userRepository.save(user);
+
+    UserHistory userHistory = new UserHistory(user, createdBy, historyType, JsonUtils.objectToJsonString(history));
+    userHistoryRepository.save(userHistory);
+
     return user;
   }
 
@@ -219,4 +251,5 @@ public class UserService {
     return generalInformation;
     
   }
+
 }
