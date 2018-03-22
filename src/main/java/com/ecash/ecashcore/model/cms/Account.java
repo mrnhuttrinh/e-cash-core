@@ -41,19 +41,19 @@ public class Account extends BaseUUID {
   @Column(name = "status")
   private String status;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "type_code", nullable = false)
   private AccountType accountType;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "customer_id", nullable = false)
   private Customer customer;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "plan_id", nullable = false)
   private Plan plan;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "currency_code", nullable = false)
   private CurrencyCode currencyCode;
 

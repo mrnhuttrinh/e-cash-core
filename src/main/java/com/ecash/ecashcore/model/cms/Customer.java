@@ -66,11 +66,11 @@ public class Customer extends BaseUUID {
   @Column(name = "position")
   private String position;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "type_code", nullable = false)
   private CustomerType customerType;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "organization_id", nullable = false)
   private Organization organization;
 
@@ -91,6 +91,7 @@ public class Customer extends BaseUUID {
   private List<CustomerHistory> customerHistory;
   
   @ManyToMany(mappedBy = "customers")
+  @JsonProperty(access = Access.WRITE_ONLY)
   private List<User> users = new ArrayList<>();
 
   public CustomerType getCustomerType() {
