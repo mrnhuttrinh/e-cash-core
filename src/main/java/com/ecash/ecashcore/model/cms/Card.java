@@ -36,11 +36,11 @@ public class Card extends BaseModel {
   @Temporal(TemporalType.TIMESTAMP)
   private Date expiryDate;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "type_code")
   private CardType cardType;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "account_id", nullable = false)
   private Account account;
 

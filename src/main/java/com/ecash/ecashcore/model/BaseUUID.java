@@ -9,6 +9,11 @@ import org.hibernate.annotations.GenericGenerator;
 @MappedSuperclass
 public abstract class BaseUUID extends BaseModel {
 
+  /**
+   * serialVersionUID
+   */
+  protected static final long serialVersionUID = BaseModel.serialVersionUID;
+
   @Id
   @GeneratedValue(generator = "system-uuid")
   @GenericGenerator(name = "system-uuid", strategy = "uuid2")

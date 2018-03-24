@@ -1,5 +1,6 @@
 package com.ecash.ecashcore.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -10,7 +11,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @MappedSuperclass
-public abstract class BaseModel {
+public abstract class BaseModel implements Serializable {
+
+  /**
+   * serialVersionUID
+   */
+  protected static final long serialVersionUID = 1234567890L;
 
   @Column(name = "created_at")
   @Temporal(TemporalType.TIMESTAMP)

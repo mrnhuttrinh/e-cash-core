@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.exception.EcashException;
 import com.ecash.ecashcore.exception.InvalidInputException;
 import com.ecash.ecashcore.exception.ValidationException;
+import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.Card;
 import com.ecash.ecashcore.model.cms.CardHistory;
 import com.ecash.ecashcore.model.cms.CardHistoryType;
@@ -21,6 +23,7 @@ import com.ecash.ecashcore.repository.CardHistoryRepository;
 import com.ecash.ecashcore.repository.CardHistoryTypeRepository;
 import com.ecash.ecashcore.repository.CardRepository;
 import com.ecash.ecashcore.util.JsonUtils;
+import com.ecash.ecashcore.util.ObjectUtils;
 import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.HistoryVO;
 import com.ecash.ecashcore.vo.request.UpdateCardStatusRequestVO;
@@ -121,7 +124,10 @@ public class CardService {
   }
 
   public Iterable<Card> findAll(Predicate predicate, Pageable pageable) {
-    return cardRepository.findAll(predicate, pageable);
+    Page<Card> result = cardRepository.findAll(predicate, pageable);
+    for(Card c : result) {
+      c.setAccount(ObjectUtils.clone(c.getAccount(), Account.class));
+    }
+    return result;
   }
-
 }
