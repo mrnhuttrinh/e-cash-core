@@ -3,26 +3,26 @@ package com.ecash.ecashcore.vo.request;
 import com.ecash.ecashcore.vo.TargetVO;
 import com.ecash.ecashcore.vo.TransferExtendedInformationVO;
 
-public class TransferRequestVO {
-  private TargetVO sourceVO;
-  private TargetVO destinationVO;
+public class TransferRequestVO implements ITransactionRequestVO {
+  private TargetVO source;
+  private TargetVO destination;
   private Double amount;
   private TransferExtendedInformationVO extendedInformation;
 
   public TargetVO getSourceVO() {
-    return sourceVO;
+    return source;
   }
 
   public void setSourceVO(TargetVO sourceVO) {
-    this.sourceVO = sourceVO;
+    this.source = sourceVO;
   }
 
   public TargetVO getDestinationVO() {
-    return destinationVO;
+    return destination;
   }
 
   public void setDestinationVO(TargetVO destinationVO) {
-    this.destinationVO = destinationVO;
+    this.destination = destinationVO;
   }
 
   public Double getAmount() {

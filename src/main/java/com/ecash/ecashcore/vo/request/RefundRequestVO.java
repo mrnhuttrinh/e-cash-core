@@ -3,7 +3,7 @@ package com.ecash.ecashcore.vo.request;
 import com.ecash.ecashcore.vo.CardInformationVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
 
-public class RefundRequestVO implements ITransactionRequestVO {
+public class RefundRequestVO implements IEcashTransactionRequestVO {
 
   private String transactionId;
 

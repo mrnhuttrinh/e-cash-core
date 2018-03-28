@@ -60,7 +60,7 @@ import com.ecash.ecashcore.vo.TransactionVO;
 import com.ecash.ecashcore.vo.TransferExtendedInformationVO;
 import com.ecash.ecashcore.vo.request.ChargeRequestVO;
 import com.ecash.ecashcore.vo.request.DepositRequestVO;
-import com.ecash.ecashcore.vo.request.ITransactionRequestVO;
+import com.ecash.ecashcore.vo.request.IEcashTransactionRequestVO;
 import com.ecash.ecashcore.vo.request.RefundRequestVO;
 import com.ecash.ecashcore.vo.request.TransferRequestVO;
 import com.ecash.ecashcore.vo.response.TransactionResponseVO;
@@ -499,7 +499,7 @@ public class TransactionService
     return true;
   }
 
-  private void validateTransactionRequest(ITransactionRequestVO transactionRequest)
+  private void validateTransactionRequest(IEcashTransactionRequestVO transactionRequest)
   {
     if (transactionRequest.getCard() == null || transactionRequest.getAmount() == null
         || transactionRequest.getExtendedInformation() == null)
@@ -661,6 +661,7 @@ public class TransactionService
     userTransactionVO.setCustomerTransactions(customerTransactions);
     return userTransactionVO;
   }
+  
   public TransactionAccountDetailPOJO getTransactionAccountDetail(String id) throws Exception {
     TransactionAccountDetailPOJO detailResult = new TransactionAccountDetailPOJO();
     

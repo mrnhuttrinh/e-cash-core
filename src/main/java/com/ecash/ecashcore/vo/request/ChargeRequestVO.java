@@ -4,7 +4,7 @@ import com.ecash.ecashcore.vo.CardInformationVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.TargetVO;
 
-public class ChargeRequestVO implements ITransactionRequestVO {
+public class ChargeRequestVO implements IEcashTransactionRequestVO {
   private CardInformationVO card;
   private Double amount;
   private ExtendedInformationVO extendedInformation;
