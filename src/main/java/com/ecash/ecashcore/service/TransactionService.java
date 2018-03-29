@@ -1,6 +1,8 @@
 package com.ecash.ecashcore.service;
 
+import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -125,6 +127,8 @@ public class TransactionService
 
   @Autowired
   MerchantStatementRepository merchantStatementRepository;
+  
+  static List<String> validTargetType  = Arrays.asList(new String[] { TargetVO.ACCOUNT, TargetVO.WALLET });
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public synchronized TransactionResponseVO transfer(TransferRequestVO transferVO)
@@ -587,10 +591,28 @@ public class TransactionService
     return true;
   }
 
-  private boolean validateTransferTransactionRequest(TransferRequestVO transferRequestVO)
-  {
-    // TODO: Implement later
+  private boolean validateTransferTransactionRequest(TransferRequestVO transferRequest) {
+    if (transferRequest.getSourceVO() == null || transferRequest.getDestinationVO() == null
+        || transferRequest.getAmount() == null || transferRequest.getExtendedInformation() == null) {
+      throw new InvalidInputException("Required information is missing");
+    }
+    
+    validateNegativeAmount(transferRequest.getAmount());
+
+    validateTransferRequestTarget(transferRequest.getSourceVO());
+    validateTransferRequestTarget(transferRequest.getDestinationVO());
+
     return true;
+  }
+  
+  private void validateTransferRequestTarget(TargetVO target) {
+    if (StringUtils.isNullOrEmpty(target.getId())) {
+      throw new InvalidInputException("Id must not be null.");
+    }
+
+    if (!validTargetType.contains(target.getType().toUpperCase())) {
+      throw new InvalidInputException("Invalid target type.");
+    }
   }
 
   private void validateTransactionRequest(IEcashTransactionRequestVO transactionRequest)
