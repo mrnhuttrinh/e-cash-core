@@ -44,7 +44,6 @@ public class WalletService {
     wallet.setProvider(SWT);
     wallet.setType(DEFAULT);
     wallet.setCard(cardRepository.findByCardNumber(data.getCard().getCardNumber()));
-    wallet.setCreatedAt(new Date());
     wallet.setName(data.getName());
     wallet.setStatus(StatusEnum.ACTIVE.getName());
     

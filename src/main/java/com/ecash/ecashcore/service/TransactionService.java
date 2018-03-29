@@ -38,6 +38,7 @@ import com.ecash.ecashcore.model.cms.TransactionDetail;
 import com.ecash.ecashcore.model.cms.TransactionType;
 import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.Wallet;
+import com.ecash.ecashcore.model.wallet.EWallet;
 import com.ecash.ecashcore.model.wallet.EWalletTransaction;
 import com.ecash.ecashcore.pojo.TransactionAccountDetailPOJO;
 import com.ecash.ecashcore.pojo.UserTransactionPOJO;
@@ -46,6 +47,7 @@ import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.BalanceHistoryRepository;
 import com.ecash.ecashcore.repository.CardRepository;
 import com.ecash.ecashcore.repository.CustomerRepository;
+import com.ecash.ecashcore.repository.EWalletRepository;
 import com.ecash.ecashcore.repository.MerchantStatementRepository;
 import com.ecash.ecashcore.repository.MerchantTerminalRepository;
 import com.ecash.ecashcore.repository.TransactionDetailRepository;
@@ -111,6 +113,9 @@ public class TransactionService
 
   @Autowired
   EWalletService eWalletService;
+  
+  @Autowired
+  EWalletRepository eWalletRepository;
 
   @Autowired
   UserService userService;
@@ -127,18 +132,39 @@ public class TransactionService
     // Validate require information
     if (validateTransferTransactionRequest(transferVO))
     {
-      if (transferVO.getSourceVO().getType() == TargetVO.ACCOUNT)
+      if (transferVO.getSourceVO().getType().equalsIgnoreCase(TargetVO.ACCOUNT))
       {
-        if (transferVO.getDestinationVO().getType() == TargetVO.ACCOUNT)
+        // Get source account
+        String sourceAccountID = transferVO.getSourceVO().getId();
+        Account sourceAccount = accountRepository.findOne(sourceAccountID);
+        if(sourceAccount == null) {
+          throw new DataNotFoundException("Not found source account.");
+        }
+        
+        if (transferVO.getDestinationVO().getType().equalsIgnoreCase(TargetVO.ACCOUNT))
         {
           // Transfer from account to account
-          // Get source account
-          String sourceAccountID = transferVO.getSourceVO().getId();
-          Account sourceAccount = accountRepository.findOne(sourceAccountID);
+          
           // Get destination account
           String destinationAccountID = transferVO.getDestinationVO().getId();
           Account destinationAccount = accountRepository.findOne(destinationAccountID);
-          return this.transferFromAccountToAccount(sourceAccount, destinationAccount, transferVO);
+          if(destinationAccount == null) {
+            throw new DataNotFoundException("Not found destination account.");
+          }
+          
+          return transferFromAccountToAccount(sourceAccount, destinationAccount, transferVO);
+        }
+        else if(transferVO.getDestinationVO().getType().equalsIgnoreCase(TargetVO.WALLET)) {
+          // Transfer from account to wallet
+          
+          // Get destination wallet
+          String destinationWalletID = transferVO.getDestinationVO().getId();
+          Wallet destinationWallet = walletRepository.findOne(destinationWalletID);
+          if(destinationWallet == null) {
+            throw new DataNotFoundException("Not found destination wallet.");
+          }
+          
+          return transferFromAccountToWallet(sourceAccount, destinationWallet, transferVO);
         }
         else
         {
@@ -227,8 +253,76 @@ public class TransactionService
   private TransactionResponseVO transferFromAccountToWallet(Account source, Wallet destination,
       TransferRequestVO transferVO)
   {
-    // TODO: Need to implement
-    return null;
+    // Find ewallet
+    EWallet eWallet = eWalletRepository.findOne(destination.getRefId());
+    if(eWallet == null) {
+      throw new DataNotFoundException("Not found destination e-wallet.");
+    }
+    
+    Date transactionTime = Calendar.getInstance().getTime();
+    // save history
+    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, source,
+        source.getCurrentBalance());
+    balanceHistoryRepository.save(balanceHistory);
+
+    // calculate
+    double remainAmount = source.getCurrentBalance() - transferVO.getAmount();
+    if (remainAmount < 0)
+    {
+      throw new ValidationException("Source account don't have enough money.");
+    }
+
+    // Update balance value
+    source.setCurrentBalance(remainAmount);
+    source = accountRepository.save(source);
+
+    // save transaction in cms
+    TransactionType transactionType = transactionTypeRepository
+        .findOne(TransactionTypeEnum.TRANSFER.getName());
+    Transaction transaction = new Transaction(source, transactionType, transactionTime,
+        transferVO.getAmount());
+
+    transactionRepository.save(transaction);
+
+    TransferExtendedInformationVO extendedInformation = transferVO.getExtendedInformation();
+
+    // save transaction detail
+    TransactionDetail transactionDetail = new TransactionDetail(transaction,
+        extendedInformation.getTransactionDetails());
+    transactionDetailRepository.save(transactionDetail);
+
+    // save history (TODO: implement save history)
+//    BalanceHistory destinationBalanceHistory = new BalanceHistory(transactionTime, destination,
+//        destination.getCurrentBalance());
+//    balanceHistoryRepository.save(balanceHistory);
+
+    // calculate
+    double newAmount = eWallet.getCurrentBalance() + transferVO.getAmount();
+
+    // Update balance value
+    eWallet.setCurrentBalance(newAmount);
+    eWallet = eWalletRepository.save(eWallet);
+
+    // save transaction in cms (TODO: implement transaction with e-wallet)
+//    TransactionType destinationTransactionType = transactionTypeRepository
+//        .findOne(TransactionTypeEnum.DEPOSIT.getName());
+//    Transaction destinationTransaction = new Transaction(destination, destinationTransactionType,
+//        transactionTime, transferVO.getAmount());
+//    destinationTransaction.setRelatedTransaction(transaction);
+//    transactionRepository.save(destinationTransaction);
+
+    TransferExtendedInformationVO destinationExtendedInformation = transferVO
+        .getExtendedInformation();
+
+    // save transaction detail
+    TransactionDetail destinationTransactionDetail = new TransactionDetail(transaction,
+        destinationExtendedInformation.getTransactionDetails());
+    transactionDetailRepository.save(destinationTransactionDetail);
+
+    return new TransactionResponseVO(transaction.getId(),
+        transaction.getAccount().getAccountName(),
+        transactionTime, transaction.getId());
+//    return null;
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)

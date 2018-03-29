@@ -168,41 +168,41 @@ public class SyncService {
 
   private static final List<Integer> validGender = Arrays.asList(new Integer[] { 1, 2, 3 });
 
-  public void sync(List<SyncVO> syncDatas) {
-    for (SyncVO syncData : syncDatas) {
-      SCMSSync scmsSync = syncData.getSCMSSync();
-
-      validateSyncData(scmsSync);
-
-      Optional<SCMSSync> oldSync = Optional.ofNullable(scmsSyncRepository.findBySyncCode(scmsSync.getSyncCode()));
-
-      if (!oldSync.isPresent()) {
-
-        if (StringUtils.isNullOrEmpty(syncData.getPersonalizationCode())) {
-          throw new ValidationException("Personalization code must not be null or empty.");
-        }
-
-        Organization organization = syncOrg(syncData.getOrganization());
-
-        Customer customer = syncCustomer(syncData.getCustomer(), organization, syncData);
-
-        syncAddress(syncData.getCustomerAddress(), customer, syncData);
-
-        syncIdentifyCard(syncData.getIdentifyCard(), customer, syncData);
-        syncPassportCard(syncData.getPassportCard(), customer, syncData);
-
-        Account account = syncAccount(syncData.getAccount(), customer, syncData);
-
-        syncCard(syncData.getCard(), account, syncData);
-
-        syncUser(customer);
-
-        scmsSyncRepository.save(scmsSync);
-      } else {
-        throw new InvalidInputException("We don’t allow 2 sync requests at the same time.");
-      }
-    }
-  }
+//  public void sync(List<SyncVO> syncDatas) {
+//    for (SyncVO syncData : syncDatas) {
+//      SCMSSync scmsSync = syncData.getSCMSSync();
+//
+//      validateSyncData(scmsSync);
+//
+//      Optional<SCMSSync> oldSync = Optional.ofNullable(scmsSyncRepository.findBySyncCode(scmsSync.getSyncCode()));
+//
+//      if (!oldSync.isPresent()) {
+//
+//        if (StringUtils.isNullOrEmpty(syncData.getPersonalizationCode())) {
+//          throw new ValidationException("Personalization code must not be null or empty.");
+//        }
+//
+//        Organization organization = syncOrg(syncData.getOrganization());
+//
+//        Customer customer = syncCustomer(syncData.getCustomer(), organization, syncData);
+//
+//        syncAddress(syncData.getCustomerAddress(), customer, syncData);
+//
+//        syncIdentifyCard(syncData.getIdentifyCard(), customer, syncData);
+//        syncPassportCard(syncData.getPassportCard(), customer, syncData);
+//
+//        Account account = syncAccount(syncData.getAccount(), customer, syncData);
+//
+//        syncCard(syncData.getCard(), account, syncData);
+//
+//        syncUser(customer);
+//
+//        scmsSyncRepository.save(scmsSync);
+//      } else {
+//        throw new InvalidInputException("We don’t allow 2 sync requests at the same time.");
+//      }
+//    }
+//  }
 
   public void syncV1(SyncV1VO syncData) {
     SCMSSync scmsSync = syncData.getSCMSSync();
@@ -307,10 +307,6 @@ public class SyncService {
       card.setAccount(account);
       card.setCardType(cardTypeRepository.findByTypeCode(CardTypeEnum.DEFAULT.toString()));
 
-      Wallet wallet = new Wallet();
-      wallet.setCard(card);
-      walletService.createWallet(wallet);
-
       // create history
       HistoryVO historyVO = new HistoryVO();
       historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
@@ -323,6 +319,10 @@ public class SyncService {
       cardHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
 
       cardRepository.save(card);
+      
+      Wallet wallet = new Wallet();
+      wallet.setCard(card);
+      walletService.createWallet(wallet);
     }
 
     if (cardHistory != null) {
