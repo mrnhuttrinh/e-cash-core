@@ -1,7 +1,7 @@
 package com.ecash.ecashcore.vo.request;
 
 import com.ecash.ecashcore.vo.CardInformationVO;
-import com.ecash.ecashcore.vo.ExtendedInformationVO;
+import com.ecash.ecashcore.vo.EcashExtendedInformationVO;
 import com.ecash.ecashcore.vo.TargetVO;
 
 public interface IEcashTransactionRequestVO extends ITransactionRequestVO {
@@ -17,11 +17,11 @@ public interface IEcashTransactionRequestVO extends ITransactionRequestVO {
 
   void setAmount(Double amount);
 
-  default ExtendedInformationVO getExtendedInformation() {
+  default EcashExtendedInformationVO getExtendedInformation() {
     return null;
   }
 
-  void setExtendedInformation(ExtendedInformationVO extendedInformation);
+  void setExtendedInformation(EcashExtendedInformationVO extendedInformation);
 
   default TargetVO getTarget() {
     return null;
