@@ -1,6 +1,5 @@
 package com.ecash.ecashcore.service;
 
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -135,27 +134,19 @@ public class TransactionService
   public synchronized TransactionResponseVO transfer(TransferRequestVO transferRequest)
   {
     // Validate require information
-    if (validateTransferTransactionRequest(transferRequest))
+    if (validateTransferRequest(transferRequest))
     {
       if (transferRequest.getSource().getType().equalsIgnoreCase(TargetVO.ACCOUNT))
       {
         // Get source account
-        String sourceAccountID = transferRequest.getSource().getId();
-        Account sourceAccount = accountRepository.findOne(sourceAccountID);
-        if(sourceAccount == null) {
-          throw new DataNotFoundException("Not found source account.");
-        }
+        Account sourceAccount = identifyValidAccount(transferRequest.getSource());
         
         if (transferRequest.getDestination().getType().equalsIgnoreCase(TargetVO.ACCOUNT))
         {
           // Transfer from account to account
           
           // Get destination account
-          String destinationAccountID = transferRequest.getDestination().getId();
-          Account destinationAccount = accountRepository.findOne(destinationAccountID);
-          if(destinationAccount == null) {
-            throw new DataNotFoundException("Not found destination account.");
-          }
+          Account destinationAccount = identifyValidAccount(transferRequest.getDestination());
           
           return transferFromAccountToAccount(sourceAccount, destinationAccount, transferRequest);
         }
@@ -331,7 +322,76 @@ public class TransactionService
   
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public synchronized TransactionResponseVO withdraw(WithdrawRequestVO withdrawRequest) {
-    return null;
+    // Validate require information
+    validateWithdrawRequest(withdrawRequest);
+
+    // Check valid account information
+    Account account = identifyValidAccount(withdrawRequest.getSource());
+
+    Date transactionTime = Calendar.getInstance().getTime();
+
+    // Record the balance history
+    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account,
+        account.getCurrentBalance());
+    balanceHistoryRepository.save(balanceHistory);
+    
+    // calculate
+    double remainAmount = account.getCurrentBalance() - withdrawRequest.getAmount();
+    if (remainAmount < 0)
+    {
+      throw new ValidationException("Source account don't have enough money.");
+    }
+
+    // Update balance value
+    account.setCurrentBalance(remainAmount);
+    accountRepository.save(account);
+
+    // Record the transaction
+    TransactionType transactionType = transactionTypeRepository
+        .findOne(TransactionTypeEnum.WITHDRAW.getName());
+
+    Transaction transaction = Transaction.activeOf(account, transactionType, transactionTime,
+        withdrawRequest.getAmount());
+    transactionRepository.save(transaction);
+
+    ExtendedInformationVO extendedInformation = withdrawRequest
+        .getExtendedInformation();
+
+    // save transaction detail
+    TransactionDetail transactionDetail = new TransactionDetail(transaction,
+        extendedInformation.getTransactionDetails());
+    transactionDetailRepository.save(transactionDetail);
+
+    return new TransactionResponseVO(transaction.getId(),
+        transaction.getAccount().getAccountName(),
+        transactionTime, transaction.getId());
+  }
+  
+  private Account identifyValidAccount(TargetVO target) {
+    // Must check target before step into this function.
+    return identifyValidAccount(target.getId());
+  }
+
+  private Account identifyValidAccount(String id) {
+    // Must check id before step into this function.
+    Account account = accountRepository.findOne(id);
+
+    if (!account.getStatus().equals(StatusEnum.ACTIVE.toString())) {
+      throw new ValidationException("Account is inactive.");
+    } else {
+      return account;
+    }
+  }
+  
+  private void validateWithdrawRequest(WithdrawRequestVO request) {
+    if (request.getSource() == null || request.getAmount() == null
+        || request.getExtendedInformation() == null) {
+      throw new InvalidInputException("Required information is missing");
+    }
+
+    validateNegativeAmount(request.getAmount());
+
+    validateTarget(request.getSource());
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -421,13 +481,6 @@ public class TransactionService
 
     // Check valid account information
     Account account = identifyValidAccount(card, depositRequest.getTarget());
-
-    // Check valid number.
-    if (depositRequest.getAmount() <= 0)
-    {
-      throw new InvalidInputException(
-          "Required information is missing. Missing amount information");
-    }
 
     // Check the last balance value is valid
     if (isOverflowBalance(account.getCurrentBalance(), depositRequest.getAmount()))
@@ -596,21 +649,21 @@ public class TransactionService
     return true;
   }
 
-  private boolean validateTransferTransactionRequest(TransferRequestVO transferRequest) {
-    if (transferRequest.getSource() == null || transferRequest.getDestination() == null
-        || transferRequest.getAmount() == null || transferRequest.getExtendedInformation() == null) {
+  private boolean validateTransferRequest(TransferRequestVO request) {
+    if (request.getSource() == null || request.getDestination() == null
+        || request.getAmount() == null || request.getExtendedInformation() == null) {
       throw new InvalidInputException("Required information is missing");
     }
     
-    validateNegativeAmount(transferRequest.getAmount());
+    validateNegativeAmount(request.getAmount());
 
-    validateTransferRequestTarget(transferRequest.getSource());
-    validateTransferRequestTarget(transferRequest.getDestination());
+    validateTarget(request.getSource());
+    validateTarget(request.getDestination());
 
     return true;
   }
   
-  private void validateTransferRequestTarget(TargetVO target) {
+  private void validateTarget(TargetVO target) {
     if (StringUtils.isNullOrEmpty(target.getId())) {
       throw new InvalidInputException("Id must not be null.");
     }

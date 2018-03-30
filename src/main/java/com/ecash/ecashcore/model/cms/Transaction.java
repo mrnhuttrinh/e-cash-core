@@ -78,6 +78,12 @@ public class Transaction extends BaseUUID
     transaction.setStatus("ACTIVE");
     return transaction;
   }
+  
+  public static Transaction activeOf(Account account, TransactionType transactionType, Date date, Double amount) {
+    Transaction transaction = new Transaction(account, transactionType, date, amount);
+    transaction.setStatus("ACTIVE");
+    return transaction;
+  }
 
   public void setAccount(Account account)
   {
