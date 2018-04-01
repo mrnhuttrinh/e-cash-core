@@ -76,7 +76,6 @@ import com.ecash.ecashcore.vo.HistoryVO;
 import com.ecash.ecashcore.vo.ISyncableVO;
 import com.ecash.ecashcore.vo.PersonalizationVO;
 import com.ecash.ecashcore.vo.SyncV1VO;
-import com.ecash.ecashcore.vo.SyncVO;
 
 @Service
 @Transactional
@@ -322,6 +321,7 @@ public class SyncService {
       
       Wallet wallet = new Wallet();
       wallet.setCard(card);
+      wallet.setName(account.getAccountName());
       walletService.createWallet(wallet);
     }
 
