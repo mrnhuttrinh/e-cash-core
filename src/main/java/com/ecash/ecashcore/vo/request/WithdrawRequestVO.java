@@ -3,15 +3,15 @@ package com.ecash.ecashcore.vo.request;
 import com.ecash.ecashcore.vo.TargetVO;
 import com.ecash.ecashcore.vo.ExtendedInformationVO;
 
-public class TransferRequestVO implements ITransactionRequestVO {
+public class WithdrawRequestVO {
   private TargetVO source;
-  private TargetVO destination;
   private Double amount;
+  private String accountHolder;
   private String content;
   private String teller;
   private ExtendedInformationVO extendedInformation;
   
-  public TransferRequestVO() {
+  public WithdrawRequestVO() {
     super();
   }
   
@@ -21,17 +21,17 @@ public class TransferRequestVO implements ITransactionRequestVO {
   public void setSource(TargetVO source) {
     this.source = source;
   }
-  public TargetVO getDestination() {
-    return destination;
-  }
-  public void setDestination(TargetVO destination) {
-    this.destination = destination;
-  }
   public Double getAmount() {
     return amount;
   }
   public void setAmount(Double amount) {
     this.amount = amount;
+  }
+  public String getAccountHolder() {
+    return accountHolder;
+  }
+  public void setAccountHolder(String accountHolder) {
+    this.accountHolder = accountHolder;
   }
   public String getContent() {
     return content;

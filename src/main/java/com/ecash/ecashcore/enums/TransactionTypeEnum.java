@@ -5,6 +5,8 @@ public enum TransactionTypeEnum {
   EXPENSE("EXPENSE"),
   PAYMENT("PAYMENT"),
   TRANSFER("TRANSFER"),
+  TRANSFER_OUT("TRANSFER_OUT"),
+  WITHDRAW("WITHDRAW"),
   REFUND("REFUND");
 
   String name;

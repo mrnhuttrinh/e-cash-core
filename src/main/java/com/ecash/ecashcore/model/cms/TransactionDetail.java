@@ -23,9 +23,8 @@ public class TransactionDetail extends BaseModel {
   @Column(name = "status")
   private String status;
 
-  // TODO: remove nullable = true
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "merchant_id", nullable = true)
+  @JoinColumn(name = "merchant_id")
   private Merchant merchant;
 
   public TransactionDetail() {
@@ -43,12 +42,6 @@ public class TransactionDetail extends BaseModel {
     this.transactionDetailId = new TransactionDetailId(transaction);
     this.detail = detail;
     this.merchant = merchant;
-  }
-
-  public static TransactionDetail activeOf(Transaction transaction, String detail, Merchant merchant) {
-    TransactionDetail transactionDetail = new TransactionDetail(transaction, detail, merchant);
-    transactionDetail.setStatus("ACTIVE");
-    return transactionDetail;
   }
 
   public TransactionDetailId getTransactionDetailId() {
@@ -81,5 +74,11 @@ public class TransactionDetail extends BaseModel {
 
   public void setStatus(String status) {
     this.status = status;
+  }
+
+  public static TransactionDetail activeOf(Transaction transaction, String detail, Merchant merchant) {
+    TransactionDetail transactionDetail = new TransactionDetail(transaction, detail, merchant);
+    transactionDetail.setStatus("ACTIVE");
+    return transactionDetail;
   }
 }

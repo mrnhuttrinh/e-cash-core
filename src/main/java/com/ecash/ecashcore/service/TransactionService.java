@@ -1,6 +1,7 @@
 package com.ecash.ecashcore.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.ecash.ecashcore.model.cms.TransactionDetail;
 import com.ecash.ecashcore.model.cms.TransactionType;
 import com.ecash.ecashcore.model.cms.User;
 import com.ecash.ecashcore.model.cms.Wallet;
+import com.ecash.ecashcore.model.wallet.EWallet;
 import com.ecash.ecashcore.model.wallet.EWalletTransaction;
 import com.ecash.ecashcore.pojo.TransactionAccountDetailPOJO;
 import com.ecash.ecashcore.pojo.UserTransactionPOJO;
@@ -46,6 +48,7 @@ import com.ecash.ecashcore.repository.AccountRepository;
 import com.ecash.ecashcore.repository.BalanceHistoryRepository;
 import com.ecash.ecashcore.repository.CardRepository;
 import com.ecash.ecashcore.repository.CustomerRepository;
+import com.ecash.ecashcore.repository.EWalletRepository;
 import com.ecash.ecashcore.repository.MerchantStatementRepository;
 import com.ecash.ecashcore.repository.MerchantTerminalRepository;
 import com.ecash.ecashcore.repository.TransactionDetailRepository;
@@ -54,15 +57,16 @@ import com.ecash.ecashcore.repository.TransactionTypeRepository;
 import com.ecash.ecashcore.repository.WalletRepository;
 import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.CustomerTransactionVO;
-import com.ecash.ecashcore.vo.ExtendedInformationVO;
+import com.ecash.ecashcore.vo.EcashExtendedInformationVO;
 import com.ecash.ecashcore.vo.TargetVO;
 import com.ecash.ecashcore.vo.TransactionVO;
-import com.ecash.ecashcore.vo.TransferExtendedInformationVO;
+import com.ecash.ecashcore.vo.ExtendedInformationVO;
 import com.ecash.ecashcore.vo.request.ChargeRequestVO;
 import com.ecash.ecashcore.vo.request.DepositRequestVO;
-import com.ecash.ecashcore.vo.request.ITransactionRequestVO;
+import com.ecash.ecashcore.vo.request.IEcashTransactionRequestVO;
 import com.ecash.ecashcore.vo.request.RefundRequestVO;
 import com.ecash.ecashcore.vo.request.TransferRequestVO;
+import com.ecash.ecashcore.vo.request.WithdrawRequestVO;
 import com.ecash.ecashcore.vo.response.TransactionResponseVO;
 import com.querydsl.core.types.Predicate;
 
@@ -111,6 +115,9 @@ public class TransactionService
 
   @Autowired
   EWalletService eWalletService;
+  
+  @Autowired
+  EWalletRepository eWalletRepository;
 
   @Autowired
   UserService userService;
@@ -120,25 +127,44 @@ public class TransactionService
 
   @Autowired
   MerchantStatementRepository merchantStatementRepository;
+  
+  static List<String> validTargetType  = Arrays.asList(new String[] { TargetVO.ACCOUNT, TargetVO.WALLET });
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
-  public synchronized TransactionResponseVO transfer(TransferRequestVO transferVO)
+  public synchronized TransactionResponseVO transfer(TransferRequestVO request, String terminalId)
   {
     // Validate require information
-    if (validateTransferTransactionRequest(transferVO))
+    if (validateTransferRequest(request))
     {
-      if (transferVO.getSourceVO().getType() == TargetVO.ACCOUNT)
+      // Identify the merchant terminal
+      MerchantTerminal merchantTerminal = merchantTerminalService
+          .identifyValidMerchantTerminal(terminalId);
+      
+      if (request.getSource().getType().equalsIgnoreCase(TargetVO.ACCOUNT))
       {
-        if (transferVO.getDestinationVO().getType() == TargetVO.ACCOUNT)
+        // Get source account
+        Account sourceAccount = identifyValidAccount(request.getSource());
+        
+        if (request.getDestination().getType().equalsIgnoreCase(TargetVO.ACCOUNT))
         {
           // Transfer from account to account
-          // Get source account
-          String sourceAccountID = transferVO.getSourceVO().getId();
-          Account sourceAccount = accountRepository.findOne(sourceAccountID);
+          
           // Get destination account
-          String destinationAccountID = transferVO.getDestinationVO().getId();
-          Account destinationAccount = accountRepository.findOne(destinationAccountID);
-          return this.transferFromAccountToAccount(sourceAccount, destinationAccount, transferVO);
+          Account destinationAccount = identifyValidAccount(request.getDestination());
+          
+          return transferFromAccountToAccount(sourceAccount, destinationAccount, request, merchantTerminal);
+        }
+        else if(request.getDestination().getType().equalsIgnoreCase(TargetVO.WALLET)) {
+          // Transfer from account to wallet
+          
+          // Get destination wallet
+          String destinationWalletID = request.getDestination().getId();
+          Wallet destinationWallet = walletRepository.findOne(destinationWalletID);
+          if(destinationWallet == null) {
+            throw new DataNotFoundException("Not found destination wallet.");
+          }
+          
+          return transferFromAccountToWallet(sourceAccount, destinationWallet, request, merchantTerminal);
         }
         else
         {
@@ -157,7 +183,7 @@ public class TransactionService
   };
 
   private TransactionResponseVO transferFromAccountToAccount(Account source, Account destination,
-      TransferRequestVO transferVO)
+      TransferRequestVO request, MerchantTerminal merchantTerminal)
   {
     Date transactionTime = Calendar.getInstance().getTime();
     // save history
@@ -166,7 +192,7 @@ public class TransactionService
     balanceHistoryRepository.save(balanceHistory);
 
     // calculate
-    double remainAmount = source.getCurrentBalance() - transferVO.getAmount();
+    double remainAmount = source.getCurrentBalance() - request.getAmount();
     if (remainAmount < 0)
     {
       throw new ValidationException("Source account don't have enough money.");
@@ -179,16 +205,14 @@ public class TransactionService
     // save transaction in cms
     TransactionType transactionType = transactionTypeRepository
         .findOne(TransactionTypeEnum.TRANSFER.getName());
-    Transaction transaction = new Transaction(source, transactionType, transactionTime,
-        transferVO.getAmount());
-
+    Transaction transaction = Transaction.activeOf(source, transactionType, transactionTime,
+        request.getAmount());
     transactionRepository.save(transaction);
 
-    TransferExtendedInformationVO extendedInformation = transferVO.getExtendedInformation();
-
+    ExtendedInformationVO extendedInformation = request.getExtendedInformation();
     // save transaction detail
-    TransactionDetail transactionDetail = new TransactionDetail(transaction,
-        extendedInformation.getTransactionDetails());
+    TransactionDetail transactionDetail = TransactionDetail.activeOf(transaction,
+        extendedInformation.getTransactionDetails(), merchantTerminal.getMerchant());
     transactionDetailRepository.save(transactionDetail);
 
     // save history
@@ -197,7 +221,7 @@ public class TransactionService
     balanceHistoryRepository.save(balanceHistory);
 
     // calculate
-    double newAmount = destination.getCurrentBalance() + transferVO.getAmount();
+    double newAmount = destination.getCurrentBalance() + request.getAmount();
 
     // Update balance value
     destination.setCurrentBalance(newAmount);
@@ -206,51 +230,197 @@ public class TransactionService
     // save transaction in cms
     TransactionType destinationTransactionType = transactionTypeRepository
         .findOne(TransactionTypeEnum.DEPOSIT.getName());
-    Transaction destinationTransaction = new Transaction(destination, destinationTransactionType,
-        transactionTime, transferVO.getAmount());
+    Transaction destinationTransaction = Transaction.activeOf(destination, destinationTransactionType, transactionTime,
+        request.getAmount());
     destinationTransaction.setRelatedTransaction(transaction);
     transactionRepository.save(destinationTransaction);
 
-    TransferExtendedInformationVO destinationExtendedInformation = transferVO
+    ExtendedInformationVO destinationExtendedInformation = request
         .getExtendedInformation();
 
     // save transaction detail
-    TransactionDetail destinationTransactionDetail = new TransactionDetail(transaction,
-        destinationExtendedInformation.getTransactionDetails());
+    TransactionDetail destinationTransactionDetail = TransactionDetail.activeOf(transaction,
+        destinationExtendedInformation.getTransactionDetails(), merchantTerminal.getMerchant());
     transactionDetailRepository.save(destinationTransactionDetail);
 
-    return new TransactionResponseVO(transaction.getId(),
-        transaction.getAccount().getAccountName(),
-        transactionTime, transaction.getId());
+    return new TransactionResponseVO(transaction.getId(), transaction.getAccount().getId(),
+        transactionTime);
   }
 
   private TransactionResponseVO transferFromAccountToWallet(Account source, Wallet destination,
-      TransferRequestVO transferVO)
+      TransferRequestVO request, MerchantTerminal merchantTerminal)
   {
-    // TODO: Need to implement
-    return null;
+    // Find ewallet
+    EWallet eWallet = eWalletRepository.findOne(destination.getRefId());
+    if(eWallet == null) {
+      throw new DataNotFoundException("Not found destination e-wallet.");
+    }
+    
+    Date transactionTime = Calendar.getInstance().getTime();
+    // save history
+    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, source,
+        source.getCurrentBalance());
+    balanceHistoryRepository.save(balanceHistory);
+
+    // calculate
+    double remainAmount = source.getCurrentBalance() - request.getAmount();
+    if (remainAmount < 0)
+    {
+      throw new ValidationException("Source account don't have enough money.");
+    }
+
+    // Update balance value
+    source.setCurrentBalance(remainAmount);
+    source = accountRepository.save(source);
+
+    // save transaction in cms
+    TransactionType transactionType = transactionTypeRepository
+        .findOne(TransactionTypeEnum.TRANSFER_OUT.getName());
+    Transaction transaction = Transaction.activeOf(source, transactionType, transactionTime,
+        request.getAmount());
+
+    transactionRepository.save(transaction);
+
+    ExtendedInformationVO extendedInformation = request.getExtendedInformation();
+
+    // save transaction detail
+    TransactionDetail transactionDetail = TransactionDetail.activeOf(transaction,
+        extendedInformation.getTransactionDetails(), merchantTerminal.getMerchant());
+    transactionDetailRepository.save(transactionDetail);
+
+    // save history (TODO: implement save history)
+//    BalanceHistory destinationBalanceHistory = new BalanceHistory(transactionTime, destination,
+//        destination.getCurrentBalance());
+//    balanceHistoryRepository.save(balanceHistory);
+
+    // calculate
+    double newAmount = eWallet.getCurrentBalance() + request.getAmount();
+
+    // Update balance value
+    eWallet.setCurrentBalance(newAmount);
+    eWallet = eWalletRepository.save(eWallet);
+
+    // save transaction in cms (TODO: implement transaction with e-wallet)
+//    TransactionType destinationTransactionType = transactionTypeRepository
+//        .findOne(TransactionTypeEnum.DEPOSIT.getName());
+//    Transaction destinationTransaction = new Transaction(destination, destinationTransactionType,
+//        transactionTime, transferVO.getAmount());
+//    destinationTransaction.setRelatedTransaction(transaction);
+//    transactionRepository.save(destinationTransaction);
+
+//    ExtendedInformationVO destinationExtendedInformation = request
+//        .getExtendedInformation();
+
+    // save transaction detail (TODO: implement transaction detail)
+//    TransactionDetail destinationTransactionDetail = new TransactionDetail(transaction,
+//        destinationExtendedInformation.getTransactionDetails());
+//    transactionDetailRepository.save(destinationTransactionDetail);
+
+    return new TransactionResponseVO(transaction.getId(),
+        transaction.getAccount().getId(),
+        transactionTime);
+  }
+  
+  @Transactional(isolation = Isolation.SERIALIZABLE)
+  public synchronized TransactionResponseVO withdraw(WithdrawRequestVO request, String terminalId) {
+    // Validate require information
+    validateWithdrawRequest(request);
+    
+    // Identify the merchant terminal
+    MerchantTerminal merchantTerminal = merchantTerminalService
+        .identifyValidMerchantTerminal(terminalId);
+
+    // Check valid account information
+    Account account = identifyValidAccount(request.getSource());
+
+    Date transactionTime = Calendar.getInstance().getTime();
+
+    // Record the balance history
+    BalanceHistory balanceHistory = new BalanceHistory(transactionTime, account,
+        account.getCurrentBalance());
+    balanceHistoryRepository.save(balanceHistory);
+    
+    // calculate
+    double remainAmount = account.getCurrentBalance() - request.getAmount();
+    if (remainAmount < 0)
+    {
+      throw new ValidationException("Source account don't have enough money.");
+    }
+
+    // Update balance value
+    account.setCurrentBalance(remainAmount);
+    accountRepository.save(account);
+
+    // Record the transaction
+    TransactionType transactionType = transactionTypeRepository
+        .findOne(TransactionTypeEnum.WITHDRAW.getName());
+    Transaction transaction = Transaction.activeOf(account, transactionType, transactionTime,
+        request.getAmount());
+    transactionRepository.save(transaction);
+
+    ExtendedInformationVO extendedInformation = request
+        .getExtendedInformation();
+    // save transaction detail
+    TransactionDetail transactionDetail = TransactionDetail.activeOf(transaction,
+        extendedInformation.getTransactionDetails(), merchantTerminal.getMerchant());
+    transactionDetailRepository.save(transactionDetail);
+
+    return new TransactionResponseVO(transaction.getId(),
+        transaction.getAccount().getId(), transactionTime);
+  }
+  
+  private Account identifyValidAccount(TargetVO target) {
+    // Must check target before step into this function.
+    return identifyValidAccount(target.getId());
+  }
+
+  private Account identifyValidAccount(String accountId) {
+    // Must check id before step into this function.
+    Account account = accountRepository.findOne(accountId);
+
+    if (account == null)
+    {
+      throw new ValidationException("Account not found. Id: " + accountId);
+    }
+    
+    if (!account.getStatus().equals(StatusEnum.ACTIVE.toString())) {
+      throw new ValidationException("Account is inactive. Id:" + accountId);
+    } else {
+      return account;
+    }
+  }
+  
+  private void validateWithdrawRequest(WithdrawRequestVO request) {
+    if (request.getSource() == null || request.getAmount() == null
+        || request.getExtendedInformation() == null) {
+      throw new InvalidInputException("Required information is missing");
+    }
+
+    validateNegativeAmount(request.getAmount());
+
+    validateTarget(request.getSource());
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
-  public synchronized TransactionResponseVO chargeRequest(ChargeRequestVO chargeRequest)
+  public synchronized TransactionResponseVO chargeRequest(ChargeRequestVO request)
   {
     Account account = null;
     Wallet wallet = null;
 
     // validate
-    validateTransactionRequest(chargeRequest);
+    validateTransactionRequest(request);
 
     // check validate card
-    Card card = cardService.identifyValidCardByCardCode(chargeRequest.getCard().getNumber());
+    Card card = cardService.identifyValidCardByCardCode(request.getCard().getNumber());
 
     Date transactionTime = Calendar.getInstance().getTime();
 
-    account = identifyValidAccount(card, chargeRequest.getTarget());
-    if (chargeRequest.getTarget() != null)
+    account = identifyValidAccount(card, request.getTarget());
+    if (request.getTarget() != null)
     {
       try
       {
-        wallet = identifyValidWallet(card, chargeRequest.getTarget());
+        wallet = identifyValidWallet(card, request.getTarget());
       }
       catch (ValidationException ve)
       {
@@ -263,7 +433,7 @@ public class TransactionService
     {
       // Make transaction in wallet
       EWalletTransaction eWalletTransaction = eWalletService
-          .createEWalletTransaction(wallet.getRefId(), chargeRequest.getAmount());
+          .createEWalletTransaction(wallet.getRefId(), request.getAmount());
     }
     else
     {
@@ -273,7 +443,7 @@ public class TransactionService
       balanceHistoryRepository.save(balanceHistory);
 
       // calculate
-      double remainAmount = account.getCurrentBalance() - chargeRequest.getAmount();
+      double remainAmount = account.getCurrentBalance() - request.getAmount();
       if (remainAmount < 0)
       {
         throw new ValidationException("Account don't have enough money.");
@@ -287,13 +457,11 @@ public class TransactionService
     // save transaction in cms
     TransactionType transactionType = transactionTypeRepository
         .findOne(TransactionTypeEnum.EXPENSE.getName());
-    Transaction transaction = new Transaction(account, transactionType, transactionTime,
-        chargeRequest.getAmount(),
-        card);
+    Transaction transaction = Transaction.activeOf(account, transactionType, transactionTime,
+        request.getAmount(), card);
     transactionRepository.save(transaction);
 
-    ExtendedInformationVO extendedInformation = chargeRequest.getExtendedInformation();
-
+    EcashExtendedInformationVO extendedInformation = request.getExtendedInformation();
     // save transaction detail
     MerchantTerminal merchantTerminal = merchantTerminalService
         .identifyValidMerchantTerminal(
@@ -307,27 +475,20 @@ public class TransactionService
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
-  public synchronized TransactionResponseVO depositRequest(DepositRequestVO depositRequest)
+  public synchronized TransactionResponseVO depositRequest(DepositRequestVO request)
   {
 
     // Validate require information
-    validateTransactionRequest(depositRequest);
+    validateTransactionRequest(request);
 
     // check validate card
-    Card card = cardService.identifyValidCardByCardCode(depositRequest.getCard().getNumber());
+    Card card = cardService.identifyValidCardByCardCode(request.getCard().getNumber());
 
     // Check valid account information
-    Account account = identifyValidAccount(card, depositRequest.getTarget());
-
-    // Check valid number.
-    if (depositRequest.getAmount() <= 0)
-    {
-      throw new InvalidInputException(
-          "Required information is missing. Missing amount information");
-    }
+    Account account = identifyValidAccount(card, request.getTarget());
 
     // Check the last balance value is valid
-    if (isOverflowBalance(account.getCurrentBalance(), depositRequest.getAmount()))
+    if (isOverflowBalance(account.getCurrentBalance(), request.getAmount()))
     {
       throw new InvalidInputException(
           "Required information is missing. The disposite amount's too large");
@@ -341,7 +502,7 @@ public class TransactionService
     balanceHistoryRepository.save(balanceHistory);
 
     // Update balance value
-    account.setCurrentBalance(account.getCurrentBalance() + depositRequest.getAmount());
+    account.setCurrentBalance(account.getCurrentBalance() + request.getAmount());
     accountRepository.save(account);
 
     // Record the transaction
@@ -349,12 +510,12 @@ public class TransactionService
         .findOne(TransactionTypeEnum.DEPOSIT.getName());
 
     Transaction transaction = Transaction.activeOf(account, transactionType, transactionTime,
-        depositRequest.getAmount(),
+        request.getAmount(),
         card);
     transactionRepository.save(transaction);
 
     // Identify the merchant terminal
-    ExtendedInformationVO extendedInformation = depositRequest.getExtendedInformation();
+    EcashExtendedInformationVO extendedInformation = request.getExtendedInformation();
     MerchantTerminal merchantTerminal = merchantTerminalService
         .identifyValidMerchantTerminal(
             extendedInformation.getAdditionalTerminalInfo().getTerminalId());
@@ -364,16 +525,16 @@ public class TransactionService
         extendedInformation.getTransactionDetails(), merchantTerminal.getMerchant());
     transactionDetailRepository.save(transactionDetail);
 
-    return new TransactionResponseVO(transaction.getId(), account.getAccountName(),
+    return new TransactionResponseVO(transaction.getId(), account.getId(),
         transactionTime);
   }
 
   @Transactional(isolation = Isolation.SERIALIZABLE)
-  public synchronized TransactionResponseVO refundRequest(RefundRequestVO refundRequest)
+  public synchronized TransactionResponseVO refundRequest(RefundRequestVO request)
   {
 
     // Validate transactionId
-    String transactionId = refundRequest.getTransactionId();
+    String transactionId = request.getTransactionId();
     if (StringUtils.isNullOrEmpty(transactionId))
     {
       throw new InvalidInputException(
@@ -404,11 +565,9 @@ public class TransactionService
     refundAccountBalance(transaction.getAccount(), transaction, transactionTime);
 
     // Record the transaction
-    TransactionType transactionType = transactionTypeRepository
-        .findOne(TransactionTypeEnum.REFUND.getName());
-    final Transaction refundTransaction = new Transaction(transaction.getAccount(), transactionType,
-        transactionTime,
-        transaction.getAmount(), transaction.getCard());
+    TransactionType transactionType = transactionTypeRepository.findOne(TransactionTypeEnum.REFUND.getName());
+    final Transaction refundTransaction = Transaction.activeOf(transaction.getAccount(), transactionType,
+        transactionTime, transaction.getAmount(), transaction.getCard());
 
     // Record relate transaction
     refundTransaction.setRelatedTransaction(transaction);
@@ -427,7 +586,7 @@ public class TransactionService
     transactionDetailRepository.save(refundTransactionDetail);
 
     return new TransactionResponseVO(refundTransaction.getId(),
-        transaction.getAccount().getAccountName(),
+        transaction.getAccount().getId(),
         transactionTime, transaction.getId());
   }
 
@@ -493,23 +652,41 @@ public class TransactionService
     return true;
   }
 
-  private boolean validateTransferTransactionRequest(TransferRequestVO transferRequestVO)
-  {
-    // TODO: Implement later
+  private boolean validateTransferRequest(TransferRequestVO request) {
+    if (request.getSource() == null || request.getDestination() == null
+        || request.getAmount() == null || request.getExtendedInformation() == null) {
+      throw new InvalidInputException("Required information is missing");
+    }
+    
+    validateNegativeAmount(request.getAmount());
+
+    validateTarget(request.getSource());
+    validateTarget(request.getDestination());
+
     return true;
   }
+  
+  private void validateTarget(TargetVO target) {
+    if (StringUtils.isNullOrEmpty(target.getId())) {
+      throw new InvalidInputException("Id must not be null.");
+    }
 
-  private void validateTransactionRequest(ITransactionRequestVO transactionRequest)
+    if (!validTargetType.contains(target.getType().toUpperCase())) {
+      throw new InvalidInputException("Invalid target type.");
+    }
+  }
+
+  private void validateTransactionRequest(IEcashTransactionRequestVO request)
   {
-    if (transactionRequest.getCard() == null || transactionRequest.getAmount() == null
-        || transactionRequest.getExtendedInformation() == null)
+    if (request.getCard() == null || request.getAmount() == null
+        || request.getExtendedInformation() == null)
     {
       throw new InvalidInputException("Required information is missing");
     }
 
-    validateNegativeAmount(transactionRequest.getAmount());
+    validateNegativeAmount(request.getAmount());
 
-    ExtendedInformationVO extendedInformation = transactionRequest.getExtendedInformation();
+    EcashExtendedInformationVO extendedInformation = request.getExtendedInformation();
     if (extendedInformation.getAdditionalTerminalInfo() == null)
     {
       throw new InvalidInputException(
@@ -629,7 +806,7 @@ public class TransactionService
       merchantStatement.setSettlement(true);
       merchantStatementRepository.save(merchantStatement);
       return new TransactionResponseVO(trans.getId(),
-          trans.getAccount().getAccountName(),
+          trans.getAccount().getId(),
           trans.getDate(), trans.getId());
     }
     return null;
@@ -661,6 +838,7 @@ public class TransactionService
     userTransactionVO.setCustomerTransactions(customerTransactions);
     return userTransactionVO;
   }
+  
   public TransactionAccountDetailPOJO getTransactionAccountDetail(String id) throws Exception {
     TransactionAccountDetailPOJO detailResult = new TransactionAccountDetailPOJO();
     

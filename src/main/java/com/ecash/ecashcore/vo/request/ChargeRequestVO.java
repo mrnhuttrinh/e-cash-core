@@ -1,13 +1,13 @@
 package com.ecash.ecashcore.vo.request;
 
 import com.ecash.ecashcore.vo.CardInformationVO;
-import com.ecash.ecashcore.vo.ExtendedInformationVO;
+import com.ecash.ecashcore.vo.EcashExtendedInformationVO;
 import com.ecash.ecashcore.vo.TargetVO;
 
-public class ChargeRequestVO implements ITransactionRequestVO {
+public class ChargeRequestVO implements IEcashTransactionRequestVO {
   private CardInformationVO card;
   private Double amount;
-  private ExtendedInformationVO extendedInformation;
+  private EcashExtendedInformationVO extendedInformation;
 
   public CardInformationVO getCard() {
     return card;
@@ -25,11 +25,11 @@ public class ChargeRequestVO implements ITransactionRequestVO {
     this.amount = amount;
   }
 
-  public ExtendedInformationVO getExtendedInformation() {
+  public EcashExtendedInformationVO getExtendedInformation() {
     return extendedInformation;
   }
 
-  public void setExtendedInformation(ExtendedInformationVO extendedInformation) {
+  public void setExtendedInformation(EcashExtendedInformationVO extendedInformation) {
     this.extendedInformation = extendedInformation;
   }
 

@@ -1,10 +1,12 @@
 package com.ecash.ecashcore.service;
 
+import com.ecash.ecashcore.enums.CurrencyCodeEnum;
 import com.ecash.ecashcore.enums.EWalletTypeEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
 import com.ecash.ecashcore.model.cms.Wallet;
 import com.ecash.ecashcore.model.wallet.EWallet;
 import com.ecash.ecashcore.repository.CardRepository;
+import com.ecash.ecashcore.repository.CurrencyCodeRepository;
 import com.ecash.ecashcore.repository.EWalletRepository;
 import com.ecash.ecashcore.repository.EWalletTypeRepository;
 import com.ecash.ecashcore.repository.WalletRepository;
@@ -33,7 +35,9 @@ public class WalletService {
   
   @Autowired
   CardRepository cardRepository;
-
+  
+  @Autowired
+  CurrencyCodeRepository currencyCodeRepository;
 
   public Iterable<Wallet> findAll(Predicate predicate, Pageable pageable) {
     return walletRepository.findAll(predicate, pageable);
@@ -44,7 +48,6 @@ public class WalletService {
     wallet.setProvider(SWT);
     wallet.setType(DEFAULT);
     wallet.setCard(cardRepository.findByCardNumber(data.getCard().getCardNumber()));
-    wallet.setCreatedAt(new Date());
     wallet.setName(data.getName());
     wallet.setStatus(StatusEnum.ACTIVE.getName());
     
@@ -53,6 +56,7 @@ public class WalletService {
     eWallet.setEWalletType(eWalletTypeRepository.findByTypeCode(EWalletTypeEnum.DEFAULT.toString()));
     eWallet.setDateOpened(new Date());
     eWallet.setStatus(StatusEnum.ACTIVE.getName());
+    eWallet.setCurrencyCode(CurrencyCodeEnum.VND.toString());
     eWalletRepository.save(eWallet);
     
     wallet.setRefId(eWallet.getId());

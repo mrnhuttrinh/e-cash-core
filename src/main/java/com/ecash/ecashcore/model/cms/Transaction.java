@@ -72,13 +72,6 @@ public class Transaction extends BaseUUID
     this.card = card;
   }
 
-  public static Transaction activeOf(Account account, TransactionType transactionType, Date date, Double amount,
-                                     Card card) {
-    Transaction transaction = new Transaction(account, transactionType, date, amount, card);
-    transaction.setStatus("ACTIVE");
-    return transaction;
-  }
-
   public void setAccount(Account account)
   {
     this.account = account;
@@ -159,4 +152,16 @@ public class Transaction extends BaseUUID
     this.status = status;
   }
 
+  public static Transaction activeOf(Account account, TransactionType transactionType, Date date, Double amount,
+                                     Card card) {
+    Transaction transaction = new Transaction(account, transactionType, date, amount, card);
+    transaction.setStatus("ACTIVE");
+    return transaction;
+  }
+  
+  public static Transaction activeOf(Account account, TransactionType transactionType, Date date, Double amount) {
+    Transaction transaction = new Transaction(account, transactionType, date, amount);
+    transaction.setStatus("ACTIVE");
+    return transaction;
+  }
 }

@@ -15,6 +15,7 @@ private String id;
   
   private String provider;
   
+  // TODO: use VO, don't use entity
   private Card card;
 
   public WalletVO(Wallet wallet) {

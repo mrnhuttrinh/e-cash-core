@@ -1,13 +1,13 @@
 package com.ecash.ecashcore.vo.request;
 
 import com.ecash.ecashcore.vo.CardInformationVO;
-import com.ecash.ecashcore.vo.ExtendedInformationVO;
+import com.ecash.ecashcore.vo.EcashExtendedInformationVO;
 
-public class RefundRequestVO implements ITransactionRequestVO {
+public class RefundRequestVO implements IEcashTransactionRequestVO {
 
   private String transactionId;
 
-  private ExtendedInformationVO extendedInformation;
+  private EcashExtendedInformationVO extendedInformation;
 
   public String getTransactionId() {
     return transactionId;
@@ -17,11 +17,11 @@ public class RefundRequestVO implements ITransactionRequestVO {
     this.transactionId = transactionId;
   }
 
-  public ExtendedInformationVO getExtendedInformation() {
+  public EcashExtendedInformationVO getExtendedInformation() {
     return extendedInformation;
   }
 
-  public void setExtendedInformation(ExtendedInformationVO extendedInformation) {
+  public void setExtendedInformation(EcashExtendedInformationVO extendedInformation) {
     this.extendedInformation = extendedInformation;
   }
 
