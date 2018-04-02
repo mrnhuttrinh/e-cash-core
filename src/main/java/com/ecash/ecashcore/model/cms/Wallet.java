@@ -25,7 +25,7 @@ public class Wallet extends BaseUUID {
   @Column(name = "provider", nullable = false)
   private String provider;
   
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "card_id", nullable = false)
   private Card card;
   
