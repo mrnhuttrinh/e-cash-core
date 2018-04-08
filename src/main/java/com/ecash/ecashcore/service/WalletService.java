@@ -3,7 +3,6 @@ package com.ecash.ecashcore.service;
 import com.ecash.ecashcore.enums.CurrencyCodeEnum;
 import com.ecash.ecashcore.enums.EWalletTypeEnum;
 import com.ecash.ecashcore.enums.StatusEnum;
-import com.ecash.ecashcore.model.cms.Card;
 import com.ecash.ecashcore.model.cms.Wallet;
 import com.ecash.ecashcore.model.wallet.EWallet;
 import com.ecash.ecashcore.repository.CardRepository;
@@ -11,10 +10,8 @@ import com.ecash.ecashcore.repository.CurrencyCodeRepository;
 import com.ecash.ecashcore.repository.EWalletRepository;
 import com.ecash.ecashcore.repository.EWalletTypeRepository;
 import com.ecash.ecashcore.repository.WalletRepository;
-import com.ecash.ecashcore.util.ObjectUtils;
 import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,15 +38,6 @@ public class WalletService {
   
   @Autowired
   CurrencyCodeRepository currencyCodeRepository;
-
-  public Iterable<Wallet> findAll(Predicate predicate, Pageable pageable) {
-    Page<Wallet> wallets = walletRepository.findAll(predicate, pageable);
-    for(Wallet wallet : wallets) {
-      wallet.setCard(ObjectUtils.clone(wallet.getCard(), Card.class));
-    }
-    
-    return wallets;
-  }
   
   public Wallet createWallet(Wallet data) {
     Wallet wallet = new Wallet();
