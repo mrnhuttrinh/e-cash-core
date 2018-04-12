@@ -55,6 +55,7 @@ public class UserService {
 
   public User getByEmail(String email) {
     User user = userRepository.findByEmail(email);
+    // TODO: should be remvoe
     if (user == null) {
       user = userRepository.findByUsername(email);
     }
@@ -63,6 +64,7 @@ public class UserService {
 
   public User getByUsername(String username) {
     User user = userRepository.findByUsername(username);
+    // TODO: should be remvoe
     if (user == null) {
       user = userRepository.findByEmail(username);
     }
