@@ -3,6 +3,8 @@ package com.ecash.ecashcore.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.Card;
 import com.ecash.ecashcore.model.cms.CardHistory;
 import com.ecash.ecashcore.model.cms.CardHistoryType;
+import com.ecash.ecashcore.model.cms.QCard;
 import com.ecash.ecashcore.repository.CardHistoryRepository;
 import com.ecash.ecashcore.repository.CardHistoryTypeRepository;
 import com.ecash.ecashcore.repository.CardRepository;
@@ -28,6 +31,7 @@ import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.HistoryVO;
 import com.ecash.ecashcore.vo.request.UpdateCardStatusRequestVO;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.jpa.impl.JPAQuery;
 
 @Service
 @Transactional
@@ -41,6 +45,9 @@ public class CardService {
 
   @Autowired
   CardRepository cardRepository;
+  
+  @Autowired
+  EntityManager entityManager;
 
   public Card updateCardStatus(UpdateCardStatusRequestVO request) {
     // validate input
@@ -128,6 +135,13 @@ public class CardService {
     for(Card c : result) {
       c.setAccount(ObjectUtils.clone(c.getAccount(), Account.class));
     }
+    return result;
+  }
+  
+  public List<Card> exampleQueryDsl() {
+    JPAQuery<Card> query = new JPAQuery(entityManager);
+    QCard card = QCard.card;
+    List<Card> result = query.from(card).where(card.cardCode.containsIgnoreCase("F")).fetch();
     return result;
   }
 }
