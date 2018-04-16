@@ -79,8 +79,7 @@ public class UserService {
     return userRepository.findAll(predicate, pageable);
   }
   
-  public User updateInformation(UserVO data, User createdBy) {
-    User user = userRepository.findOne(data.getId());
+  public User updateInformation(User user, User createdBy, UserVO data) {
     if (user == null) {
       throw new ValidationException("User is not exist.");
     }
@@ -108,15 +107,18 @@ public class UserService {
     for (Role r : user.getRoles()) {
 	previousRole.add(r.getName());
     }
-    List<String>  nextRole = new ArrayList<>();
-    for (Role r : data.getRoles()) {
-	nextRole.add(r.getName());
+    List<String>  nextRole = new ArrayList<String>();
+    List<Role> nextRoleStore = new ArrayList<Role>();
+    for (String r : data.getRoles()) {
+      Role role = roleRepository.findOne(r);
+	nextRole.add(role.getName());
+  nextRoleStore.add(role);
     }
     
     history.getPrevious().put("roles", previousRole);
     history.getNext().put("roles", nextRole);
 
-    user.setRoles(data.getRoles());
+    user.setRoles(nextRoleStore);
     
     userRepository.save(user);
 

@@ -15,7 +15,7 @@ public class UserVO {
 
 	private String email;
 
-	private List<Role> roles;
+	private List<String> roles;
 
 	public String getUsername() {
 		return username;
@@ -49,11 +49,11 @@ public class UserVO {
 		this.email = email;
 	}
 
-	public List<Role> getRoles() {
+	public List<String> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
+	public void setRoles(List<String> roles) {
 		this.roles = roles;
 	}
 
