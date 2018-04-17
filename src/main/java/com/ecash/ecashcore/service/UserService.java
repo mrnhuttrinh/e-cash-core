@@ -105,14 +105,14 @@ public class UserService {
     
     List<String>  previousRole = new ArrayList<>();
     for (Role r : user.getRoles()) {
-	previousRole.add(r.getName());
+	  previousRole.add(r.getName());
     }
     List<String>  nextRole = new ArrayList<String>();
     List<Role> nextRoleStore = new ArrayList<Role>();
     for (String r : data.getRoles()) {
       Role role = roleRepository.findOne(r);
-	nextRole.add(role.getName());
-  nextRoleStore.add(role);
+	  nextRole.add(role.getName());
+      nextRoleStore.add(role);
     }
     
     history.getPrevious().put("roles", previousRole);
