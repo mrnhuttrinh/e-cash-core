@@ -54,6 +54,14 @@ public final class DateTimeUtils
 
     return dt;
   }
+  
+  public static DateTime parseDate(String dateString, String datePatternParam) {
+    return parseDate(dateString, datePatternParam, null);
+  }
+
+  public static DateTime parseDate(String dateString) {
+    return parseDate(dateString, null, null);
+  }
 
   public static String toDefaultFormatString(Date date)
   {
