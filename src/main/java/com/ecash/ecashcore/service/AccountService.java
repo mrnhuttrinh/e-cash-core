@@ -7,9 +7,11 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.StatusEnum;
+import com.ecash.ecashcore.exception.DataNotFoundException;
 import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Account;
 import com.ecash.ecashcore.model.cms.AccountHistory;
@@ -17,9 +19,12 @@ import com.ecash.ecashcore.model.cms.AccountHistoryType;
 import com.ecash.ecashcore.repository.AccountHistoryRepository;
 import com.ecash.ecashcore.repository.AccountHistoryTypeRepository;
 import com.ecash.ecashcore.repository.AccountRepository;
+import com.ecash.ecashcore.util.StringUtils;
+import com.ecash.ecashcore.vo.AccountVO;
 import com.querydsl.core.types.Predicate;
 
 @Service
+@Transactional
 public class AccountService {
 
   @Autowired
@@ -75,4 +80,39 @@ public class AccountService {
     accountRepository.save(account);
   }
 
+  public void lock(List<AccountVO> vos) {
+    for (AccountVO vo : vos) {
+      if (StringUtils.isNullOrEmpty(vo.getId())) {
+        throw new ValidationException("Account ids must not be null or emtpy.");
+      }
+
+      Account account = accountRepository.findOne(vo.getId());
+      if (account == null) {
+        throw new DataNotFoundException("Account could not be found. Id: " + vo.getId());
+      }
+
+      if (!account.getStatus().equals(StatusEnum.ACTIVE.toString())) {
+        account.setStatus(StatusEnum.ACTIVE.toString());
+        accountRepository.save(account);
+      }
+    }
+  }
+
+  public void unlockAccounts(List<AccountVO> vos) {
+    for (AccountVO vo : vos) {
+      if (StringUtils.isNullOrEmpty(vo.getId())) {
+        throw new ValidationException("Account ids must not be null or emtpy.");
+      }
+
+      Account account = accountRepository.findOne(vo.getId());
+      if (account == null) {
+        throw new DataNotFoundException("Account could not be found. Id: " + vo.getId());
+      }
+
+      if (!account.getStatus().equals(StatusEnum.DEACTIVE.toString())) {
+        account.setStatus(StatusEnum.DEACTIVE.toString());
+        accountRepository.save(account);
+      }
+    }
+  }
 }
