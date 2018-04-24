@@ -91,8 +91,8 @@ public class AccountService {
         throw new DataNotFoundException("Account could not be found. Id: " + vo.getId());
       }
 
-      if (!account.getStatus().equals(StatusEnum.ACTIVE.toString())) {
-        account.setStatus(StatusEnum.ACTIVE.toString());
+      if (!account.getStatus().equals(StatusEnum.DEACTIVE.toString())) {
+        account.setStatus(StatusEnum.DEACTIVE.toString());
         accountRepository.save(account);
       }
     }
@@ -109,8 +109,8 @@ public class AccountService {
         throw new DataNotFoundException("Account could not be found. Id: " + vo.getId());
       }
 
-      if (!account.getStatus().equals(StatusEnum.DEACTIVE.toString())) {
-        account.setStatus(StatusEnum.DEACTIVE.toString());
+      if (!account.getStatus().equals(StatusEnum.ACTIVE.toString())) {
+        account.setStatus(StatusEnum.ACTIVE.toString());
         accountRepository.save(account);
       }
     }
