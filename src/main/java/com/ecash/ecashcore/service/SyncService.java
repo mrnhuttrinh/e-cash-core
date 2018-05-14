@@ -394,7 +394,7 @@ public class SyncService {
       account.setDateOpened(Calendar.getInstance().getTime());
       account.setCurrencyCode(currencyCodeRepository.findOne(CurrencyCodeEnum.VND.toString()));
       account.setCurrentBalance(Double.valueOf(0));
-      account.setStatus(StatusEnum.ACTIVE.toString());
+      account.setStatus(StatusEnum.DEACTIVE.toString());
       account.setPlan(planRepository.findbyPlanType(PlanTypeEnum.DEFAULT.toString()));
 
       accountRepository.save(account);
