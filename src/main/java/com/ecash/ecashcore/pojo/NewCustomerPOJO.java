@@ -1,10 +1,10 @@
-package com.ecash.ecashcore.vo.request;
+package com.ecash.ecashcore.pojo;
 
 import com.ecash.ecashcore.model.cms.Address;
 import com.ecash.ecashcore.model.cms.Customer;
 import com.ecash.ecashcore.model.cms.IdentifyDocument;
 
-public class NewCustomerVO  {
+public class NewCustomerPOJO  {
   private Customer customer;
   private Address address;
   private IdentifyDocument indetifyCard;

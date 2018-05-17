@@ -1,11 +1,12 @@
 package com.ecash.ecashcore.service;
 
 import java.util.List;
-import java.util.ArrayList;
 
+import org.springframework.aop.ThrowsAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ecash.ecashcore.constants.StringConstant;
 import com.ecash.ecashcore.enums.StatusEnum;
@@ -14,28 +15,44 @@ import com.ecash.ecashcore.exception.ValidationException;
 import com.ecash.ecashcore.model.cms.Address;
 import com.ecash.ecashcore.model.cms.Customer;
 import com.ecash.ecashcore.model.cms.CustomerAddress;
+import com.ecash.ecashcore.model.cms.CustomerHistory;
+import com.ecash.ecashcore.model.cms.CustomerHistoryType;
 import com.ecash.ecashcore.model.cms.CustomerIdentifyDocument;
 import com.ecash.ecashcore.model.cms.IdentifyDocument;
+import com.ecash.ecashcore.model.cms.SCMSSyncDetail;
+import com.ecash.ecashcore.pojo.NewCustomerPOJO;
+import com.ecash.ecashcore.pojo.UpdateCustomerPOJO;
 import com.ecash.ecashcore.repository.AddressRepository;
-import com.ecash.ecashcore.repository.CustomerRepository;
-import com.ecash.ecashcore.repository.CustomerIdentifyDocumentsRepository;
 import com.ecash.ecashcore.repository.CustomerAddressRepository;
+import com.ecash.ecashcore.repository.CustomerHistoryRepository;
+import com.ecash.ecashcore.repository.CustomerHistoryTypeRepository;
+import com.ecash.ecashcore.repository.CustomerIdentifyDocumentsRepository;
+import com.ecash.ecashcore.repository.CustomerRepository;
 import com.ecash.ecashcore.repository.IdentifyDocumentRepository;
+import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.util.StringUtils;
+import com.ecash.ecashcore.vo.CustomerVO;
+import com.ecash.ecashcore.vo.HistoryVO;
 import com.querydsl.core.types.Predicate;
-import com.ecash.ecashcore.vo.request.NewCustomerVO;
 
 @Service
+@Transactional
 public class CustomerService {
 
   @Autowired
   CustomerRepository customerRepository;
+  
+  @Autowired
+  CustomerAddressRepository customerAddressRepository;
+  
+  @Autowired
+  CustomerHistoryTypeRepository customerHistoryTypeRepository;
+  
+  @Autowired
+  CustomerHistoryRepository customerHistoryRepository;
 
   @Autowired
   AddressRepository addressRepository;
-
-  @Autowired
-  CustomerAddressRepository customerAddressRepository;
 
   @Autowired
   CustomerIdentifyDocumentsRepository customerIdentifyDocumentsRepository;
@@ -82,12 +99,13 @@ public class CustomerService {
       }
     }
   }
-  public Customer addNewCustomer(NewCustomerVO newCustomerVO) {
+  
+  public Customer addNewCustomer(NewCustomerPOJO newCustomerPOJO, String currentUser) {
     // save customer
-    Customer customer = customerRepository.saveAndFlush(newCustomerVO.getCustomer());
+    Customer customer = customerRepository.save(newCustomerPOJO.getCustomer());
 
     // save address
-    Address address = addressRepository.saveAndFlush(newCustomerVO.getAddress());
+    Address address = addressRepository.save(newCustomerPOJO.getAddress());
 
     CustomerAddress customerAddress = new CustomerAddress();
     customerAddress.setAddress(address);
@@ -95,8 +113,8 @@ public class CustomerService {
     customerAddress.setStatus(StatusEnum.ACTIVE.toString());
     customerAddressRepository.save(customerAddress);
 
-    // save
-    IdentifyDocument newIndetifyCard = identifyDocumentRepository.saveAndFlush(newCustomerVO.getIndetifyCard());
+    // save identify document
+    IdentifyDocument newIndetifyCard = identifyDocumentRepository.save(newCustomerPOJO.getIndetifyCard());
 
     CustomerIdentifyDocument customerIdentifyDocument = new CustomerIdentifyDocument();
     customerIdentifyDocument.setIdentifyDocument(newIndetifyCard);
@@ -104,7 +122,69 @@ public class CustomerService {
     customerIdentifyDocumentsRepository.save(customerIdentifyDocument);
 
     // create history
+    HistoryVO historyVO = new HistoryVO();
+    historyVO.getPrevious().put(StringConstant.PREVIOUS, "");
+    historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(customer));
 
+    // update history
+    CustomerHistory customerHistory = new CustomerHistory();
+    customerHistory.setCustomer(customer);
+    customerHistory.setType(customerHistoryTypeRepository.findOne(CustomerHistoryType.CREATED));
+    customerHistory.setCreatedBy(currentUser);
+    customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
+    customerHistoryRepository.save(customerHistory);
+
+    return customer;
+  }
+
+  public Customer updateCustomer(UpdateCustomerPOJO updateCustomerPOJO, String currentUser) {
+
+    Customer updateCustomer = updateCustomerPOJO.getCustomer();
+    Customer customer = customerRepository.findOne(updateCustomer.getId());
+    if(customer == null) {
+      throw new DataNotFoundException("Can not find customer id:" + updateCustomer.getId());
+    }
+    
+    // create history
+    HistoryVO historyVO = new HistoryVO();
+    historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(new CustomerVO(customer)));
+    
+    // update
+    // customer.setScmsMemberCode(syncCustomer.getScmsMemberCode());
+    customer.setFirstName(updateCustomer.getFirstName());
+    customer.setLastName(updateCustomer.getLastName());
+    customer.setGender(updateCustomer.getGender());
+    customer.setDateOfBirth(updateCustomer.getDateOfBirth());
+    customer.setPhone1(updateCustomer.getPhone1());
+    customer.setPhone1(updateCustomer.getPhone2());
+    customer.setEmail(updateCustomer.getEmail());
+    // customer.setDateBecameCustomer(syncCustomer.getDateBecameCustomer());
+    customer.setCountryCode(updateCustomer.getCountryCode());
+    customer.setOccupation(updateCustomer.getOccupation());
+    customer.setTitle(updateCustomer.getTitle());
+    customer.setPosition(updateCustomer.getPosition());
+    customerRepository.save(customer);
+    
+    List<Address> updateAddresses = updateCustomerPOJO.getAddresses();
+    for(Address updateAddress : updateAddresses) {
+      
+    }
+    
+    List<IdentifyDocument> updateIdentifyDocuments = updateCustomerPOJO.getIndetifyCards();
+    for(IdentifyDocument updateIdentifyDocument : updateIdentifyDocuments) {
+      
+    }
+    
+    historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(new CustomerVO(customer)));
+
+    // update history
+    CustomerHistory customerHistory = new CustomerHistory();
+    customerHistory.setCustomer(customer);
+    customerHistory.setType(customerHistoryTypeRepository.findOne(CustomerHistoryType.UPDATED));
+    customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
+    customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
+    customerHistoryRepository.save(customerHistory);
+    
     return customer;
   }
 }
