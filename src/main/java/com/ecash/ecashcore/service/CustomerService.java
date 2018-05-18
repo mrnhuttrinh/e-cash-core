@@ -2,7 +2,6 @@ package com.ecash.ecashcore.service;
 
 import java.util.List;
 
-import org.springframework.aop.ThrowsAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -167,12 +166,46 @@ public class CustomerService {
     
     List<Address> updateAddresses = updateCustomerPOJO.getAddresses();
     for(Address updateAddress : updateAddresses) {
-      
+      if(updateAddress.getId() != null) {
+        Address address = addressRepository.findOne(updateAddress.getId());
+        if(address == null) {
+          throw new DataNotFoundException("Address could not be found. Id: " + updateAddress.getId());
+        }
+        address.setCountry(updateAddress.getCountry());
+        address.setLine1(updateAddress.getLine1());
+        address.setLine2(updateAddress.getLine2());
+        // TODO: update more field if need
+        addressRepository.save(address);
+      } else {
+        Address address = addressRepository.save(updateAddress);
+
+        CustomerAddress customerAddress = new CustomerAddress();
+        customerAddress.setAddress(address);
+        customerAddress.setCustomer(customer);
+        customerAddress.setStatus(StatusEnum.ACTIVE.toString());
+        customerAddressRepository.save(customerAddress);
+      }
     }
     
     List<IdentifyDocument> updateIdentifyDocuments = updateCustomerPOJO.getIndetifyCards();
     for(IdentifyDocument updateIdentifyDocument : updateIdentifyDocuments) {
-      
+      if(updateIdentifyDocument.getId() != null) {
+        IdentifyDocument identifyDocument = identifyDocumentRepository.findOne(updateIdentifyDocument.getId());
+        if(identifyDocument == null) {
+          throw new DataNotFoundException("Address could not be found. Id: " + updateIdentifyDocument.getId());
+        }
+        identifyDocument.setDateOfIssue(updateIdentifyDocument.getDateOfIssue());
+        identifyDocument.setDateOfExpiry(updateIdentifyDocument.getDateOfExpiry());
+        identifyDocument.setPlaceOfIssue(updateIdentifyDocument.getPlaceOfIssue());
+        identifyDocumentRepository.save(identifyDocument);
+      } else {
+        IdentifyDocument identifyDocument = identifyDocumentRepository.save(updateIdentifyDocument);
+
+        CustomerIdentifyDocument customerIdentifyDocument = new CustomerIdentifyDocument();
+        customerIdentifyDocument.setIdentifyDocument(identifyDocument);
+        customerIdentifyDocument.setCustomer(customer);
+        customerIdentifyDocumentsRepository.save(customerIdentifyDocument);
+      }
     }
     
     historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(new CustomerVO(customer)));
