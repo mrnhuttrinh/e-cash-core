@@ -63,7 +63,11 @@ public class CustomerService {
     return customerRepository.findAll(predicate, pageable);
   }
 
-  public void lockCustomers(List<Customer> vos) {
+  public void lockCustomers(List<Customer> vos, Predicate predicate, Pageable pageable) {
+    if(vos == null || vos.isEmpty()) {
+      vos = (List<Customer>) customerRepository.findAll(predicate);
+    }
+    
     for (Customer vo : vos) {
       if (StringUtils.isNullOrEmpty(vo.getId())) {
         throw new ValidationException("Customer ids must not be null or emtpy.");
@@ -81,7 +85,11 @@ public class CustomerService {
     }
   }
 
-  public void unlockCustomers(List<Customer> vos) {
+  public void unlockCustomers(List<Customer> vos, Predicate predicate, Pageable pageable) {
+    if(vos == null || vos.isEmpty()) {
+      vos = (List<Customer>) customerRepository.findAll(predicate);
+    }
+    
     for (Customer vo : vos) {
       if (StringUtils.isNullOrEmpty(vo.getId())) {
         throw new ValidationException("Customer ids must not be null or emtpy.");
