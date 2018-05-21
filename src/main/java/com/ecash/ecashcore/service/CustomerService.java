@@ -40,13 +40,13 @@ public class CustomerService {
 
   @Autowired
   CustomerRepository customerRepository;
-  
+
   @Autowired
   CustomerAddressRepository customerAddressRepository;
-  
+
   @Autowired
   CustomerHistoryTypeRepository customerHistoryTypeRepository;
-  
+
   @Autowired
   CustomerHistoryRepository customerHistoryRepository;
 
@@ -58,55 +58,66 @@ public class CustomerService {
 
   @Autowired
   IdentifyDocumentRepository identifyDocumentRepository;
-  
+
   public Iterable<Customer> findAll(Predicate predicate, Pageable pageable) {
     return customerRepository.findAll(predicate, pageable);
   }
 
   public void lockCustomers(List<Customer> vos, Predicate predicate, Pageable pageable) {
-    if(vos == null || vos.isEmpty()) {
+    if (vos == null || vos.isEmpty()) {
       vos = (List<Customer>) customerRepository.findAll(predicate);
-    }
-    
-    for (Customer vo : vos) {
-      if (StringUtils.isNullOrEmpty(vo.getId())) {
-        throw new ValidationException("Customer ids must not be null or emtpy.");
-      }
+      updateListCustomerStatus(vos, StatusEnum.DEACTIVE);
+    } else if (vos != null) {
+      for (Customer vo : vos) {
+        if (StringUtils.isNullOrEmpty(vo.getId())) {
+          throw new ValidationException("Customer ids must not be null or emtpy.");
+        }
 
-      Customer customer = customerRepository.findOne(vo.getId());
-      if (customer == null) {
-        throw new DataNotFoundException("Customer could not be found. Id: " + vo.getId());
-      }
+        Customer customer = customerRepository.findOne(vo.getId());
+        if (customer == null) {
+          throw new DataNotFoundException("Customer could not be found. Id: " + vo.getId());
+        }
 
-      if (!customer.getStatus().equals(StatusEnum.DEACTIVE.toString())) {
-        customer.setStatus(StatusEnum.DEACTIVE.toString());
-        customerRepository.save(customer);
+        if (!customer.getStatus().equals(StatusEnum.DEACTIVE.toString())) {
+          customer.setStatus(StatusEnum.DEACTIVE.toString());
+          customerRepository.save(customer);
+        }
       }
     }
   }
 
   public void unlockCustomers(List<Customer> vos, Predicate predicate, Pageable pageable) {
-    if(vos == null || vos.isEmpty()) {
+    if (vos == null || vos.isEmpty()) {
       vos = (List<Customer>) customerRepository.findAll(predicate);
+      updateListCustomerStatus(vos, StatusEnum.ACTIVE);
+    } else if (vos != null) {
+      for (Customer vo : vos) {
+        if (StringUtils.isNullOrEmpty(vo.getId())) {
+          throw new ValidationException("Customer ids must not be null or emtpy.");
+        }
+
+        Customer customer = customerRepository.findOne(vo.getId());
+        if (customer == null) {
+          throw new DataNotFoundException("Customer could not be found. Id: " + vo.getId());
+        }
+
+        if (!customer.getStatus().equals(StatusEnum.ACTIVE.toString())) {
+          customer.setStatus(StatusEnum.ACTIVE.toString());
+          customerRepository.save(customer);
+        }
+      }
     }
-    
-    for (Customer vo : vos) {
-      if (StringUtils.isNullOrEmpty(vo.getId())) {
-        throw new ValidationException("Customer ids must not be null or emtpy.");
-      }
+  }
 
-      Customer customer = customerRepository.findOne(vo.getId());
-      if (customer == null) {
-        throw new DataNotFoundException("Customer could not be found. Id: " + vo.getId());
-      }
-
-      if (!customer.getStatus().equals(StatusEnum.ACTIVE.toString())) {
-        customer.setStatus(StatusEnum.ACTIVE.toString());
+  private void updateListCustomerStatus(List<Customer> customers, StatusEnum status) {
+    for (Customer customer : customers) {
+      if (!customer.getStatus().equals(status.toString())) {
+        customer.setStatus(status.toString());
         customerRepository.save(customer);
       }
     }
   }
-  
+
   public Customer addNewCustomer(NewCustomerPOJO newCustomerPOJO, String currentUser) {
     // save customer
     Customer customer = customerRepository.save(newCustomerPOJO.getCustomer());
@@ -148,14 +159,14 @@ public class CustomerService {
 
     Customer updateCustomer = updateCustomerPOJO.getCustomer();
     Customer customer = customerRepository.findOne(updateCustomer.getId());
-    if(customer == null) {
+    if (customer == null) {
       throw new DataNotFoundException("Can not find customer id:" + updateCustomer.getId());
     }
-    
+
     // create history
     HistoryVO historyVO = new HistoryVO();
     historyVO.getPrevious().put(StringConstant.PREVIOUS, JsonUtils.objectToJsonString(new CustomerVO(customer)));
-    
+
     // update
     // customer.setScmsMemberCode(syncCustomer.getScmsMemberCode());
     customer.setFirstName(updateCustomer.getFirstName());
@@ -171,12 +182,12 @@ public class CustomerService {
     customer.setTitle(updateCustomer.getTitle());
     customer.setPosition(updateCustomer.getPosition());
     customerRepository.save(customer);
-    
+
     List<Address> updateAddresses = updateCustomerPOJO.getAddresses();
-    for(Address updateAddress : updateAddresses) {
-      if(updateAddress.getId() != null) {
+    for (Address updateAddress : updateAddresses) {
+      if (updateAddress.getId() != null) {
         Address address = addressRepository.findOne(updateAddress.getId());
-        if(address == null) {
+        if (address == null) {
           throw new DataNotFoundException("Address could not be found. Id: " + updateAddress.getId());
         }
         address.setCountry(updateAddress.getCountry());
@@ -194,12 +205,12 @@ public class CustomerService {
         customerAddressRepository.save(customerAddress);
       }
     }
-    
+
     List<IdentifyDocument> updateIdentifyDocuments = updateCustomerPOJO.getIndetifyCards();
-    for(IdentifyDocument updateIdentifyDocument : updateIdentifyDocuments) {
-      if(updateIdentifyDocument.getId() != null) {
+    for (IdentifyDocument updateIdentifyDocument : updateIdentifyDocuments) {
+      if (updateIdentifyDocument.getId() != null) {
         IdentifyDocument identifyDocument = identifyDocumentRepository.findOne(updateIdentifyDocument.getId());
-        if(identifyDocument == null) {
+        if (identifyDocument == null) {
           throw new DataNotFoundException("Address could not be found. Id: " + updateIdentifyDocument.getId());
         }
         identifyDocument.setDateOfIssue(updateIdentifyDocument.getDateOfIssue());
@@ -215,7 +226,7 @@ public class CustomerService {
         customerIdentifyDocumentsRepository.save(customerIdentifyDocument);
       }
     }
-    
+
     historyVO.getNext().put(StringConstant.NEXT, JsonUtils.objectToJsonString(new CustomerVO(customer)));
 
     // update history
@@ -225,7 +236,7 @@ public class CustomerService {
     customerHistory.setCreatedBy(SCMSSyncDetail.SCMS_SYNC);
     customerHistory.setDetails(JsonUtils.objectToJsonString(historyVO));
     customerHistoryRepository.save(customerHistory);
-    
+
     return customer;
   }
 }
