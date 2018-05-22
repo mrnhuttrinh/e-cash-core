@@ -1,6 +1,7 @@
 package com.ecash.ecashcore.service;
 
 import java.util.List;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -120,6 +121,7 @@ public class CustomerService {
 
   public Customer addNewCustomer(NewCustomerPOJO newCustomerPOJO, String currentUser) {
     // save customer
+    newCustomerPOJO.getCustomer().setDateBecameCustomer(new Date());
     Customer customer = customerRepository.save(newCustomerPOJO.getCustomer());
 
     // save address
@@ -193,6 +195,7 @@ public class CustomerService {
         address.setCountry(updateAddress.getCountry());
         address.setLine1(updateAddress.getLine1());
         address.setLine2(updateAddress.getLine2());
+        address.setStatus(updateAddress.getStatus());
         // TODO: update more field if need
         addressRepository.save(address);
       } else {
@@ -216,6 +219,7 @@ public class CustomerService {
         identifyDocument.setDateOfIssue(updateIdentifyDocument.getDateOfIssue());
         identifyDocument.setDateOfExpiry(updateIdentifyDocument.getDateOfExpiry());
         identifyDocument.setPlaceOfIssue(updateIdentifyDocument.getPlaceOfIssue());
+        identifyDocument.setStatus(updateIdentifyDocument.getStatus());
         identifyDocumentRepository.save(identifyDocument);
       } else {
         IdentifyDocument identifyDocument = identifyDocumentRepository.save(updateIdentifyDocument);
