@@ -64,7 +64,7 @@ public class CustomerService {
   }
 
   public void lockCustomers(List<Customer> vos, Predicate predicate, Pageable pageable) {
-    if (vos == null || vos.isEmpty()) {
+    if ((vos == null || vos.isEmpty()) && predicate != null) {
       vos = (List<Customer>) customerRepository.findAll(predicate);
       updateListCustomerStatus(vos, StatusEnum.DEACTIVE);
     } else if (vos != null) {
@@ -87,7 +87,7 @@ public class CustomerService {
   }
 
   public void unlockCustomers(List<Customer> vos, Predicate predicate, Pageable pageable) {
-    if (vos == null || vos.isEmpty()) {
+    if ((vos == null || vos.isEmpty()) && predicate != null) {
       vos = (List<Customer>) customerRepository.findAll(predicate);
       updateListCustomerStatus(vos, StatusEnum.ACTIVE);
     } else if (vos != null) {

@@ -80,37 +80,56 @@ public class AccountService {
     accountRepository.save(account);
   }
 
-  public void lock(List<AccountVO> vos) {
-    for (AccountVO vo : vos) {
-      if (StringUtils.isNullOrEmpty(vo.getId())) {
-        throw new ValidationException("Account ids must not be null or emtpy.");
-      }
+  public void lock(List<AccountVO> vos, Predicate predicate, Pageable pageable) {
+    if ((vos == null || vos.isEmpty()) && predicate != null) {
+      List<Account> accounts = (List<Account>) accountRepository.findAll(predicate);
+      updateListAccountStatus(accounts, StatusEnum.DEACTIVE);
+    } else if (vos != null) {
+      for (AccountVO vo : vos) {
+        if (StringUtils.isNullOrEmpty(vo.getId())) {
+          throw new ValidationException("Account ids must not be null or emtpy.");
+        }
 
-      Account account = accountRepository.findOne(vo.getId());
-      if (account == null) {
-        throw new DataNotFoundException("Account could not be found. Id: " + vo.getId());
-      }
+        Account account = accountRepository.findOne(vo.getId());
+        if (account == null) {
+          throw new DataNotFoundException("Account could not be found. Id: " + vo.getId());
+        }
 
-      if (!account.getStatus().equals(StatusEnum.DEACTIVE.toString())) {
-        account.setStatus(StatusEnum.DEACTIVE.toString());
-        accountRepository.save(account);
+        if (!account.getStatus().equals(StatusEnum.DEACTIVE.toString())) {
+          account.setStatus(StatusEnum.DEACTIVE.toString());
+          accountRepository.save(account);
+        }
       }
     }
   }
 
-  public void unlockAccounts(List<AccountVO> vos) {
-    for (AccountVO vo : vos) {
-      if (StringUtils.isNullOrEmpty(vo.getId())) {
-        throw new ValidationException("Account ids must not be null or emtpy.");
-      }
+  public void unlockAccounts(List<AccountVO> vos, Predicate predicate, Pageable pageable) {
+    if ((vos == null || vos.isEmpty()) && predicate != null) {
+      List<Account> accounts = (List<Account>) accountRepository.findAll(predicate);
+      updateListAccountStatus(accounts, StatusEnum.ACTIVE);
+    } else if (vos != null) {
+      for (AccountVO vo : vos) {
+        if (StringUtils.isNullOrEmpty(vo.getId())) {
+          throw new ValidationException("Account ids must not be null or emtpy.");
+        }
 
-      Account account = accountRepository.findOne(vo.getId());
-      if (account == null) {
-        throw new DataNotFoundException("Account could not be found. Id: " + vo.getId());
-      }
+        Account account = accountRepository.findOne(vo.getId());
+        if (account == null) {
+          throw new DataNotFoundException("Account could not be found. Id: " + vo.getId());
+        }
 
-      if (!account.getStatus().equals(StatusEnum.ACTIVE.toString())) {
-        account.setStatus(StatusEnum.ACTIVE.toString());
+        if (!account.getStatus().equals(StatusEnum.ACTIVE.toString())) {
+          account.setStatus(StatusEnum.ACTIVE.toString());
+          accountRepository.save(account);
+        }
+      }
+    }
+  }
+
+  private void updateListAccountStatus(List<Account> accounts, StatusEnum status) {
+    for (Account account : accounts) {
+      if (!account.getStatus().equals(status.toString())) {
+        account.setStatus(status.toString());
         accountRepository.save(account);
       }
     }
