@@ -19,6 +19,7 @@ import com.ecash.ecashcore.model.cms.CustomerHistory;
 import com.ecash.ecashcore.model.cms.CustomerHistoryType;
 import com.ecash.ecashcore.model.cms.CustomerIdentifyDocument;
 import com.ecash.ecashcore.model.cms.IdentifyDocument;
+import com.ecash.ecashcore.model.cms.Organization;
 import com.ecash.ecashcore.model.cms.SCMSSyncDetail;
 import com.ecash.ecashcore.pojo.NewCustomerPOJO;
 import com.ecash.ecashcore.pojo.UpdateCustomerPOJO;
@@ -29,6 +30,7 @@ import com.ecash.ecashcore.repository.CustomerHistoryTypeRepository;
 import com.ecash.ecashcore.repository.CustomerIdentifyDocumentsRepository;
 import com.ecash.ecashcore.repository.CustomerRepository;
 import com.ecash.ecashcore.repository.IdentifyDocumentRepository;
+import com.ecash.ecashcore.repository.OrganizationRepository;
 import com.ecash.ecashcore.util.JsonUtils;
 import com.ecash.ecashcore.util.StringUtils;
 import com.ecash.ecashcore.vo.CustomerVO;
@@ -59,6 +61,9 @@ public class CustomerService {
 
   @Autowired
   IdentifyDocumentRepository identifyDocumentRepository;
+
+  @Autowired
+  OrganizationRepository organizationRepository;
 
   public Iterable<Customer> findAll(Predicate predicate, Pageable pageable) {
     return customerRepository.findAll(predicate, pageable);
@@ -120,8 +125,12 @@ public class CustomerService {
   }
 
   public Customer addNewCustomer(NewCustomerPOJO newCustomerPOJO, String currentUser) {
+    // save new organization
+    Organization organization = organizationRepository.save(newCustomerPOJO.getOrganization());
+
     // save customer
     newCustomerPOJO.getCustomer().setDateBecameCustomer(new Date());
+    newCustomerPOJO.getCustomer().setOrganization(organization);
     Customer customer = customerRepository.save(newCustomerPOJO.getCustomer());
 
     // save address
@@ -158,6 +167,15 @@ public class CustomerService {
   }
 
   public Customer updateCustomer(UpdateCustomerPOJO updateCustomerPOJO, String currentUser) {
+
+    // save new organization
+    Organization updateOrganization = updateCustomerPOJO.getCustomer().getOrganization();
+    Organization organization = organizationRepository.findOne(updateOrganization.getId());
+    if (organization == null) {
+      throw new DataNotFoundException("Can not find organization id:" + updateOrganization.getId());
+    }
+    organization.setShortName(updateOrganization.getShortName());
+    organizationRepository.save(organization);
 
     Customer updateCustomer = updateCustomerPOJO.getCustomer();
     Customer customer = customerRepository.findOne(updateCustomer.getId());
@@ -214,7 +232,7 @@ public class CustomerService {
       if (updateIdentifyDocument.getId() != null) {
         IdentifyDocument identifyDocument = identifyDocumentRepository.findOne(updateIdentifyDocument.getId());
         if (identifyDocument == null) {
-          throw new DataNotFoundException("Address could not be found. Id: " + updateIdentifyDocument.getId());
+          throw new DataNotFoundException("Identify Document could not be found. Id: " + updateIdentifyDocument.getId());
         }
         identifyDocument.setDateOfIssue(updateIdentifyDocument.getDateOfIssue());
         identifyDocument.setDateOfExpiry(updateIdentifyDocument.getDateOfExpiry());
