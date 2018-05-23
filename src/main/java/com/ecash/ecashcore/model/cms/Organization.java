@@ -1,6 +1,6 @@
 package com.ecash.ecashcore.model.cms;
 
-import com.ecash.ecashcore.model.BaseModel;
+import com.ecash.ecashcore.model.BaseUUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "organization")
-public class Organization extends BaseModel {
+public class Organization extends BaseUUID {
   @Id
   private String id;
 
